@@ -1,0 +1,15 @@
+{
+  "projectTarget": "DotNet6",
+  "mappings": {
+    "src": {
+      "paths": [
+        "src"
+      ]
+    },
+    "test": {
+      "paths": [
+        "test"
+      ]
+    }
+  }
+}
