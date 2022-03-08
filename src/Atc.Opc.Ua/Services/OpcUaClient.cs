@@ -10,13 +10,12 @@ public partial class OpcUaClient : IOpcUaClient
 {
     private const uint SessionTimeout = 30 * 60 * 1000;
     private const string ApplicationName = nameof(OpcUaClient);
+    private readonly ApplicationConfiguration configuration;
 
     private readonly List<NodeId> excludeNodes = new()
     {
         ObjectIds.Server,
     };
-
-    private readonly ApplicationConfiguration configuration;
 
     public Session? Session { get; private set; }
 
