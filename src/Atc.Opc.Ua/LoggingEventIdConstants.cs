@@ -1,4 +1,4 @@
-namespace Atc.Opc.Ua.Services;
+namespace Atc.Opc.Ua;
 
 internal static class LoggingEventIdConstants
 {
