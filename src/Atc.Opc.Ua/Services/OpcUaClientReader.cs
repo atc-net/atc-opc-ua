@@ -76,10 +76,17 @@ public partial class OpcUaClient
             (includeObjects || includeVariables) &&
             nodeObjectReadDepth >= 1)
         {
-            await ReadChildNodes(nodeObject, 1, includeObjects, includeVariables, includeSampleValues, nodeObjectReadDepth);
+            await ReadChildNodes(
+                nodeObject,
+                1,
+                includeObjects,
+                includeVariables,
+                includeSampleValues,
+                nodeObjectReadDepth);
         }
 
         LogSessionReadNodeObjectSucceeded(nodeId);
+
         return (true, nodeObject, null);
     }
 
