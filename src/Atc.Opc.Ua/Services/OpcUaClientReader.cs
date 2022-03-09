@@ -12,7 +12,7 @@ public partial class OpcUaClient
         ObjectIds.Server,
     };
 
-    public Task<NodeVariable?> ReadNodeVariableAsync(
+    public Task<(bool Succeeded, NodeVariable? NodeVariable, string? ErrorMessage)> ReadNodeVariableAsync(
         string nodeId,
         bool includeSampleValue)
     {
@@ -21,7 +21,7 @@ public partial class OpcUaClient
         return InvokeReadNodeVariableAsync(nodeId, includeSampleValue);
     }
 
-    public Task<IList<NodeVariable>?> ReadNodeVariablesAsync(
+    public Task<(bool Succeeded, IList<NodeVariable>? NodeVariables, string? ErrorMessage)> ReadNodeVariablesAsync(
         string[] nodeIds,
         bool includeSampleValues)
     {
@@ -30,7 +30,7 @@ public partial class OpcUaClient
         return InvokeReadNodeVariablesAsync(nodeIds, includeSampleValues);
     }
 
-    public async Task<NodeObject?> ReadNodeObjectAsync(
+    public async Task<(bool Succeeded, NodeObject? NodeObject, string? ErrorMesssage)> ReadNodeObjectAsync(
         string nodeId,
         bool includeObjects,
         bool includeVariables,
@@ -39,13 +39,13 @@ public partial class OpcUaClient
     {
         if (string.IsNullOrEmpty(nodeId))
         {
-            return null;
+            return (false, null, "Missing nodeId.");
         }
 
         if (!IsConnected())
         {
             LogSessionNotConnected();
-            return null;
+            return (false, null, "Session is not connected.");
         }
 
         LogSessionReadNodeObjectWithMaxDepth(nodeId, nodeObjectReadDepth);
@@ -54,20 +54,20 @@ public partial class OpcUaClient
         if (readNode is null)
         {
             LogSessionNodeNotFound(nodeId);
-            return null;
+            return (false, null, $"Could not find node by nodeId '{nodeId}'.");
         }
 
         if (readNode.NodeClass != NodeClass.Object)
         {
             LogSessionNodeHasWrongClass(nodeId, readNode.NodeClass, NodeClass.Object);
-            return null;
+            return (false, null, $"Node with nodeId '{nodeId}' has wrong NodeClass '{readNode.NodeClass}', expected '{NodeClass.Object}'.");
         }
 
         var parentNodeId = GetParentNodeId(nodeId);
         if (parentNodeId is null)
         {
             LogSessionParentNodeNotFound(nodeId);
-            return null;
+            return (false, null, $"Could not find parent for node with nodeId '{nodeId}'.");
         }
 
         var nodeObject = readNode.MapToNodeObject(parentNodeId);
@@ -80,7 +80,7 @@ public partial class OpcUaClient
         }
 
         LogSessionReadNodeObjectSucceeded(nodeId);
-        return nodeObject;
+        return (true, nodeObject, null);
     }
 
     private string? GetParentNodeId(
@@ -130,14 +130,14 @@ public partial class OpcUaClient
         }
     }
 
-    private async Task<NodeVariable?> InvokeReadNodeVariableAsync(
+    private async Task<(bool Succeeded, NodeVariable? NodeVariable, string? ErrorMessage)> InvokeReadNodeVariableAsync(
         string nodeId,
         bool includeSampleValue)
     {
         if (!IsConnected())
         {
             LogSessionNotConnected();
-            return null;
+            return (false, null, "Session is not connected.");
         }
 
         try
@@ -148,13 +148,13 @@ public partial class OpcUaClient
             if (readNode is null)
             {
                 LogSessionNodeNotFound(nodeId);
-                return null;
+                return (false, null, $"Could not find node by nodeId '{nodeId}'.");
             }
 
             if (readNode.NodeClass != NodeClass.Variable)
             {
                 LogSessionNodeHasWrongClass(nodeId, readNode.NodeClass, NodeClass.Variable);
-                return null;
+                return (false, null, $"Node with nodeId '{nodeId}' has wrong NodeClass '{readNode.NodeClass}', expected '{NodeClass.Variable}'.");
             }
 
             var browserParent = BrowserFactory.GetBackwardsBrowser(Session!);
@@ -162,7 +162,7 @@ public partial class OpcUaClient
             if (browseParentResults is null || browseParentResults.Count != 1)
             {
                 LogSessionParentNodeNotFound(nodeId);
-                return null;
+                return (false, null, $"Could not find parent for node with nodeId '{nodeId}'.");
             }
 
             DataValue? sampleValue = null;
@@ -175,41 +175,51 @@ public partial class OpcUaClient
             var nodeVariable = readNode.MapToNodeVariableWithValue(parentObject.NodeId.ToString(), sampleValue);
 
             LogSessionReadNodeVariableSucceeded(nodeId);
-            return nodeVariable;
+            return (true, nodeVariable, null);
         }
         catch (Exception ex)
         {
             LogSessionReadNodeFailure(nodeId, ex.Message);
-            return null;
+            return (false, null, $"Reading node with nodeId '{nodeId}' failed: '{ex.Message}'.");
         }
     }
 
-    private async Task<IList<NodeVariable>?> InvokeReadNodeVariablesAsync(
+    private async Task<(bool Succeeded, IList<NodeVariable>? NodeVariables, string? ErrorMessage)> InvokeReadNodeVariablesAsync(
         string[] nodeIds,
         bool includeSampleValues)
     {
         if (!nodeIds.Any())
         {
-            return null;
+            return (false, null, "Missing NodeIds");
         }
 
         if (!IsConnected())
         {
             LogSessionNotConnected();
-            return null;
+            return (false, null, "Session is not connected.");
         }
 
         var result = new List<NodeVariable>();
+        var errors = new List<string>();
         foreach (var nodeId in nodeIds)
         {
-            var nodeVariable = await ReadNodeVariableAsync(nodeId, includeSampleValues);
-            if (nodeVariable is not null)
+            var (succeeded, nodeVariable, errorMessage) = await ReadNodeVariableAsync(nodeId, includeSampleValues);
+            if (succeeded)
             {
-                result.Add(nodeVariable);
+                result.Add(nodeVariable!);
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    errors.Add(errorMessage);
+                }
             }
         }
 
-        return result;
+        return errors.Any()
+            ? (true, result, string.Join(',', errors))
+            : (true, result, null);
     }
 
     private async Task HandleChildBrowseResults(
@@ -231,7 +241,13 @@ public partial class OpcUaClient
                     {
                         if (nodeObjectReadDepth > level)
                         {
-                            await ReadChildNodes(childNode, level + 1, includeObjects, includeVariables, includeSampleValues, nodeObjectReadDepth);
+                            await ReadChildNodes(
+                                childNode,
+                                level + 1,
+                                includeObjects,
+                                includeVariables,
+                                includeSampleValues,
+                                nodeObjectReadDepth);
                         }
 
                         currentNode.NodeObjects.Add(childNode);

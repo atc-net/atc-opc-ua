@@ -4,7 +4,8 @@ public static class CommandAppExtensions
 {
     private const string SampleOpcUaServerUrl = "opc.tcp://opcuaserver.com:48010";
 
-    public static void ConfigureCommands(this CommandApp app)
+    public static void ConfigureCommands(
+        this CommandApp app)
     {
         ArgumentNullException.ThrowIfNull(app);
 
@@ -15,7 +16,8 @@ public static class CommandAppExtensions
         });
     }
 
-    private static void ConfigureTestConnectionCommand(IConfigurator config)
+    private static void ConfigureTestConnectionCommand(
+        IConfigurator config)
         => config.AddCommand<TestConnectionCommand>("testconnection")
             .WithDescription("Tests if a connection can be made to a given server.")
             .WithExample(new[] { $"testconnection -s {SampleOpcUaServerUrl}" })
@@ -28,7 +30,8 @@ public static class CommandAppExtensions
             ConfigureNodeReadCommands(node);
         };
 
-    private static void ConfigureNodeReadCommands(IConfigurator<CommandSettings> node)
+    private static void ConfigureNodeReadCommands(
+        IConfigurator<CommandSettings> node)
         => node.AddBranch("read", read =>
         {
             read.SetDescription("Operations related to reading nodes.");

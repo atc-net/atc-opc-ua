@@ -7,7 +7,7 @@ namespace Atc.Opc.Ua.Services;
 [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OK")]
 public partial class OpcUaClient
 {
-    public bool WriteNode(
+    public (bool Succeeded, string? ErrorMessage) WriteNode(
         string nodeId,
         object value)
     {
@@ -18,7 +18,7 @@ public partial class OpcUaClient
         return WriteNodeValueCollection(nodesToWriteCollection);
     }
 
-    public bool WriteNodes(
+    public (bool Succeeded, string? ErrorMessage) WriteNodes(
         IDictionary<string, object> nodesToWrite)
     {
         ArgumentNullException.ThrowIfNull(nodesToWrite);
@@ -33,7 +33,7 @@ public partial class OpcUaClient
         return WriteNodeValueCollection(nodesToWriteCollection);
     }
 
-    private bool WriteNodeValueCollection(
+    private (bool Succeeded, string? ErrorMessage) WriteNodeValueCollection(
         WriteValueCollection nodesToWriteCollection)
     {
         try
@@ -48,16 +48,17 @@ public partial class OpcUaClient
                 results.Any() &&
                 StatusCode.IsGood(results[0]))
             {
-                return true;
+                return (true, null);
             }
 
-            LogSessionWriteNodeVariableFailure(results![0].ToString());
-            return false;
+            var errorMessage = results![0].ToString();
+            LogSessionWriteNodeVariableFailure(errorMessage);
+            return (false, $"Writing node variable(s) failed: {errorMessage}.");
         }
         catch (Exception ex)
         {
             LogSessionWriteNodeVariableFailure(ex.Message);
-            return false;
+            return (false, $"Writing node variable(s) failed: {ex.Message}.");
         }
     }
 

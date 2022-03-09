@@ -2,37 +2,37 @@ namespace Atc.Opc.Ua.Services;
 
 public interface IOpcUaClient
 {
-    Task<bool> ConnectAsync(
+    Task<(bool Succeeded, string? ErrorMessage)> ConnectAsync(
         Uri serverUri);
 
-    Task<bool> ConnectAsync(
+    Task<(bool Succeeded, string? ErrorMessage)> ConnectAsync(
         Uri serverUri,
         string userName,
         string password);
 
     bool IsConnected();
 
-    bool Disconnect();
+    (bool Succeeded, string? ErrorMessage) Disconnect();
 
-    Task<NodeVariable?> ReadNodeVariableAsync(
+    Task<(bool Succeeded, NodeVariable? NodeVariable, string? ErrorMessage)> ReadNodeVariableAsync(
         string nodeId,
         bool includeSampleValue);
 
-    Task<IList<NodeVariable>?> ReadNodeVariablesAsync(
+    Task<(bool Succeeded, IList<NodeVariable>? NodeVariables, string? ErrorMessage)> ReadNodeVariablesAsync(
         string[] nodeIds,
         bool includeSampleValues);
 
-    Task<NodeObject?> ReadNodeObjectAsync(
+    Task<(bool Succeeded, NodeObject? NodeObject, string? ErrorMesssage)> ReadNodeObjectAsync(
         string nodeId,
         bool includeObjects,
         bool includeVariables,
         bool includeSampleValues,
         int nodeObjectReadDepth = 1);
 
-    bool WriteNode(
+    (bool Succeeded, string? ErrorMessage) WriteNode(
         string nodeId,
         object value);
 
-    bool WriteNodes(
+    (bool Succeeded, string? ErrorMessage) WriteNodes(
         IDictionary<string, object> nodesToWrite);
 }

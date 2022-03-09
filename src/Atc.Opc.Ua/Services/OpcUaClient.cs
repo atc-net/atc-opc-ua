@@ -26,7 +26,7 @@ public partial class OpcUaClient : IOpcUaClient
     public bool IsConnected()
         => Session is not null && Session.Connected;
 
-    public bool Disconnect()
+    public (bool Succeeded, string? ErrorMessage) Disconnect()
     {
         try
         {
@@ -40,24 +40,24 @@ public partial class OpcUaClient : IOpcUaClient
                 Session = null;
 
                 LogSessionDisconnected(sessionName);
-                return true;
+                return (true, null);
             }
 
             LogSessionNotConnected();
-            return false;
+            return (false, "Session is not connected.");
         }
         catch (Exception ex)
         {
             LogSessionDisconnectionFailure(ex.Message);
-            return false;
+            return (false, ex.Message);
         }
     }
 
-    public Task<bool> ConnectAsync(
+    public Task<(bool Succeeded, string? ErrorMessage)> ConnectAsync(
         Uri serverUri)
         => ConnectAsync(serverUri, string.Empty, string.Empty);
 
-    public Task<bool> ConnectAsync(
+    public Task<(bool Succeeded, string? ErrorMessage)> ConnectAsync(
         Uri serverUri,
         string userName,
         string password)
@@ -67,7 +67,7 @@ public partial class OpcUaClient : IOpcUaClient
         return InvokeConnectAsync(serverUri, userName, password);
     }
 
-    private async Task<bool> InvokeConnectAsync(
+    private async Task<(bool Succeeded, string? ErrorMessage)> InvokeConnectAsync(
         Uri serverUri,
         string userName,
         string password)
@@ -94,12 +94,12 @@ public partial class OpcUaClient : IOpcUaClient
                 LogSessionConnected(Session?.SessionName ?? "unknown");
             }
 
-            return true;
+            return (true, null);
         }
         catch (Exception ex)
         {
             LogSessionConnectionFailure(ex.Message);
-            return false;
+            return (false, ex.Message);
         }
     }
 

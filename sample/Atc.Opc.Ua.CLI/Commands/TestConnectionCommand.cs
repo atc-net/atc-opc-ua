@@ -5,20 +5,25 @@ internal sealed class TestConnectionCommand : AsyncCommand<OpcUaBaseCommandSetti
     private readonly IOpcUaClient opcUaClient;
     private readonly ILogger<TestConnectionCommand> logger;
 
-    public TestConnectionCommand(IOpcUaClient opcUaClient, ILogger<TestConnectionCommand> logger)
+    public TestConnectionCommand(
+        IOpcUaClient opcUaClient,
+        ILogger<TestConnectionCommand> logger)
     {
         this.opcUaClient = opcUaClient ?? throw new ArgumentNullException(nameof(opcUaClient));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public override Task<int> ExecuteAsync(CommandContext context, OpcUaBaseCommandSettings settings)
+    public override Task<int> ExecuteAsync(
+        CommandContext context,
+        OpcUaBaseCommandSettings settings)
     {
         ArgumentNullException.ThrowIfNull(settings);
 
         return ExecuteInternalAsync(settings);
     }
 
-    private async Task<int> ExecuteInternalAsync(OpcUaBaseCommandSettings settings)
+    private async Task<int> ExecuteInternalAsync(
+        OpcUaBaseCommandSettings settings)
     {
         ConsoleHelper.WriteHeader();
 
@@ -28,11 +33,11 @@ internal sealed class TestConnectionCommand : AsyncCommand<OpcUaBaseCommandSetti
 
         var sw = Stopwatch.StartNew();
 
-        var connectionSucceeded = userName is not null && userName.IsSet
+        var (succeeded, _) = userName is not null && userName.IsSet
             ? await opcUaClient.ConnectAsync(serverUrl, userName.Value, password!.Value)
             : await opcUaClient.ConnectAsync(serverUrl);
 
-        if (connectionSucceeded)
+        if (succeeded)
         {
             opcUaClient.Disconnect();
         }
@@ -40,7 +45,7 @@ internal sealed class TestConnectionCommand : AsyncCommand<OpcUaBaseCommandSetti
         sw.Stop();
         logger.LogDebug($"Time for operation: {sw.Elapsed.GetPrettyTime()}");
 
-        return connectionSucceeded
+        return succeeded
             ? ConsoleExitStatusCodes.Success
             : ConsoleExitStatusCodes.Failure;
     }

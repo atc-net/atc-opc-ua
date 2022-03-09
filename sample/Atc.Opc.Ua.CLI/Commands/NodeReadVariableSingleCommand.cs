@@ -5,20 +5,25 @@ public sealed class NodeReadVariableSingleCommand : AsyncCommand<SingleNodeSetti
     private readonly IOpcUaClient opcUaClient;
     private readonly ILogger<NodeReadVariableSingleCommand> logger;
 
-    public NodeReadVariableSingleCommand(IOpcUaClient opcUaClient, ILogger<NodeReadVariableSingleCommand> logger)
+    public NodeReadVariableSingleCommand(
+        IOpcUaClient opcUaClient,
+        ILogger<NodeReadVariableSingleCommand> logger)
     {
         this.opcUaClient = opcUaClient ?? throw new ArgumentNullException(nameof(opcUaClient));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public override Task<int> ExecuteAsync(CommandContext context, SingleNodeSettings settings)
+    public override Task<int> ExecuteAsync(
+        CommandContext context,
+        SingleNodeSettings settings)
     {
         ArgumentNullException.ThrowIfNull(settings);
 
         return ExecuteInternalAsync(settings);
     }
 
-    private async Task<int> ExecuteInternalAsync(SingleNodeSettings settings)
+    private async Task<int> ExecuteInternalAsync(
+        SingleNodeSettings settings)
     {
         ConsoleHelper.WriteHeader();
 
@@ -30,16 +35,16 @@ public sealed class NodeReadVariableSingleCommand : AsyncCommand<SingleNodeSetti
 
         var sw = Stopwatch.StartNew();
 
-        var connectionSucceeded = userName is not null && userName.IsSet
+        var (succeeded, _) = userName is not null && userName.IsSet
             ? await opcUaClient.ConnectAsync(serverUrl, userName.Value, password!.Value)
             : await opcUaClient.ConnectAsync(serverUrl);
 
-        if (connectionSucceeded)
+        if (succeeded)
         {
-            var nodeVariable = await opcUaClient.ReadNodeVariableAsync(nodeId, includeSampleValue);
-            if (nodeVariable is not null)
+            var (succeededReading, nodeVariable, _) = await opcUaClient.ReadNodeVariableAsync(nodeId, includeSampleValue);
+            if (succeededReading)
             {
-                logger.LogInformation($"Received the following data: '{nodeVariable.ToStringSimple()}'");
+                logger.LogInformation($"Received the following data: '{nodeVariable!.ToStringSimple()}'");
             }
 
             opcUaClient.Disconnect();
@@ -48,7 +53,7 @@ public sealed class NodeReadVariableSingleCommand : AsyncCommand<SingleNodeSetti
         sw.Stop();
         logger.LogDebug($"Time for operation: {sw.Elapsed.GetPrettyTime()}");
 
-        return connectionSucceeded
+        return succeeded
             ? ConsoleExitStatusCodes.Success
             : ConsoleExitStatusCodes.Failure;
     }
