@@ -4,36 +4,6 @@ public static class Program
 {
     public static Task<int> Main(string[] args)
     {
-        if (args.Length == default)
-        {
-            args = new[]
-            {
-                //"node read object -s opc.tcp://opcuaserver.com:48010 -n \"ns=2;s=Demo.Dynamic.Scalar\"",
-                ////"node read variable single -s opc.tcp://milo.digitalpetri.com:62541/milo -n \"ns=2;s=CTT/SecurityAccess/AccessLevel_CurrentRead_NotUser\"",
-                ////node write variable single -s opc.tcp://milo.digitalpetri.com:62541/milo -n "ns=2;s=Dynamic/RandomFloat" -v 100.5
-                "node", "read", "object",
-                ////"node", "read", "variable", "single",
-                ////"node", "write", "variable", "single",
-                ////"testconnection",
-                ////"-s", "opc.tcp://milo.digitalpetri.com:62541/milo",
-                "-s", "opc.tcp://opcuaserver.com:48010",
-                "-n", "\"ns=2;s=Demo.Dynamic.Scalar\"",
-                ////"-n", "\"ns=9;i=56768\"",
-                ////"-d", "string",
-                ////"-d", "dummy",
-                ////"-v", "Channel 1#",
-                ////"-n", "\"ns=2;s=Dynamic/RandomInt32\"",
-                ////"-n", "ns=2;s=CTT/SecurityAccess/AccessLevel_CurrentRead_NotUser",
-                "--includeObjects",
-                "--includeVariables",
-                ////"--nodeObjectReadDepth", "1",
-                ////"--outputAsJson",
-                ////"--outputToFilePath", @"C:\Temp\asd.txt",
-                ////"--outputFormat", "some_invalid_value",
-                ////"--outputFileFolder", @"C:\Temp\flow\",
-            };
-        }
-
         ArgumentNullException.ThrowIfNull(args);
 
         args = SetHelpArgumentIfNeeded(args);
@@ -56,7 +26,8 @@ public static class Program
         return app.RunAsync(args);
     }
 
-    private static string[] SetHelpArgumentIfNeeded(string[] args)
+    private static string[] SetHelpArgumentIfNeeded(
+        string[] args)
     {
         if (args.Length == 0)
         {
