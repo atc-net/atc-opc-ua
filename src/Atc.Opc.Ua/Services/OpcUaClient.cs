@@ -130,7 +130,7 @@ public partial class OpcUaClient : IOpcUaClient
         return InvokeReadNodeVariablesAsync(nodeIds);
     }
 
-    public Task<NodeObject?> ReadNodeObjectAsync(
+    public async Task<NodeObject?> ReadNodeObjectAsync(
         string nodeId,
         bool includeObjects,
         bool includeVariables,
@@ -138,13 +138,13 @@ public partial class OpcUaClient : IOpcUaClient
     {
         if (string.IsNullOrEmpty(nodeId))
         {
-            return Task.FromResult((NodeObject?)null);
+            return null;
         }
 
         if (!IsConnected())
         {
             LogSessionNotConnected();
-            return Task.FromResult((NodeObject?)null);
+            return null;
         }
 
         LogSessionReadNodeObjectWithMaxDepth(nodeId, nodeObjectReadDepth);
@@ -153,20 +153,20 @@ public partial class OpcUaClient : IOpcUaClient
         if (readNode is null)
         {
             LogSessionNodeNotFound(nodeId);
-            return Task.FromResult((NodeObject?)null);
+            return null;
         }
 
         if (readNode.NodeClass != NodeClass.Object)
         {
             LogSessionNodeHasWrongClass(nodeId, readNode.NodeClass, NodeClass.Object);
-            return Task.FromResult((NodeObject?)null);
+            return null;
         }
 
         var parentNodeId = GetParentNodeId(nodeId);
         if (parentNodeId is null)
         {
             LogSessionParentNodeNotFound(nodeId);
-            return Task.FromResult((NodeObject?)null);
+            return null;
         }
 
         var nodeObject = readNode.MapToNodeObject(parentNodeId);
@@ -175,11 +175,11 @@ public partial class OpcUaClient : IOpcUaClient
             (includeObjects || includeVariables) &&
             nodeObjectReadDepth >= 1)
         {
-            ReadChildNodes(nodeObject, 1, includeObjects, includeVariables, nodeObjectReadDepth);
+            await ReadChildNodes(nodeObject, 1, includeObjects, includeVariables, nodeObjectReadDepth);
         }
 
         LogSessionReadNodeObjectSucceeded(nodeId);
-        return Task.FromResult(nodeObject);
+        return nodeObject;
     }
 
     public bool WriteNode(
@@ -267,7 +267,7 @@ public partial class OpcUaClient : IOpcUaClient
         return parentObject.NodeId.ToString();
     }
 
-    private void ReadChildNodes(
+    private async Task ReadChildNodes(
         NodeObject currentNode,
         int level,
         bool includeObjects,
@@ -291,17 +291,17 @@ public partial class OpcUaClient : IOpcUaClient
 
         foreach (var result in browseChildResults)
         {
-            HandleChildBrowseResults(currentNode, level, includeObjects, includeVariables, nodeObjectReadDepth, result);
+            await HandleChildBrowseResults(currentNode, level, includeObjects, includeVariables, nodeObjectReadDepth, result);
         }
     }
 
-    private Task<NodeVariable?> InvokeReadNodeVariableAsync(
+    private async Task<NodeVariable?> InvokeReadNodeVariableAsync(
         string nodeId)
     {
         if (!IsConnected())
         {
             LogSessionNotConnected();
-            return Task.FromResult((NodeVariable?)null);
+            return null;
         }
 
         try
@@ -312,13 +312,13 @@ public partial class OpcUaClient : IOpcUaClient
             if (readNode is null)
             {
                 LogSessionNodeNotFound(nodeId);
-                return Task.FromResult((NodeVariable?)null);
+                return null;
             }
 
             if (readNode.NodeClass != NodeClass.Variable)
             {
                 LogSessionNodeHasWrongClass(nodeId, readNode.NodeClass, NodeClass.Variable);
-                return Task.FromResult((NodeVariable?)null);
+                return null;
             }
 
             var browserParent = BrowserFactory.GetBackwardsBrowser(Session!);
@@ -326,20 +326,20 @@ public partial class OpcUaClient : IOpcUaClient
             if (browseParentResults is null || browseParentResults.Count != 1)
             {
                 LogSessionParentNodeNotFound(nodeId);
-                return Task.FromResult((NodeVariable?)null);
+                return null;
             }
 
-            var sampleValue = TryGetDataValueForVariable(nodeId);
+            var sampleValue = await TryGetDataValueForVariable((VariableNode)readNode);
             var parentObject = browseParentResults[0];
             var nodeVariable = readNode.MapToNodeVariableWithValue(parentObject.NodeId.ToString(), sampleValue);
 
             LogSessionReadNodeVariableSucceeded(nodeId);
-            return Task.FromResult(nodeVariable);
+            return nodeVariable;
         }
         catch (Exception ex)
         {
             LogSessionReadNodeFailure(nodeId, ex.Message);
-            return Task.FromResult((NodeVariable?)null);
+            return null;
         }
     }
 
@@ -370,7 +370,7 @@ public partial class OpcUaClient : IOpcUaClient
         return result;
     }
 
-    private void HandleChildBrowseResults(
+    private async Task HandleChildBrowseResults(
         NodeObject currentNode,
         int level,
         bool includeObjects,
@@ -388,7 +388,7 @@ public partial class OpcUaClient : IOpcUaClient
                     {
                         if (nodeObjectReadDepth > level)
                         {
-                            ReadChildNodes(childNode, level + 1, includeObjects, includeVariables, nodeObjectReadDepth);
+                            await ReadChildNodes(childNode, level + 1, includeObjects, includeVariables, nodeObjectReadDepth);
                         }
 
                         currentNode.NodeObjects.Add(childNode);
@@ -399,7 +399,7 @@ public partial class OpcUaClient : IOpcUaClient
             case NodeClass.Variable:
                 if (includeVariables)
                 {
-                    HandleBrowseResultVariableNode(currentNode, result);
+                    await HandleBrowseResultVariableNode(currentNode, result);
                 }
 
                 break;
@@ -439,13 +439,13 @@ public partial class OpcUaClient : IOpcUaClient
         }
     }
 
-    private void HandleBrowseResultVariableNode(
+    private async Task HandleBrowseResultVariableNode(
         NodeObject node,
         ReferenceDescription referenceDescription)
     {
         var childNodeId = referenceDescription.NodeId.ToString();
         var childNode = Session!.ReadNode(childNodeId);
-        var sampleValue = TryGetDataValueForVariable(childNodeId);
+        var sampleValue = await TryGetDataValueForVariable((VariableNode)childNode);
         var nodeVariable = childNode.MapToNodeVariableWithValue(node.NodeId, sampleValue);
         if (nodeVariable is not null)
         {
@@ -453,8 +453,9 @@ public partial class OpcUaClient : IOpcUaClient
         }
     }
 
-    private DataValue? TryGetDataValueForVariable(
-        string nodeId)
+    private async Task<DataValue?> TryGetDataValueForVariable(
+        VariableNode node,
+        bool loadComplexTypeSystem = false)
     {
         DataValue? sampleValue = null;
 
@@ -462,10 +463,18 @@ public partial class OpcUaClient : IOpcUaClient
         {
             new()
             {
-                NodeId = nodeId,
+                NodeId = node.NodeId,
                 AttributeId = Attributes.Value,
             },
         };
+
+        if (loadComplexTypeSystem)
+        {
+            var complexTypeSystem = new ComplexTypeSystem(Session!);
+            var nodeDataType = node.DataType;
+            LogLoadingComplexTypeSystem(node.NodeId.ToString(), nodeDataType.ToString());
+            await complexTypeSystem.LoadType(nodeDataType);
+        }
 
         Session!.Read(
             requestHeader: null,
@@ -481,7 +490,15 @@ public partial class OpcUaClient : IOpcUaClient
         {
             if (resultValues[0].Value is null)
             {
-                LogSessionReadNodeVariableValueFailure(nodeId);
+                var statusCode = resultValues[0].StatusCode;
+
+                if (!loadComplexTypeSystem &&
+                    statusCode.Code == StatusCodes.BadDataTypeIdUnknown)
+                {
+                    return await TryGetDataValueForVariable(node, loadComplexTypeSystem: true);
+                }
+
+                LogSessionReadNodeVariableValueFailure(node.NodeId.ToString(), statusCode.ToString());
                 return sampleValue;
             }
 

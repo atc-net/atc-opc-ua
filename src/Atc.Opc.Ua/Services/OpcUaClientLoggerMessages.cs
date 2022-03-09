@@ -76,6 +76,12 @@ public partial class OpcUaClient
     private partial void LogSessionParentNodeNotFound(string nodeId);
 
     [LoggerMessage(
+        EventId = LoggingEventIdConstants.SessionLoadComplexTypeSystem,
+        Level = LogLevel.Trace,
+        Message = "Loading Complex Type System for node with nodeId '{nodeId}' and dataTypeId '{dataTypeId}'.")]
+    private partial void LogLoadingComplexTypeSystem(string nodeId, string dataTypeId);
+
+    [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionReadNodeObject,
         Level = LogLevel.Information,
         Message = "Reading node with nodeId '{nodeId}'.")]
@@ -108,8 +114,8 @@ public partial class OpcUaClient
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionReadNodeVariableValueFailure,
         Level = LogLevel.Error,
-        Message = "Could not retrieve value for variable with nodeId '{nodeId}'.")]
-    private partial void LogSessionReadNodeVariableValueFailure(string nodeId);
+        Message = "Retrieving value for variable with nodeId '{nodeId}' failed: '{errorMessage}'.")]
+    private partial void LogSessionReadNodeVariableValueFailure(string nodeId, string errorMessage);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionNodeHasWrongClass,

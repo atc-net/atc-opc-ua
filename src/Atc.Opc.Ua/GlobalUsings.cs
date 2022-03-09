@@ -13,4 +13,5 @@ global using Microsoft.Extensions.Logging;
 
 global using Opc.Ua;
 global using Opc.Ua.Client;
+global using Opc.Ua.Client.ComplexTypes;
 global using Opc.Ua.Configuration;
