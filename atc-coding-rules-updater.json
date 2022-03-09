@@ -1,6 +1,11 @@
 {
   "projectTarget": "DotNet6",
   "mappings": {
+    "sample": {
+      "paths": [
+        "sample"
+      ]
+    },
     "src": {
       "paths": [
         "src"

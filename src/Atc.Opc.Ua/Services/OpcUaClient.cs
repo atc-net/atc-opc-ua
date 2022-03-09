@@ -199,7 +199,6 @@ public partial class OpcUaClient : IOpcUaClient
         ArgumentNullException.ThrowIfNull(nodesToWrite);
 
         var nodesToWriteCollection = new WriteValueCollection();
-
         foreach (var (nodeId, value) in nodesToWrite)
         {
             var writeVal = BuildWriteValue(nodeId, value);

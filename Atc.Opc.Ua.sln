@@ -12,6 +12,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{DAC1423F-D
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample", "sample", "{1CB34588-A7CA-42EB-88AC-A778697946DD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Atc.Opc.Ua.CLI", "sample\Atc.Opc.Ua.CLI\Atc.Opc.Ua.CLI.csproj", "{3D4B76ED-EB10-4CA4-8609-E9110DC42A20}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,12 +26,17 @@ Global
 		{4856D04B-2DA5-4398-90C2-CF13B8FA6191}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4856D04B-2DA5-4398-90C2-CF13B8FA6191}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4856D04B-2DA5-4398-90C2-CF13B8FA6191}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D4B76ED-EB10-4CA4-8609-E9110DC42A20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D4B76ED-EB10-4CA4-8609-E9110DC42A20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D4B76ED-EB10-4CA4-8609-E9110DC42A20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D4B76ED-EB10-4CA4-8609-E9110DC42A20}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{4856D04B-2DA5-4398-90C2-CF13B8FA6191} = {69C84246-AA75-43E8-94B2-66FD555B18B0}
+		{3D4B76ED-EB10-4CA4-8609-E9110DC42A20} = {1CB34588-A7CA-42EB-88AC-A778697946DD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {04120463-05C5-417B-8D7A-2D7D35B71A07}
