@@ -26,6 +26,7 @@ public sealed class NodeReadVariableSingleCommand : AsyncCommand<SingleNodeSetti
         var userName = settings.UserName;
         var password = settings.Password;
         var nodeId = settings.NodeId;
+        var includeSampleValue = settings.IncludeSampleValue;
 
         var sw = Stopwatch.StartNew();
 
@@ -35,7 +36,7 @@ public sealed class NodeReadVariableSingleCommand : AsyncCommand<SingleNodeSetti
 
         if (connectionSucceeded)
         {
-            var nodeVariable = await opcUaClient.ReadNodeVariableAsync(nodeId);
+            var nodeVariable = await opcUaClient.ReadNodeVariableAsync(nodeId, includeSampleValue);
             if (nodeVariable is not null)
             {
                 logger.LogInformation($"Received the following data: '{nodeVariable.ToStringSimple()}'");

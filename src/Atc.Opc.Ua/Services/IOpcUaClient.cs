@@ -15,15 +15,18 @@ public interface IOpcUaClient
     bool Disconnect();
 
     Task<NodeVariable?> ReadNodeVariableAsync(
-        string nodeId);
+        string nodeId,
+        bool includeSampleValue);
 
     Task<IList<NodeVariable>?> ReadNodeVariablesAsync(
-        string[] nodeIds);
+        string[] nodeIds,
+        bool includeSampleValues);
 
     Task<NodeObject?> ReadNodeObjectAsync(
         string nodeId,
         bool includeObjects,
         bool includeVariables,
+        bool includeSampleValues,
         int nodeObjectReadDepth = 1);
 
     bool WriteNode(

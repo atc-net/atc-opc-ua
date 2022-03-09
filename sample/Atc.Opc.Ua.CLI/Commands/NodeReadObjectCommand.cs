@@ -28,6 +28,7 @@ internal sealed class NodeReadObjectCommand : AsyncCommand<ObjectNodeSettings>
         var nodeId = settings.NodeId;
         var includeObjects = settings.IncludeObjects;
         var includeVariables = settings.IncludeVariables;
+        var includeSampleValues = settings.IncludeSampleValues;
         var nodeObjectReadDepth = settings.NodeObjectReadDepth;
 
         var sw = Stopwatch.StartNew();
@@ -38,7 +39,13 @@ internal sealed class NodeReadObjectCommand : AsyncCommand<ObjectNodeSettings>
 
         if (connectionSucceeded)
         {
-            var nodeObject = await opcUaClient.ReadNodeObjectAsync(nodeId, includeObjects, includeVariables, nodeObjectReadDepth);
+            var nodeObject = await opcUaClient.ReadNodeObjectAsync(
+                nodeId,
+                includeObjects,
+                includeVariables,
+                includeSampleValues,
+                nodeObjectReadDepth);
+
             if (nodeObject is not null)
             {
                 logger.LogInformation($"Received the following data: '{nodeObject.ToStringSimple()}'");

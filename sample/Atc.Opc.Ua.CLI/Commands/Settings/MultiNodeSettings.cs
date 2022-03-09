@@ -6,6 +6,11 @@ public class MultiNodeSettings : OpcUaBaseCommandSettings
     [Description("OPC UA NodeIds")]
     public string[] NodeIds { get; init; } = Array.Empty<string>();
 
+    [CommandOption("--includeSampleValues")]
+    [Description("Indicates if sample values for the nodes should be included.")]
+    [DefaultValue(false)]
+    public bool IncludeSampleValues { get; init; }
+
     public override ValidationResult Validate()
     {
         var validationResult = base.Validate();

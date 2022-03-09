@@ -115,25 +115,28 @@ public partial class OpcUaClient : IOpcUaClient
     }
 
     public Task<NodeVariable?> ReadNodeVariableAsync(
-        string nodeId)
+        string nodeId,
+        bool includeSampleValue)
     {
         ArgumentNullException.ThrowIfNull(nodeId);
 
-        return InvokeReadNodeVariableAsync(nodeId);
+        return InvokeReadNodeVariableAsync(nodeId, includeSampleValue);
     }
 
     public Task<IList<NodeVariable>?> ReadNodeVariablesAsync(
-        string[] nodeIds)
+        string[] nodeIds,
+        bool includeSampleValues)
     {
         ArgumentNullException.ThrowIfNull(nodeIds);
 
-        return InvokeReadNodeVariablesAsync(nodeIds);
+        return InvokeReadNodeVariablesAsync(nodeIds, includeSampleValues);
     }
 
     public async Task<NodeObject?> ReadNodeObjectAsync(
         string nodeId,
         bool includeObjects,
         bool includeVariables,
+        bool includeSampleValues,
         int nodeObjectReadDepth = 1)
     {
         if (string.IsNullOrEmpty(nodeId))
@@ -175,7 +178,7 @@ public partial class OpcUaClient : IOpcUaClient
             (includeObjects || includeVariables) &&
             nodeObjectReadDepth >= 1)
         {
-            await ReadChildNodes(nodeObject, 1, includeObjects, includeVariables, nodeObjectReadDepth);
+            await ReadChildNodes(nodeObject, 1, includeObjects, includeVariables, includeSampleValues, nodeObjectReadDepth);
         }
 
         LogSessionReadNodeObjectSucceeded(nodeId);
@@ -272,6 +275,7 @@ public partial class OpcUaClient : IOpcUaClient
         int level,
         bool includeObjects,
         bool includeVariables,
+        bool includeSampleValues,
         int nodeObjectReadDepth)
     {
         ArgumentNullException.ThrowIfNull(currentNode);
@@ -291,12 +295,13 @@ public partial class OpcUaClient : IOpcUaClient
 
         foreach (var result in browseChildResults)
         {
-            await HandleChildBrowseResults(currentNode, level, includeObjects, includeVariables, nodeObjectReadDepth, result);
+            await HandleChildBrowseResults(currentNode, level, includeObjects, includeVariables, includeSampleValues, nodeObjectReadDepth, result);
         }
     }
 
     private async Task<NodeVariable?> InvokeReadNodeVariableAsync(
-        string nodeId)
+        string nodeId,
+        bool includeSampleValue)
     {
         if (!IsConnected())
         {
@@ -329,7 +334,12 @@ public partial class OpcUaClient : IOpcUaClient
                 return null;
             }
 
-            var sampleValue = await TryGetDataValueForVariable((VariableNode)readNode);
+            DataValue? sampleValue = null;
+            if (includeSampleValue)
+            {
+                sampleValue = await TryGetDataValueForVariable((VariableNode)readNode);
+            }
+
             var parentObject = browseParentResults[0];
             var nodeVariable = readNode.MapToNodeVariableWithValue(parentObject.NodeId.ToString(), sampleValue);
 
@@ -344,7 +354,8 @@ public partial class OpcUaClient : IOpcUaClient
     }
 
     private async Task<IList<NodeVariable>?> InvokeReadNodeVariablesAsync(
-        string[] nodeIds)
+        string[] nodeIds,
+        bool includeSampleValues)
     {
         if (!nodeIds.Any())
         {
@@ -360,7 +371,7 @@ public partial class OpcUaClient : IOpcUaClient
         var result = new List<NodeVariable>();
         foreach (var nodeId in nodeIds)
         {
-            var nodeVariable = await ReadNodeVariableAsync(nodeId);
+            var nodeVariable = await ReadNodeVariableAsync(nodeId, includeSampleValues);
             if (nodeVariable is not null)
             {
                 result.Add(nodeVariable);
@@ -375,6 +386,7 @@ public partial class OpcUaClient : IOpcUaClient
         int level,
         bool includeObjects,
         bool includeVariables,
+        bool includeSampleValues,
         int nodeObjectReadDepth,
         ReferenceDescription result)
     {
@@ -388,7 +400,7 @@ public partial class OpcUaClient : IOpcUaClient
                     {
                         if (nodeObjectReadDepth > level)
                         {
-                            await ReadChildNodes(childNode, level + 1, includeObjects, includeVariables, nodeObjectReadDepth);
+                            await ReadChildNodes(childNode, level + 1, includeObjects, includeVariables, includeSampleValues, nodeObjectReadDepth);
                         }
 
                         currentNode.NodeObjects.Add(childNode);
@@ -399,7 +411,7 @@ public partial class OpcUaClient : IOpcUaClient
             case NodeClass.Variable:
                 if (includeVariables)
                 {
-                    await HandleBrowseResultVariableNode(currentNode, result);
+                    await HandleBrowseResultVariableNode(currentNode, result, includeSampleValues);
                 }
 
                 break;
@@ -441,11 +453,18 @@ public partial class OpcUaClient : IOpcUaClient
 
     private async Task HandleBrowseResultVariableNode(
         NodeObject node,
-        ReferenceDescription referenceDescription)
+        ReferenceDescription referenceDescription,
+        bool includeSampleValue)
     {
         var childNodeId = referenceDescription.NodeId.ToString();
         var childNode = Session!.ReadNode(childNodeId);
-        var sampleValue = await TryGetDataValueForVariable((VariableNode)childNode);
+
+        DataValue? sampleValue = null;
+        if (includeSampleValue)
+        {
+            sampleValue = await TryGetDataValueForVariable((VariableNode)childNode);
+        }
+
         var nodeVariable = childNode.MapToNodeVariableWithValue(node.NodeId, sampleValue);
         if (nodeVariable is not null)
         {
