@@ -59,7 +59,7 @@ public partial class OpcUaClient : IOpcUaClient
 
                 // Get the endpoint by connecting to server's discovery endpoint.
                 // Try to find the first endpoint without security.
-                var endpointDescription = CoreClientUtils.SelectEndpoint(serverUri.AbsoluteUri, useSecurity: false);
+                var endpointDescription = CoreClientUtils.SelectEndpoint(serverUri.AbsoluteUri, useSecurity: true);
 
                 var endpointConfiguration = EndpointConfiguration.Create(configuration);
                 var endpoint = new ConfiguredEndpoint(collection: null, endpointDescription, endpointConfiguration);
@@ -548,7 +548,7 @@ public partial class OpcUaClient : IOpcUaClient
 
         if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
         {
-            userIdentity = new UserIdentity();
+            userIdentity = new UserIdentity(new AnonymousIdentityToken());
         }
         else
         {
