@@ -28,6 +28,7 @@ public static class CommandAppExtensions
         {
             node.SetDescription("Operations related to nodes.");
             ConfigureNodeReadCommands(node);
+            ConfigureNodeWriteCommands(node);
         };
 
     private static void ConfigureNodeReadCommands(
@@ -49,6 +50,20 @@ public static class CommandAppExtensions
                 variable.AddCommand<NodeReadVariableMultiCommand>("multi")
                     .WithDescription("Reads a list of node variables.")
                     .WithExample(new[] { $"node read variable multi -s {SampleOpcUaServerUrl} -n \"ns=2;s=Demo.Dynamic.Scalar.Float\" -n \"ns=2;s=Demo.Dynamic.Scalar.Int32\"" });
+            });
+        });
+
+    private static void ConfigureNodeWriteCommands(IConfigurator<CommandSettings> node)
+        => node.AddBranch("write", write =>
+        {
+            write.SetDescription("Operations related to writing nodes.");
+
+            write.AddBranch("variable", variable =>
+            {
+                variable.SetDescription("Writes a value to one or more node variable(s).");
+                variable.AddCommand<NodeWriteVariableSingleCommand>("single")
+                    .WithDescription("Write a value to a single node variable.")
+                    .WithExample(new[] { $"node write variable single -s {SampleOpcUaServerUrl} -n \"ns=2;s=Demo.Dynamic.Scalar.Float\" -d float -v \"100.5\"" });
             });
         });
 }

@@ -25,4 +25,14 @@ public class ObjectNodeSettings : OpcUaBaseCommandSettings
     [Description("Sets the max depth for object hierarchy retrieval. Default set to 1.")]
     [DefaultValue(1)]
     public int NodeObjectReadDepth { get; init; }
+
+    public override ValidationResult Validate()
+    {
+        var validationResult = base.Validate();
+        return !validationResult.Successful
+            ? validationResult
+            : string.IsNullOrWhiteSpace(NodeId)
+                ? ValidationResult.Error("NodeId is missing.")
+                : ValidationResult.Success();
+    }
 }
