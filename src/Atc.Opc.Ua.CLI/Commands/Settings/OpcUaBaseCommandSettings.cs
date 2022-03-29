@@ -4,7 +4,6 @@ public class OpcUaBaseCommandSettings : BaseCommandSettings
 {
     [CommandOption("-s|--serverUrl <SERVERURL>")]
     [Description("OPC UA Server Url")]
-    [SuppressMessage("Design", "CA1056:URI-like properties should not be strings", Justification = "OK.")]
     public string? ServerUrl { get; init; }
 
     [CommandOption("-u|--userName [USERNAME]")]

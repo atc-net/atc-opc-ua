@@ -29,10 +29,13 @@ public class ObjectNodeSettings : OpcUaBaseCommandSettings
     public override ValidationResult Validate()
     {
         var validationResult = base.Validate();
-        return !validationResult.Successful
-            ? validationResult
-            : string.IsNullOrWhiteSpace(NodeId)
-                ? ValidationResult.Error("NodeId is missing.")
-                : ValidationResult.Success();
+        if (!validationResult.Successful)
+        {
+            return validationResult;
+        }
+
+        return string.IsNullOrWhiteSpace(NodeId)
+            ? ValidationResult.Error("NodeId is missing.")
+            : ValidationResult.Success();
     }
 }

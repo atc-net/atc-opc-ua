@@ -14,10 +14,13 @@ public class MultiNodeSettings : OpcUaBaseCommandSettings
     public override ValidationResult Validate()
     {
         var validationResult = base.Validate();
-        return !validationResult.Successful
-            ? validationResult
-            : !NodeIds.Any()
-                ? ValidationResult.Error("NodeIds are missing.")
-                : ValidationResult.Success();
+        if (!validationResult.Successful)
+        {
+            return validationResult;
+        }
+
+        return !NodeIds.Any()
+            ? ValidationResult.Error("NodeIds are missing.")
+            : ValidationResult.Success();
     }
 }
