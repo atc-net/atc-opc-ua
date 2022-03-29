@@ -30,7 +30,6 @@ public class ExecuteMethodCommand : AsyncCommand<ExecuteMethodCommandSettings>
         var serverUrl = new Uri(settings.ServerUrl!);
         var userName = settings.UserName;
         var password = settings.Password;
-        ////var nodeId = settings.NodeId;
 
         var sw = Stopwatch.StartNew();
 
@@ -40,18 +39,27 @@ public class ExecuteMethodCommand : AsyncCommand<ExecuteMethodCommandSettings>
 
         if (succeeded)
         {
-            var arguments = new List<MethodExecutionParameter>();
+            var (succeededExecutingMethod, executionResults, errorMessage) = opcUaClient.ExecuteMethod(
+                settings.ParentNodeId,
+                settings.MethodNodeId,
+                MapSettingsToMethodExecutionParameters(settings));
 
-            opcUaClient.ExecuteMethod(
-                "ns=2;s=Methods/sqrt(x)",
-                "ns=2;s=Methods",
-                arguments);
-
-            // TODO: FIx.
-            ////if (succeededReading)
-            ////{
-            ////    logger.LogInformation($"Received the following data: '{nodeObject!.ToStringSimple()}'");
-            ////}
+            if (succeededExecutingMethod)
+            {
+                if (executionResults is not null)
+                {
+                    logger.LogInformation("Received the following data:");
+                    foreach (var executionResult in executionResults)
+                    {
+                        var spaces = string.Empty.PadRight(16 - executionResult.DataEncoding.ToString().Length);
+                        logger.LogInformation($"  {executionResult.DataEncoding}{spaces}{executionResult.Value}");
+                    }
+                }
+            }
+            else
+            {
+                logger.LogError(errorMessage);
+            }
 
             opcUaClient.Disconnect();
         }
@@ -62,5 +70,20 @@ public class ExecuteMethodCommand : AsyncCommand<ExecuteMethodCommandSettings>
         return succeeded
             ? ConsoleExitStatusCodes.Success
             : ConsoleExitStatusCodes.Failure;
+    }
+
+    private static List<MethodExecutionParameter> MapSettingsToMethodExecutionParameters(
+        ExecuteMethodCommandSettings settings)
+    {
+        var data = new List<MethodExecutionParameter>();
+        for (var i = 0; i < settings.DataTypes.Length; i++)
+        {
+            data.Add(
+                new MethodExecutionParameter(
+                    Enum<OpcUaDataEncodingType>.Parse(settings.DataTypes[i]),
+                    settings.DataValues[i]));
+        }
+
+        return data;
     }
 }

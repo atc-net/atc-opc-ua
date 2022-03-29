@@ -1,4 +1,4 @@
-using System.Globalization;
+using System.Text;
 
 namespace Atc.Opc.Ua.Services;
 
@@ -9,11 +9,13 @@ namespace Atc.Opc.Ua.Services;
 [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OK")]
 public partial class OpcUaClient
 {
-    public (bool Succeeded, string? ErrorMessage) ExecuteMethod(
-        string methodNodeId,
+    public (bool Succeeded, IList<MethodExecutionResult>? ExecutionResults, string? ErrorMessage) ExecuteMethod(
         string parentNodeId,
+        string methodNodeId,
         List<MethodExecutionParameter> arguments)
     {
+        ArgumentNullException.ThrowIfNull(arguments);
+
         try
         {
             var request = new CallMethodRequest
@@ -27,33 +29,59 @@ public partial class OpcUaClient
                 HandleArguments(request, arguments);
             }
 
-            var requests = new CallMethodRequestCollection
-            {
-                request,
-            };
+            LogSessionExecuteCommandRequest(parentNodeId, methodNodeId, ArgumentsToString(arguments));
 
             Session!.Call(
                 requestHeader: null,
-                requests,
-                out CallMethodResultCollection results,
-                out DiagnosticInfoCollection _);
+                new CallMethodRequestCollection { request },
+                out var results,
+                out _);
 
             if (results is not null &&
                 results.Any() &&
                 StatusCode.IsGood(results[0].StatusCode))
             {
-                return (true, null);
+                return (
+                    Succeeded: true,
+                    MapMethodExecutionResults(results),
+                    null);
             }
 
             var errorMessage = results![0].ToString();
-            //LogExecuteCommandFailure(errorMessage);
-            return (false, $"Executing command failed: {errorMessage}.");
+            LogSessionExecuteCommandFailure(parentNodeId, methodNodeId, errorMessage!);
+            return (
+                Succeeded: false,
+                null,
+                $"Executing command failed: {errorMessage}.");
         }
         catch (Exception ex)
         {
-            //LogExecuteCommandFailure(ex.Message);
-            return (false, $"Executing command failed: {ex.Message}.");
+            LogSessionExecuteCommandFailure(parentNodeId, methodNodeId, ex.Message);
+            return (
+                Succeeded: false,
+                null,
+                $"Executing command failed: {ex.Message}.");
         }
+    }
+
+    private static string ArgumentsToString(
+        IReadOnlyList<MethodExecutionParameter> arguments)
+    {
+        var sb = new StringBuilder();
+        for (var i = 0; i < arguments.Count; i++)
+        {
+            sb.Append('(');
+            sb.Append(arguments[i].DataEncoding);
+            sb.Append(", ");
+            sb.Append(arguments[i].Value);
+            sb.Append(')');
+            if (i != arguments.Count - 1)
+            {
+                sb.Append(", ");
+            }
+        }
+
+        return sb.ToString();
     }
 
     [SuppressMessage("Design", "MA0051:Method is too long", Justification = "OK")]
@@ -138,5 +166,34 @@ public partial class OpcUaClient
         }
 
         request.InputArguments = variantCollection;
+    }
+
+    private static List<MethodExecutionResult> MapMethodExecutionResults(
+        CallMethodResultCollection results)
+    {
+        var data = new List<MethodExecutionResult>();
+        foreach (var outputArgument in results[0].OutputArguments)
+        {
+            if (!Enum<OpcUaDataEncodingType>.TryParse(
+                    outputArgument.TypeInfo.BuiltInType.ToString(),
+                    ignoreCase: true,
+                    out var dataType))
+            {
+                continue;
+            }
+
+            var dataValue = string.Empty;
+            if (outputArgument.Value is not null)
+            {
+                dataValue = outputArgument.Value.ToString();
+            }
+
+            data.Add(
+                new MethodExecutionResult(
+                    dataType,
+                    dataValue!));
+        }
+
+        return data;
     }
 }

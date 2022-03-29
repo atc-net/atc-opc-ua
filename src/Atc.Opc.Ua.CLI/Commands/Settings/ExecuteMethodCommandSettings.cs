@@ -2,13 +2,13 @@ namespace Atc.Opc.Ua.CLI.Commands.Settings;
 
 public class ExecuteMethodCommandSettings : OpcUaBaseCommandSettings
 {
-    [CommandOption("--method-node-id <METHOD-NODE-ID>")]
-    [Description("OPC UA NodeId")]
-    public string MethodNodeId { get; init; } = string.Empty;
-
     [CommandOption("--parent-node-id <PARENT-NODE-ID>")]
     [Description("OPC UA ParentNodeId")]
     public string ParentNodeId { get; init; } = string.Empty;
+
+    [CommandOption("--method-node-id <METHOD-NODE-ID>")]
+    [Description("OPC UA NodeId")]
+    public string MethodNodeId { get; init; } = string.Empty;
 
     [CommandOption("--data-types <DATA-TYPES>")]
     [Description("OPC UA Argument Data Types")]
@@ -26,8 +26,24 @@ public class ExecuteMethodCommandSettings : OpcUaBaseCommandSettings
             return validationResult;
         }
 
-        //// TODO: Expand
+        if (string.IsNullOrEmpty(ParentNodeId))
+        {
+            return ValidationResult.Error("--parent-node-id is not set.");
+        }
 
-        return ValidationResult.Success();
+        if (string.IsNullOrEmpty(MethodNodeId))
+        {
+            return ValidationResult.Error("--method-node-id is not set.");
+        }
+
+        var validationError = OpcUaValidationHelper.GetErrorForArgumentData(
+            "data-types",
+            "data-values",
+            DataTypes,
+            DataValues);
+
+        return validationError is not null
+            ? ValidationResult.Error(validationError)
+            : ValidationResult.Success();
     }
 }
