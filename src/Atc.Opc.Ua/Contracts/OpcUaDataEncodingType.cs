@@ -3,6 +3,7 @@ namespace Atc.Opc.Ua.Contracts;
 /// <summary>
 /// Ref: https://reference.opcfoundation.org/v104/Core/docs/Part6/5.1.2/
 /// </summary>
+[SuppressMessage("Naming", "CA1720:Identifier contains type name", Justification = "OK")]
 public enum OpcUaDataEncodingType
 {
     None = 0,

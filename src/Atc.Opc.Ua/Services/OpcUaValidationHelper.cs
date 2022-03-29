@@ -29,89 +29,132 @@ public static class OpcUaValidationHelper
 
         for (var i = 0; i < parameterValueDataTypes.Length; i++)
         {
-            if (Enum<OpcUaDataEncodingType>.TryParse(parameterValueDataTypes[i], out var dataType))
+            if (!Enum<OpcUaDataEncodingType>.TryParse(parameterValueDataTypes[i], out var dataType))
             {
-                var dataValue = parameterValueDataValues[i];
-                var isValid = false;
-                switch (dataType)
-                {
-                    case OpcUaDataEncodingType.Boolean:
-                        if (bool.TryParse(dataValue, out _))
-                        {
-                            isValid = true;
-                        }
-
-                        break;
-                    case OpcUaDataEncodingType.SByte:
-                        break;
-                    case OpcUaDataEncodingType.Byte:
-                        break;
-                    case OpcUaDataEncodingType.Int16:
-                        break;
-                    case OpcUaDataEncodingType.UInt16:
-                        break;
-                    case OpcUaDataEncodingType.Int32:
-                        if (int.TryParse(dataValue, NumberStyles.Any, GlobalizationConstants.EnglishCultureInfo, out _))
-                        {
-                            isValid = true;
-                        }
-
-                        break;
-                    case OpcUaDataEncodingType.UInt32:
-                        break;
-                    case OpcUaDataEncodingType.Int64:
-                        break;
-                    case OpcUaDataEncodingType.UInt64:
-                        break;
-                    case OpcUaDataEncodingType.Float:
-                        break;
-                    case OpcUaDataEncodingType.Double:
-                        if (double.TryParse(dataValue, NumberStyles.Any, GlobalizationConstants.EnglishCultureInfo, out _))
-                        {
-                            isValid = true;
-                        }
-
-                        break;
-                    case OpcUaDataEncodingType.String:
-                        break;
-                    case OpcUaDataEncodingType.DateTime:
-                        break;
-                    case OpcUaDataEncodingType.Guid:
-                        break;
-                    case OpcUaDataEncodingType.ByteString:
-                        break;
-                    case OpcUaDataEncodingType.XmlElement:
-                        break;
-                    case OpcUaDataEncodingType.NodeId:
-                        break;
-                    case OpcUaDataEncodingType.ExpandedNodeId:
-                        break;
-                    case OpcUaDataEncodingType.StatusCode:
-                        break;
-                    case OpcUaDataEncodingType.QualifiedName:
-                        break;
-                    case OpcUaDataEncodingType.LocalizedText:
-                        break;
-                    case OpcUaDataEncodingType.ExtensionObject:
-                        break;
-                    case OpcUaDataEncodingType.DataValue:
-                        break;
-                    case OpcUaDataEncodingType.Variant:
-                        break;
-                    case OpcUaDataEncodingType.DiagnosticInfo:
-                        break;
-                    default:
-                        return $"--{parameterNameDataTypes} contains a unsupported data type: {parameterValueDataTypes[i]}";
-                }
-
-                if (!isValid)
-                {
-                    return $"--{parameterNameDataTypes} contains a invalid value: '{dataValue}' for data type '{dataType}'";
-                }
+                return $"--{parameterNameDataTypes} contains an unsupported data type: {parameterValueDataTypes[i]}";
             }
-            else
+
+            var dataValue = parameterValueDataValues[i];
+            var isValid = false;
+            switch (dataType)
             {
-                return $"--{parameterNameDataTypes} contains a unsupported data type: {parameterValueDataTypes[i]}";
+                case OpcUaDataEncodingType.Boolean:
+                    if (bool.TryParse(dataValue, out _))
+                    {
+                        isValid = true;
+                    }
+
+                    break;
+                case OpcUaDataEncodingType.SByte:
+                    if (sbyte.TryParse(dataValue, NumberStyles.Any, GlobalizationConstants.EnglishCultureInfo, out _))
+                    {
+                        isValid = true;
+                    }
+
+                    break;
+                case OpcUaDataEncodingType.Byte:
+                    if (byte.TryParse(dataValue, NumberStyles.Any, GlobalizationConstants.EnglishCultureInfo, out _))
+                    {
+                        isValid = true;
+                    }
+
+                    break;
+                case OpcUaDataEncodingType.Int16:
+                    if (short.TryParse(dataValue, NumberStyles.Any, GlobalizationConstants.EnglishCultureInfo, out _))
+                    {
+                        isValid = true;
+                    }
+
+                    break;
+                case OpcUaDataEncodingType.UInt16:
+                    if (ushort.TryParse(dataValue, NumberStyles.Any, GlobalizationConstants.EnglishCultureInfo, out _))
+                    {
+                        isValid = true;
+                    }
+
+                    break;
+                case OpcUaDataEncodingType.Int32:
+                    if (int.TryParse(dataValue, NumberStyles.Any, GlobalizationConstants.EnglishCultureInfo, out _))
+                    {
+                        isValid = true;
+                    }
+
+                    break;
+                case OpcUaDataEncodingType.UInt32:
+                    if (uint.TryParse(dataValue, NumberStyles.Any, GlobalizationConstants.EnglishCultureInfo, out _))
+                    {
+                        isValid = true;
+                    }
+
+                    break;
+                case OpcUaDataEncodingType.Int64:
+                    if (long.TryParse(dataValue, NumberStyles.Any, GlobalizationConstants.EnglishCultureInfo, out _))
+                    {
+                        isValid = true;
+                    }
+
+                    break;
+                case OpcUaDataEncodingType.UInt64:
+                    if (ulong.TryParse(dataValue, NumberStyles.Any, GlobalizationConstants.EnglishCultureInfo, out _))
+                    {
+                        isValid = true;
+                    }
+
+                    break;
+                case OpcUaDataEncodingType.Float:
+                    if (float.TryParse(dataValue, NumberStyles.Any, GlobalizationConstants.EnglishCultureInfo, out _))
+                    {
+                        isValid = true;
+                    }
+
+                    break;
+                case OpcUaDataEncodingType.Double:
+                    if (double.TryParse(dataValue, NumberStyles.Any, GlobalizationConstants.EnglishCultureInfo, out _))
+                    {
+                        isValid = true;
+                    }
+
+                    break;
+                case OpcUaDataEncodingType.String:
+                    isValid = true;
+
+                    break;
+                case OpcUaDataEncodingType.DateTime:
+                    if (DateTime.TryParse(dataValue, GlobalizationConstants.EnglishCultureInfo, DateTimeStyles.None, out _))
+                    {
+                        isValid = true;
+                    }
+
+                    break;
+                case OpcUaDataEncodingType.Guid:
+                    if (Guid.TryParse(dataValue, out _))
+                    {
+                        isValid = true;
+                    }
+
+                    break;
+                case OpcUaDataEncodingType.ByteString:
+                case OpcUaDataEncodingType.XmlElement:
+                case OpcUaDataEncodingType.NodeId:
+                case OpcUaDataEncodingType.ExpandedNodeId:
+                case OpcUaDataEncodingType.StatusCode:
+                case OpcUaDataEncodingType.QualifiedName:
+                case OpcUaDataEncodingType.LocalizedText:
+                case OpcUaDataEncodingType.ExtensionObject:
+                case OpcUaDataEncodingType.DataValue:
+                case OpcUaDataEncodingType.Variant:
+                case OpcUaDataEncodingType.DiagnosticInfo:
+                    return
+                        $"--{parameterNameDataTypes} contains data type '{parameterValueDataTypes[i]}', which is not supported by this library.";
+                default:
+                    return
+                        $"--{parameterNameDataTypes} contains an unsupported data type: {parameterValueDataTypes[i]}";
+            }
+
+            if (!isValid)
+            {
+                return
+                    $"--{parameterNameDataValues} contains an invalid value: '{dataValue}' for data type '{dataType}'";
             }
         }
 

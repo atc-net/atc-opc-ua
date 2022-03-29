@@ -47,7 +47,7 @@ public partial class OpcUaClient
                     null);
             }
 
-            var errorMessage = results![0].ToString();
+            var errorMessage = results![0].StatusCode.ToString();
             LogSessionExecuteCommandFailure(parentNodeId, methodNodeId, errorMessage!);
             return (
                 Succeeded: false,
@@ -91,7 +91,6 @@ public partial class OpcUaClient
     {
         var variantCollection = new VariantCollection();
 
-        // TODO: Fill out
         foreach (var (dataEncoding, value) in arguments)
         {
             switch (dataEncoding)
@@ -101,63 +100,108 @@ public partial class OpcUaClient
                 case OpcUaDataEncodingType.Boolean:
                     if (bool.TryParse(value, out var boolResult))
                     {
-                        var variant = new Variant(boolResult);
-                        variantCollection.Add(variant);
+                        variantCollection.Add(new Variant(boolResult));
                     }
 
                     break;
                 case OpcUaDataEncodingType.SByte:
+                    if (sbyte.TryParse(value, NumberStyles.Any, GlobalizationConstants.EnglishCultureInfo, out var sbyteResult))
+                    {
+                        variantCollection.Add(new Variant(sbyteResult));
+                    }
+
                     break;
                 case OpcUaDataEncodingType.Byte:
+                    if (byte.TryParse(value, NumberStyles.Any, GlobalizationConstants.EnglishCultureInfo, out var byteResult))
+                    {
+                        variantCollection.Add(new Variant(byteResult));
+                    }
+
                     break;
                 case OpcUaDataEncodingType.Int16:
+                    if (short.TryParse(value, NumberStyles.Any, GlobalizationConstants.EnglishCultureInfo, out var int16Result))
+                    {
+                        variantCollection.Add(new Variant(int16Result));
+                    }
+
                     break;
                 case OpcUaDataEncodingType.UInt16:
+                    if (ushort.TryParse(value, NumberStyles.Any, GlobalizationConstants.EnglishCultureInfo, out var uint16Result))
+                    {
+                        variantCollection.Add(new Variant(uint16Result));
+                    }
+
                     break;
                 case OpcUaDataEncodingType.Int32:
+                    if (int.TryParse(value, NumberStyles.Any, GlobalizationConstants.EnglishCultureInfo, out var int32Result))
+                    {
+                        variantCollection.Add(new Variant(int32Result));
+                    }
+
                     break;
                 case OpcUaDataEncodingType.UInt32:
+                    if (uint.TryParse(value, NumberStyles.Any, GlobalizationConstants.EnglishCultureInfo, out var uint32Result))
+                    {
+                        variantCollection.Add(new Variant(uint32Result));
+                    }
+
                     break;
                 case OpcUaDataEncodingType.Int64:
+                    if (long.TryParse(value, NumberStyles.Any, GlobalizationConstants.EnglishCultureInfo, out var int64Result))
+                    {
+                        variantCollection.Add(new Variant(int64Result));
+                    }
+
                     break;
                 case OpcUaDataEncodingType.UInt64:
+                    if (ulong.TryParse(value, NumberStyles.Any, GlobalizationConstants.EnglishCultureInfo, out var uint64Result))
+                    {
+                        variantCollection.Add(new Variant(uint64Result));
+                    }
+
                     break;
                 case OpcUaDataEncodingType.Float:
+                    if (float.TryParse(value, NumberStyles.Any, GlobalizationConstants.EnglishCultureInfo, out var floatResult))
+                    {
+                        variantCollection.Add(new Variant(floatResult));
+                    }
+
                     break;
                 case OpcUaDataEncodingType.Double:
                     if (double.TryParse(value, NumberStyles.Any, GlobalizationConstants.EnglishCultureInfo, out var doubleResult))
                     {
-                        var variant = new Variant(doubleResult);
-                        variantCollection.Add(variant);
+                        variantCollection.Add(new Variant(doubleResult));
                     }
 
                     break;
                 case OpcUaDataEncodingType.String:
+                    variantCollection.Add(new Variant(value));
+
                     break;
                 case OpcUaDataEncodingType.DateTime:
+                    if (DateTime.TryParse(value, GlobalizationConstants.EnglishCultureInfo, DateTimeStyles.None, out var dateTimeResult))
+                    {
+                        variantCollection.Add(new Variant(dateTimeResult));
+                    }
+
                     break;
                 case OpcUaDataEncodingType.Guid:
+                    if (Guid.TryParse(value, out var guidResult))
+                    {
+                        variantCollection.Add(new Variant(guidResult));
+                    }
+
                     break;
                 case OpcUaDataEncodingType.ByteString:
-                    break;
                 case OpcUaDataEncodingType.XmlElement:
-                    break;
                 case OpcUaDataEncodingType.NodeId:
-                    break;
                 case OpcUaDataEncodingType.ExpandedNodeId:
-                    break;
                 case OpcUaDataEncodingType.StatusCode:
-                    break;
                 case OpcUaDataEncodingType.QualifiedName:
-                    break;
                 case OpcUaDataEncodingType.LocalizedText:
-                    break;
                 case OpcUaDataEncodingType.ExtensionObject:
-                    break;
                 case OpcUaDataEncodingType.DataValue:
-                    break;
                 case OpcUaDataEncodingType.Variant:
-                    break;
                 case OpcUaDataEncodingType.DiagnosticInfo:
                     break;
                 default:

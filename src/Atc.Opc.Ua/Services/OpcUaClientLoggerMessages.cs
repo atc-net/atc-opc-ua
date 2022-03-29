@@ -140,6 +140,7 @@ public partial class OpcUaClient
         Level = LogLevel.Trace,
         Message = "Executing method for parentNodeId '{parentNodeId}' and methodNodeId '{methodNodeId}' with '{arguments}'.")]
     private partial void LogSessionExecuteCommandRequest(string parentNodeId, string methodNodeId, string arguments);
+
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionExecuteCommandFailure,
         Level = LogLevel.Error,
