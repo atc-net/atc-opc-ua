@@ -82,7 +82,8 @@ public partial class OpcUaClient : IOpcUaClient
             {
                 LogSessionConnecting();
 
-                var endpoint = GetServerEndpoint(serverUri);
+                var useSecurity = !string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(password);
+                var endpoint = GetServerEndpoint(serverUri, useSecurity);
                 var userIdentity = BuildUserIdentity(userName, password);
                 var session = await CreateSession(endpoint, userIdentity);
 
@@ -109,9 +110,10 @@ public partial class OpcUaClient : IOpcUaClient
     /// <param name="serverUri">The server to get endpoint from.</param>
     /// <returns>The ConfiguredEndpoint on the server.</returns>
     private ConfiguredEndpoint GetServerEndpoint(
-        Uri serverUri)
+        Uri serverUri,
+        bool useSecurity)
     {
-        var endpointDescription = CoreClientUtils.SelectEndpoint(serverUri.AbsoluteUri, useSecurity: true);
+        var endpointDescription = CoreClientUtils.SelectEndpoint(serverUri.AbsoluteUri, useSecurity);
         var endpointConfiguration = EndpointConfiguration.Create(configuration);
         var endpoint = new ConfiguredEndpoint(collection: null, endpointDescription, endpointConfiguration);
         return endpoint;
