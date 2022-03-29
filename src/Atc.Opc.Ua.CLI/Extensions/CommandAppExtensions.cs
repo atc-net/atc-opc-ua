@@ -14,6 +14,8 @@ public static class CommandAppExtensions
         {
             ConfigureTestConnectionCommand(config);
             config.AddBranch("node", ConfigureNodeCommands());
+
+            config.AddBranch("method", ConfigureMethodCommands());
         });
     }
 
@@ -30,6 +32,15 @@ public static class CommandAppExtensions
             node.SetDescription("Operations related to nodes.");
             ConfigureNodeReadCommands(node);
             ConfigureNodeWriteCommands(node);
+        };
+
+    private static Action<IConfigurator<CommandSettings>> ConfigureMethodCommands()
+        => method =>
+        {
+            method.SetDescription("Operations related to methods.");
+
+            method.AddCommand<ExecuteMethodCommand>("execute")
+                .WithDescription("Used to execute a given method.");
         };
 
     private static void ConfigureNodeReadCommands(
