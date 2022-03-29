@@ -2,6 +2,7 @@ namespace Atc.Opc.Ua.CLI.Extensions;
 
 public static class CommandAppExtensions
 {
+    [SuppressMessage("Minor Code Smell", "S1075:URIs should not be hardcoded", Justification = "OK.")]
     private const string SampleOpcUaServerUrl = "opc.tcp://opcuaserver.com:48010";
 
     public static void ConfigureCommands(
@@ -13,6 +14,8 @@ public static class CommandAppExtensions
         {
             ConfigureTestConnectionCommand(config);
             config.AddBranch("node", ConfigureNodeCommands());
+
+            config.AddBranch("method", ConfigureMethodCommands());
         });
     }
 
@@ -29,6 +32,15 @@ public static class CommandAppExtensions
             node.SetDescription("Operations related to nodes.");
             ConfigureNodeReadCommands(node);
             ConfigureNodeWriteCommands(node);
+        };
+
+    private static Action<IConfigurator<CommandSettings>> ConfigureMethodCommands()
+        => method =>
+        {
+            method.SetDescription("Operations related to methods.");
+
+            method.AddCommand<ExecuteMethodCommand>("execute")
+                .WithDescription("Used to execute a given method.");
         };
 
     private static void ConfigureNodeReadCommands(
@@ -63,7 +75,7 @@ public static class CommandAppExtensions
                 variable.SetDescription("Writes a value to one or more node variable(s).");
                 variable.AddCommand<NodeWriteVariableSingleCommand>("single")
                     .WithDescription("Write a value to a single node variable.")
-                    .WithExample(new[] { $"node write variable single -s {SampleOpcUaServerUrl} -n \"ns=2;s=Demo.Dynamic.Scalar.Float\" -d float -v \"100.5\"" });
+                    .WithExample(new[] { $"node write variable single -s {SampleOpcUaServerUrl} -n \"ns=2;s=Demo.Dynamic.Scalar.Float\" -d float --value \"100.5\"" });
             });
         });
 }

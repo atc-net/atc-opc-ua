@@ -1,6 +1,6 @@
 namespace Atc.Opc.Ua.CLI.Commands;
 
-public sealed class NodeReadVariableSingleCommand : AsyncCommand<SingleNodeSettings>
+public sealed class NodeReadVariableSingleCommand : AsyncCommand<SingleNodeCommandSettings>
 {
     private readonly IOpcUaClient opcUaClient;
     private readonly ILogger<NodeReadVariableSingleCommand> logger;
@@ -15,7 +15,7 @@ public sealed class NodeReadVariableSingleCommand : AsyncCommand<SingleNodeSetti
 
     public override Task<int> ExecuteAsync(
         CommandContext context,
-        SingleNodeSettings settings)
+        SingleNodeCommandSettings settings)
     {
         ArgumentNullException.ThrowIfNull(settings);
 
@@ -23,7 +23,7 @@ public sealed class NodeReadVariableSingleCommand : AsyncCommand<SingleNodeSetti
     }
 
     private async Task<int> ExecuteInternalAsync(
-        SingleNodeSettings settings)
+        SingleNodeCommandSettings settings)
     {
         ConsoleHelper.WriteHeader();
 

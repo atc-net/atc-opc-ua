@@ -1,5 +1,6 @@
 global using System;
 global using System.Diagnostics.CodeAnalysis;
+global using System.Globalization;
 global using System.Runtime.Serialization;
 
 global using Atc.Opc.Ua.Contracts;

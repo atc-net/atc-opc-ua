@@ -1,17 +1,17 @@
 // ReSharper disable ConvertIfStatementToReturnStatement
 namespace Atc.Opc.Ua.CLI.Commands.Settings;
 
-public class WriteNodeSettings : OpcUaBaseCommandSettings
+public class WriteNodeCommandSettings : OpcUaBaseCommandSettings
 {
-    [CommandOption("-n|--nodeId <NODEID>")]
+    [CommandOption("-n|--node-id <NODE-ID>")]
     [Description("OPC UA NodeId")]
     public string NodeId { get; init; } = string.Empty;
 
-    [CommandOption("-d|--datatype <DATATYPE>")]
+    [CommandOption("--data-type <DATA-TYPE>")]
     [Description("OPC UA DataType")]
     public string DataType { get; set; } = string.Empty;
 
-    [CommandOption("-v|--value <DATAVALUE>")]
+    [CommandOption("--data-value <DATA-VALUE>")]
     [Description("OPC UA DataValue")]
     public string Value { get; init; } = string.Empty;
 

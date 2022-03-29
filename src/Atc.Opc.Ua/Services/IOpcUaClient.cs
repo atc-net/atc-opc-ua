@@ -35,4 +35,9 @@ public interface IOpcUaClient
 
     (bool Succeeded, string? ErrorMessage) WriteNodes(
         IDictionary<string, object> nodesToWrite);
+
+    (bool Succeeded, IList<MethodExecutionResult>? ExecutionResults, string? ErrorMessage) ExecuteMethod(
+        string parentNodeId,
+        string methodNodeId,
+        List<MethodExecutionParameter> arguments);
 }

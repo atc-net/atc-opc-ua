@@ -1,12 +1,12 @@
 namespace Atc.Opc.Ua.CLI.Commands.Settings;
 
-public class MultiNodeSettings : OpcUaBaseCommandSettings
+public class MultiNodeCommandSettings : OpcUaBaseCommandSettings
 {
-    [CommandOption("-n|--nodeId <NODEID>")]
+    [CommandOption("-n|--node-id <NODE-ID>")]
     [Description("OPC UA NodeIds")]
     public string[] NodeIds { get; init; } = Array.Empty<string>();
 
-    [CommandOption("--includeSampleValues")]
+    [CommandOption("--include-sample-values")]
     [Description("Indicates if sample values for the nodes should be included.")]
     [DefaultValue(false)]
     public bool IncludeSampleValues { get; init; }
@@ -14,10 +14,13 @@ public class MultiNodeSettings : OpcUaBaseCommandSettings
     public override ValidationResult Validate()
     {
         var validationResult = base.Validate();
-        return !validationResult.Successful
-            ? validationResult
-            : !NodeIds.Any()
-                ? ValidationResult.Error("NodeIds are missing.")
-                : ValidationResult.Success();
+        if (!validationResult.Successful)
+        {
+            return validationResult;
+        }
+
+        return !NodeIds.Any()
+            ? ValidationResult.Error("NodeIds are missing.")
+            : ValidationResult.Success();
     }
 }
