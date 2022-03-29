@@ -2,7 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+    <PackageId>Atc.Opc.Ua</PackageId>
+    <PackageTags>opc-ua</PackageTags>
+    <Description>Atc.Opc.Ua is a collection of classes and clients for interacting with OPCUA.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Link="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Atc" Version="2.0.91" />

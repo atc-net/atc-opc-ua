@@ -63,7 +63,7 @@ public static class CommandAppExtensions
                 variable.SetDescription("Writes a value to one or more node variable(s).");
                 variable.AddCommand<NodeWriteVariableSingleCommand>("single")
                     .WithDescription("Write a value to a single node variable.")
-                    .WithExample(new[] { $"node write variable single -s {SampleOpcUaServerUrl} -n \"ns=2;s=Demo.Dynamic.Scalar.Float\" -d float -v \"100.5\"" });
+                    .WithExample(new[] { $"node write variable single -s {SampleOpcUaServerUrl} -n \"ns=2;s=Demo.Dynamic.Scalar.Float\" -d float --value \"100.5\"" });
             });
         });
 }

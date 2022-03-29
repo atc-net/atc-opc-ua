@@ -11,7 +11,7 @@ public class WriteNodeSettings : OpcUaBaseCommandSettings
     [Description("OPC UA DataType")]
     public string DataType { get; set; } = string.Empty;
 
-    [CommandOption("-v|--value <DATAVALUE>")]
+    [CommandOption("--value <DATAVALUE>")]
     [Description("OPC UA DataValue")]
     public string Value { get; init; } = string.Empty;
 
