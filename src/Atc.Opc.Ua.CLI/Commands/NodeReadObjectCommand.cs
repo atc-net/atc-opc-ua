@@ -1,6 +1,6 @@
 namespace Atc.Opc.Ua.CLI.Commands;
 
-internal sealed class NodeReadObjectCommand : AsyncCommand<ObjectNodeSettings>
+internal sealed class NodeReadObjectCommand : AsyncCommand<ReadObjectNodeCommandSettings>
 {
     private readonly IOpcUaClient opcUaClient;
     private readonly ILogger<NodeReadObjectCommand> logger;
@@ -15,7 +15,7 @@ internal sealed class NodeReadObjectCommand : AsyncCommand<ObjectNodeSettings>
 
     public override Task<int> ExecuteAsync(
         CommandContext context,
-        ObjectNodeSettings settings)
+        ReadObjectNodeCommandSettings settings)
     {
         ArgumentNullException.ThrowIfNull(settings);
 
@@ -23,7 +23,7 @@ internal sealed class NodeReadObjectCommand : AsyncCommand<ObjectNodeSettings>
     }
 
     private async Task<int> ExecuteInternalAsync(
-        ObjectNodeSettings settings)
+        ReadObjectNodeCommandSettings settings)
     {
         ConsoleHelper.WriteHeader();
 

@@ -1,27 +1,27 @@
 namespace Atc.Opc.Ua.CLI.Commands.Settings;
 
-public class ObjectNodeSettings : OpcUaBaseCommandSettings
+public class ReadObjectNodeCommandSettings : OpcUaBaseCommandSettings
 {
-    [CommandOption("-n|--nodeId <NODEID>")]
+    [CommandOption("-n|--node-id <NODE-ID>")]
     [Description("OPC UA NodeId")]
     public string NodeId { get; init; } = string.Empty;
 
-    [CommandOption("--includeObjects")]
+    [CommandOption("--include-objects")]
     [Description("Indicates if child objects should be included.")]
     [DefaultValue(false)]
     public bool IncludeObjects { get; init; }
 
-    [CommandOption("--includeVariables")]
+    [CommandOption("--include-variables")]
     [Description("Indicates if child variables should be included.")]
     [DefaultValue(false)]
     public bool IncludeVariables { get; init; }
 
-    [CommandOption("--includeSampleValues")]
+    [CommandOption("--include-sample-values")]
     [Description("Indicates if sample values for the node(s) should be included. Only Relevant if IncludeVariables is set.")]
     [DefaultValue(false)]
     public bool IncludeSampleValues { get; init; }
 
-    [CommandOption("--nodeObjectReadDepth")]
+    [CommandOption("--node-object-read-depth")]
     [Description("Sets the max depth for object hierarchy retrieval. Default set to 1.")]
     [DefaultValue(1)]
     public int NodeObjectReadDepth { get; init; }

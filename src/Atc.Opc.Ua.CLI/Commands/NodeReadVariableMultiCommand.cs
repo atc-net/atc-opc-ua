@@ -1,6 +1,6 @@
 namespace Atc.Opc.Ua.CLI.Commands;
 
-public class NodeReadVariableMultiCommand : AsyncCommand<MultiNodeSettings>
+public class NodeReadVariableMultiCommand : AsyncCommand<MultiNodeCommandSettings>
 {
     private readonly IOpcUaClient opcUaClient;
     private readonly ILogger<NodeReadVariableMultiCommand> logger;
@@ -15,7 +15,7 @@ public class NodeReadVariableMultiCommand : AsyncCommand<MultiNodeSettings>
 
     public override Task<int> ExecuteAsync(
         CommandContext context,
-        MultiNodeSettings settings)
+        MultiNodeCommandSettings settings)
     {
         ArgumentNullException.ThrowIfNull(settings);
 
@@ -23,7 +23,7 @@ public class NodeReadVariableMultiCommand : AsyncCommand<MultiNodeSettings>
     }
 
     private async Task<int> ExecuteInternalAsync(
-        MultiNodeSettings settings)
+        MultiNodeCommandSettings settings)
     {
         ConsoleHelper.WriteHeader();
 

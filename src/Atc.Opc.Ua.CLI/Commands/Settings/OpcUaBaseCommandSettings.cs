@@ -2,11 +2,11 @@ namespace Atc.Opc.Ua.CLI.Commands.Settings;
 
 public class OpcUaBaseCommandSettings : BaseCommandSettings
 {
-    [CommandOption("-s|--serverUrl <SERVERURL>")]
+    [CommandOption("-s|--server-url <SERVER-URL>")]
     [Description("OPC UA Server Url")]
     public string? ServerUrl { get; init; }
 
-    [CommandOption("-u|--userName [USERNAME]")]
+    [CommandOption("-u|--username [USERNAME]")]
     [Description("OPC UA UserName")]
     public FlagValue<string>? UserName { get; init; }
 
