@@ -22,7 +22,7 @@ public interface IOpcUaClient
         string[] nodeIds,
         bool includeSampleValues);
 
-    Task<(bool Succeeded, NodeObject? NodeObject, string? ErrorMesssage)> ReadNodeObjectAsync(
+    Task<(bool Succeeded, NodeObject? NodeObject, string? ErrorMessage)> ReadNodeObjectAsync(
         string nodeId,
         bool includeObjects,
         bool includeVariables,
