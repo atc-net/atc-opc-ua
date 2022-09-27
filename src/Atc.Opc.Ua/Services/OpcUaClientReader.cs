@@ -30,7 +30,7 @@ public partial class OpcUaClient
         return InvokeReadNodeVariablesAsync(nodeIds, includeSampleValues);
     }
 
-    public async Task<(bool Succeeded, NodeObject? NodeObject, string? ErrorMesssage)> ReadNodeObjectAsync(
+    public async Task<(bool Succeeded, NodeObject? NodeObject, string? ErrorMessage)> ReadNodeObjectAsync(
         string nodeId,
         bool includeObjects,
         bool includeVariables,
