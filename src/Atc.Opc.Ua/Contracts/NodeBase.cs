@@ -5,7 +5,7 @@ public abstract class NodeBase
     /// <summary>
     /// Parent node id.
     /// </summary>
-    public string ParentNodeId { get; set; } = "unknown";
+    public string ParentNodeId { get; set; } = Constants.UnknownNodeId;
 
     /// <summary>
     /// Id of node.

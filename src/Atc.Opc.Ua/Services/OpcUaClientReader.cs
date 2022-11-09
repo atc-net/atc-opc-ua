@@ -67,7 +67,6 @@ public partial class OpcUaClient
         if (parentNodeId is null)
         {
             LogSessionParentNodeNotFound(nodeId);
-            return (false, null, $"Could not find parent for node with nodeId '{nodeId}'.");
         }
 
         var nodeObject = readNode.MapToNodeObject(parentNodeId);
@@ -164,12 +163,10 @@ public partial class OpcUaClient
                 return (false, null, $"Node with nodeId '{nodeId}' has wrong NodeClass '{readNode.NodeClass}', expected '{NodeClass.Variable}'.");
             }
 
-            var browserParent = BrowserFactory.GetBackwardsBrowser(Session!);
-            var browseParentResults = browserParent.Browse(new NodeId(nodeId));
-            if (browseParentResults is null || browseParentResults.Count != 1)
+            var browseParentResults = BrowseBackwardsByNodeId(nodeId);
+            if (browseParentResults.Count != 1)
             {
                 LogSessionParentNodeNotFound(nodeId);
-                return (false, null, $"Could not find parent for node with nodeId '{nodeId}'.");
             }
 
             DataValue? sampleValue = null;
@@ -178,8 +175,17 @@ public partial class OpcUaClient
                 sampleValue = await TryGetDataValueForVariable((VariableNode)readNode);
             }
 
-            var parentObject = browseParentResults[0];
-            var nodeVariable = readNode.MapToNodeVariableWithValue(parentObject.NodeId.ToString(), sampleValue);
+            NodeVariable? nodeVariable;
+
+            if (browseParentResults.Count == 1)
+            {
+                var parentObject = browseParentResults[0];
+                nodeVariable = readNode.MapToNodeVariableWithValue(parentObject.NodeId.ToString(), sampleValue);
+            }
+            else
+            {
+                nodeVariable = readNode.MapToNodeVariableWithValue(parentNodeId: null, sampleValue);
+            }
 
             LogSessionReadNodeVariableSucceeded(nodeId);
             return (true, nodeVariable, null);

@@ -5,26 +5,25 @@ public static class NodeExtensions
 {
     public static NodeVariable? MapToNodeVariable(
         this Node? node,
-        string parentNodeId)
+        string? parentNodeId)
     {
         if (node is null)
         {
             return null;
         }
 
-        if (string.IsNullOrEmpty(parentNodeId))
-        {
-            return null;
-        }
-
         var data = new NodeVariable
         {
-            ParentNodeId = parentNodeId,
             NodeId = node.NodeId.ToString(),
             NodeIdentifier = node.NodeId.Identifier.ToString()!,
             NodeClass = Enum<NodeClassType>.Parse(node.NodeClass.ToString()),
             DisplayName = node.DisplayName.Text,
         };
+
+        if (!string.IsNullOrEmpty(parentNodeId))
+        {
+            data.ParentNodeId = parentNodeId;
+        }
 
         if (node.DataLock is VariableNode variableNode)
         {
@@ -44,15 +43,10 @@ public static class NodeExtensions
 
     public static NodeVariable? MapToNodeVariableWithValue(
         this Node? node,
-        string parentNodeId,
+        string? parentNodeId,
         DataValue? nodeDataValue)
     {
         if (node is null)
-        {
-            return null;
-        }
-
-        if (string.IsNullOrEmpty(parentNodeId))
         {
             return null;
         }
@@ -68,20 +62,26 @@ public static class NodeExtensions
 
     public static NodeObject? MapToNodeObject(
         this Node? node,
-        string parentNodeId)
+        string? parentNodeId)
     {
         if (node is null)
         {
             return null;
         }
 
-        return new NodeObject
+        var result = new NodeObject
         {
-            ParentNodeId = parentNodeId,
             NodeId = node.NodeId.ToString(),
             NodeIdentifier = node.NodeId.Identifier.ToString()!,
             NodeClass = Enum<NodeClassType>.Parse(node.NodeClass.ToString()),
             DisplayName = node.DisplayName.Text,
         };
+
+        if (!string.IsNullOrEmpty(parentNodeId))
+        {
+            result.ParentNodeId = parentNodeId;
+        }
+
+        return result;
     }
 }
