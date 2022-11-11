@@ -12,8 +12,8 @@ public partial class OpcUaClient
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionConnecting,
         Level = LogLevel.Information,
-        Message = "Session is connecting.")]
-    private partial void LogSessionConnecting();
+        Message = "Session is connecting to '{opcUaUri}'.")]
+    private partial void LogSessionConnecting(string opcUaUri);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionConnected,
@@ -24,8 +24,8 @@ public partial class OpcUaClient
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionConnectionFailure,
         Level = LogLevel.Error,
-        Message = "Session connection failure: '{errorMessage}'.")]
-    private partial void LogSessionConnectionFailure(string errorMessage);
+        Message = "Session failed to connect to '{opcUaUri}': '{errorMessage}'.")]
+    private partial void LogSessionConnectionFailure(string opcUaUri, string errorMessage);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionAlreadyConnected,
