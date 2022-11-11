@@ -80,7 +80,7 @@ public partial class OpcUaClient : IOpcUaClient
             }
             else
             {
-                LogSessionConnecting();
+                LogSessionConnecting(serverUri.AbsoluteUri);
 
                 var useSecurity = !string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(password);
                 var endpoint = GetServerEndpoint(serverUri, useSecurity);
@@ -99,7 +99,7 @@ public partial class OpcUaClient : IOpcUaClient
         }
         catch (Exception ex)
         {
-            LogSessionConnectionFailure(ex.Message);
+            LogSessionConnectionFailure(serverUri.AbsoluteUri, ex.Message);
             return (false, ex.Message);
         }
     }
