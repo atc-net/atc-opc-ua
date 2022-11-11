@@ -26,6 +26,7 @@ internal static class LoggingEventIdConstants
     public const int SessionReadNodeVariableValueFailure = 10044;
     public const int SessionReadNodeNotSupportedNodeClass = 10045;
     public const int SessionReadNodeFailure = 10046;
+    public const int SessionReadParentNodeFailure = 10047;
 
     public const int SessionWriteNodeVariableFailure = 10050;
 

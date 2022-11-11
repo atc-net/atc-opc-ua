@@ -306,7 +306,7 @@ public partial class OpcUaClient
         }
         catch (Exception ex)
         {
-            LogSessionReadNodeFailure(nodeId, ex.Message);
+            LogSessionReadParentNodeFailure(nodeId, ex.Message);
             return new ReferenceDescriptionCollection();
         }
     }

@@ -136,6 +136,12 @@ public partial class OpcUaClient
     private partial void LogSessionReadNodeFailure(string nodeId, string errorMessage);
 
     [LoggerMessage(
+        EventId = LoggingEventIdConstants.SessionReadParentNodeFailure,
+        Level = LogLevel.Error,
+        Message = "Reading parent node of nodeId '{nodeId}' failed: '{errorMessage}'.")]
+    private partial void LogSessionReadParentNodeFailure(string nodeId, string errorMessage);
+
+    [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionExecuteCommandRequest,
         Level = LogLevel.Trace,
         Message = "Executing method for parentNodeId '{parentNodeId}' and methodNodeId '{methodNodeId}' with '{arguments}'.")]
