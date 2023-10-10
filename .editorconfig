@@ -513,4 +513,7 @@ dotnet_diagnostic.CA5400.severity = none            # Ensure HttpClient certific
 dotnet_diagnostic.MA0004.severity = none            # Use Task.ConfigureAwait(false) as the current SynchronizationContext is not needed
 dotnet_diagnostic.MA0016.severity = none            # Collection abstraction
 
-dotnet_diagnostic.S1172.severity = suggestion       # Temporary, due to false positive in latest version of the analyzer package
+dotnet_diagnostic.S1172.severity = none             # Temporary, due to false positive in latest version of the analyzer package
+dotnet_diagnostic.S2589.severity = none             # Boolean expressions should not be gratuitous
+dotnet_diagnostic.S6605.severity = none             # Collection-specific "Exists" method should be used instead of the "Any" extension
+dotnet_diagnostic.S6608.severity = none             # Prefer indexing instead of "Enumerable" methods on types implementing "IList"

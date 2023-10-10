@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -14,9 +14,9 @@
 
 
   <ItemGroup>
-    <PackageReference Include="Atc" Version="2.0.91" />
-    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua" Version="1.4.368.33" />
-    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client.ComplexTypes" Version="1.4.368.33" />
+    <PackageReference Include="Atc" Version="2.0.360" />
+    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua" Version="1.4.372.56" />
+    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client.ComplexTypes" Version="1.4.372.56" />
   </ItemGroup>
 
 </Project>

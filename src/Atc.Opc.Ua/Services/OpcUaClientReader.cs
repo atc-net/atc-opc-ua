@@ -1,7 +1,8 @@
+// ReSharper disable SuggestBaseTypeForParameter
 namespace Atc.Opc.Ua.Services;
 
 /// <summary>
-/// OpcUaClient Reader.
+/// Provides functionality to interact with an OPC UA server for reading node variables and objects.
 /// </summary>
 [SuppressMessage("Design", "MA0048:File name must match type name", Justification = "OK - By Design")]
 [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OK")]
@@ -12,24 +13,59 @@ public partial class OpcUaClient
         ObjectIds.Server,
     };
 
+    /// <summary>
+    /// Asynchronously reads the variable of a specified node in the OPC UA server.
+    /// </summary>
+    /// <param name="nodeId">The identifier of the node.</param>
+    /// <param name="includeSampleValue">Indicates whether to include the sample value of the variable.</param>
+    /// <returns>A Task representing the result of the asynchronous operation.</returns>
     public Task<(bool Succeeded, NodeVariable? NodeVariable, string? ErrorMessage)> ReadNodeVariableAsync(
         string nodeId,
         bool includeSampleValue)
     {
-        ArgumentNullException.ThrowIfNull(nodeId);
+        if (string.IsNullOrWhiteSpace(nodeId))
+        {
+            return Task.FromResult<(bool Succeeded, NodeVariable? NodeVariable, string? ErrorMessage)>((false, null, "Missing nodeId."));
+        }
+
+        nodeId = nodeId.Trim();
 
         return InvokeReadNodeVariableAsync(nodeId, includeSampleValue);
     }
 
+    /// <summary>
+    /// Asynchronously reads the variables of specified nodes in the OPC UA server.
+    /// </summary>
+    /// <param name="nodeIds">The identifiers of the nodes.</param>
+    /// <param name="includeSampleValues">Indicates whether to include the sample values of the variables.</param>
+    /// <returns>A Task representing the result of the asynchronous operation.</returns>
     public Task<(bool Succeeded, IList<NodeVariable>? NodeVariables, string? ErrorMessage)> ReadNodeVariablesAsync(
         string[] nodeIds,
         bool includeSampleValues)
     {
         ArgumentNullException.ThrowIfNull(nodeIds);
 
-        return InvokeReadNodeVariablesAsync(nodeIds, includeSampleValues);
+        if (nodeIds.Length == 0)
+        {
+            return Task.FromResult<(bool Succeeded, IList<NodeVariable>? NodeVariables, string? ErrorMessage)>((false, null, "Missing nodeIds."));
+        }
+
+        nodeIds = nodeIds.Select(id => id.Trim()).ToArray();
+
+        return nodeIds.Any(string.IsNullOrWhiteSpace)
+            ? Task.FromResult<(bool Succeeded, IList<NodeVariable>? NodeVariables, string? ErrorMessage)>((false, null, "One or more nodeIds are invalid."))
+            : InvokeReadNodeVariablesAsync(nodeIds, includeSampleValues);
     }
 
+    /// <summary>
+    /// Asynchronously reads the object of a specified node in the OPC UA server.
+    /// </summary>
+    /// <param name="nodeId">The identifier of the node.</param>
+    /// <param name="includeObjects">Indicates whether to include objects in the result.</param>
+    /// <param name="includeVariables">Indicates whether to include variables in the result.</param>
+    /// <param name="includeSampleValues">Indicates whether to include sample values of the variables.</param>
+    /// <param name="nodeObjectReadDepth">The depth to read the node object.</param>
+    /// <returns>A Task representing the result of the asynchronous operation.</returns>
     public async Task<(bool Succeeded, NodeObject? NodeObject, string? ErrorMessage)> ReadNodeObjectAsync(
         string nodeId,
         bool includeObjects,
@@ -37,10 +73,12 @@ public partial class OpcUaClient
         bool includeSampleValues,
         int nodeObjectReadDepth = 1)
     {
-        if (string.IsNullOrEmpty(nodeId))
+        if (string.IsNullOrWhiteSpace(nodeId))
         {
             return (false, null, "Missing nodeId.");
         }
+
+        nodeId = nodeId.Trim();
 
         if (!IsConnected())
         {
@@ -50,7 +88,7 @@ public partial class OpcUaClient
 
         LogSessionReadNodeObjectWithMaxDepth(nodeId, nodeObjectReadDepth);
 
-        var readNode = Session!.ReadNode(nodeId);
+        var readNode = await Session!.ReadNodeAsync(nodeId);
         if (readNode is null)
         {
             LogSessionNodeNotFound(nodeId);
@@ -89,6 +127,11 @@ public partial class OpcUaClient
         return (true, nodeObject, null);
     }
 
+    /// <summary>
+    /// Gets the parent node identifier of a specified node.
+    /// </summary>
+    /// <param name="nodeId">The identifier of the node.</param>
+    /// <returns>The identifier of the parent node.</returns>
     private string? GetParentNodeId(
         string nodeId)
     {
@@ -107,6 +150,16 @@ public partial class OpcUaClient
         return parentObject.NodeId.ToString();
     }
 
+    /// <summary>
+    /// Asynchronously reads child nodes of a specified node object.
+    /// </summary>
+    /// <param name="currentNode">The current node object.</param>
+    /// <param name="level">The level of node object read depth.</param>
+    /// <param name="includeObjects">Indicates whether to include objects in the result.</param>
+    /// <param name="includeVariables">Indicates whether to include variables in the result.</param>
+    /// <param name="includeSampleValues">Indicates whether to include sample values of the variables.</param>
+    /// <param name="nodeObjectReadDepth">The depth to read the node object.</param>
+    /// <returns>A Task representing the result of the asynchronous operation.</returns>
     private async Task ReadChildNodes(
         NodeObject currentNode,
         int level,
@@ -136,6 +189,12 @@ public partial class OpcUaClient
         }
     }
 
+    /// <summary>
+    /// Invokes the asynchronous read operation for a specified node variable.
+    /// </summary>
+    /// <param name="nodeId">The identifier of the node.</param>
+    /// <param name="includeSampleValue">Indicates whether to include the sample value of the variable.</param>
+    /// <returns>A Task representing the result of the asynchronous operation.</returns>
     private async Task<(bool Succeeded, NodeVariable? NodeVariable, string? ErrorMessage)> InvokeReadNodeVariableAsync(
         string nodeId,
         bool includeSampleValue)
@@ -150,7 +209,7 @@ public partial class OpcUaClient
         {
             LogSessionReadNodeObject(nodeId);
 
-            var readNode = Session!.ReadNode(nodeId);
+            var readNode = await Session!.ReadNodeAsync(nodeId);
             if (readNode is null)
             {
                 LogSessionNodeNotFound(nodeId);
@@ -197,6 +256,12 @@ public partial class OpcUaClient
         }
     }
 
+    /// <summary>
+    /// Invokes the asynchronous read operation for specified node variables.
+    /// </summary>
+    /// <param name="nodeIds">The identifiers of the nodes.</param>
+    /// <param name="includeSampleValues">Indicates whether to include the sample values of the variables.</param>
+    /// <returns>A Task representing the result of the asynchronous operation.</returns>
     private async Task<(bool Succeeded, IList<NodeVariable>? NodeVariables, string? ErrorMessage)> InvokeReadNodeVariablesAsync(
         string[] nodeIds,
         bool includeSampleValues)
@@ -235,6 +300,17 @@ public partial class OpcUaClient
             : (true, result, null);
     }
 
+    /// <summary>
+    /// Handles the browse results for child nodes.
+    /// </summary>
+    /// <param name="currentNode">The current node object.</param>
+    /// <param name="level">The level of node object read depth.</param>
+    /// <param name="includeObjects">Indicates whether to include objects in the result.</param>
+    /// <param name="includeVariables">Indicates whether to include variables in the result.</param>
+    /// <param name="includeSampleValues">Indicates whether to include sample values of the variables.</param>
+    /// <param name="nodeObjectReadDepth">The depth to read the node object.</param>
+    /// <param name="result">The browse result for a child node.</param>
+    /// <returns>A Task representing the result of the asynchronous operation.</returns>
     private async Task HandleChildBrowseResults(
         NodeObject currentNode,
         int level,
@@ -281,6 +357,11 @@ public partial class OpcUaClient
         }
     }
 
+    /// <summary>
+    /// Browses forward by node identifier to find child nodes.
+    /// </summary>
+    /// <param name="nodeId">The identifier of the node.</param>
+    /// <returns>A collection of reference descriptions for child nodes.</returns>
     private ReferenceDescriptionCollection BrowseForwardByNodeId(
         string nodeId)
     {
@@ -296,6 +377,11 @@ public partial class OpcUaClient
         }
     }
 
+    /// <summary>
+    /// Browses backwards by node identifier to find parent nodes.
+    /// </summary>
+    /// <param name="nodeId">The identifier of the node.</param>
+    /// <returns>A collection of reference descriptions for parent nodes.</returns>
     private ReferenceDescriptionCollection BrowseBackwardsByNodeId(
         string nodeId)
     {
@@ -311,13 +397,20 @@ public partial class OpcUaClient
         }
     }
 
+    /// <summary>
+    /// Handles the browse result for a variable node.
+    /// </summary>
+    /// <param name="node">The current node object.</param>
+    /// <param name="referenceDescription">The reference description of the child node.</param>
+    /// <param name="includeSampleValue">Indicates whether to include the sample value of the variable.</param>
+    /// <returns>A Task representing the result of the asynchronous operation.</returns>
     private async Task HandleBrowseResultVariableNode(
         NodeObject node,
         ReferenceDescription referenceDescription,
         bool includeSampleValue)
     {
         var childNodeId = referenceDescription.NodeId.ToString();
-        var childNode = Session!.ReadNode(childNodeId);
+        var childNode = await Session!.ReadNodeAsync(childNodeId);
 
         DataValue? sampleValue = null;
         if (includeSampleValue)
@@ -332,6 +425,12 @@ public partial class OpcUaClient
         }
     }
 
+    /// <summary>
+    /// Tries to get the data value for a specified variable node.
+    /// </summary>
+    /// <param name="node">The variable node.</param>
+    /// <param name="loadComplexTypeSystem">Indicates whether to load the complex type system.</param>
+    /// <returns>A Task representing the result of the asynchronous operation.</returns>
     private async Task<DataValue?> TryGetDataValueForVariable(
         VariableNode node,
         bool loadComplexTypeSystem = false)

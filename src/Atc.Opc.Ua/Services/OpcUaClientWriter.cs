@@ -1,12 +1,18 @@
 namespace Atc.Opc.Ua.Services;
 
 /// <summary>
-/// OpcUaClient Writer.
+/// Provides functionality to interact with an OPC UA server for writing node variables.
 /// </summary>
 [SuppressMessage("Design", "MA0048:File name must match type name", Justification = "OK - By Design")]
 [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OK")]
 public partial class OpcUaClient
 {
+    /// <summary>
+    /// Writes a single node to the server.
+    /// </summary>
+    /// <param name="nodeId">The node identifier.</param>
+    /// <param name="value">The value to write.</param>
+    /// <returns>A tuple indicating success and an error message if applicable.</returns>
     public (bool Succeeded, string? ErrorMessage) WriteNode(
         string nodeId,
         object value)
@@ -18,6 +24,11 @@ public partial class OpcUaClient
         return WriteNodeValueCollection(nodesToWriteCollection);
     }
 
+    /// <summary>
+    /// Writes multiple nodes to the server.
+    /// </summary>
+    /// <param name="nodesToWrite">A dictionary containing node identifiers and values to write.</param>
+    /// <returns>A tuple indicating success and an error message if applicable.</returns>
     public (bool Succeeded, string? ErrorMessage) WriteNodes(
         IDictionary<string, object> nodesToWrite)
     {
@@ -33,6 +44,11 @@ public partial class OpcUaClient
         return WriteNodeValueCollection(nodesToWriteCollection);
     }
 
+    /// <summary>
+    /// Executes the write operation on the server.
+    /// </summary>
+    /// <param name="nodesToWriteCollection">The collection of nodes to write.</param>
+    /// <returns>A tuple indicating success and an error message if applicable.</returns>
     private (bool Succeeded, string? ErrorMessage) WriteNodeValueCollection(
         WriteValueCollection nodesToWriteCollection)
     {
@@ -62,6 +78,12 @@ public partial class OpcUaClient
         }
     }
 
+    /// <summary>
+    /// Builds the WriteValue for a node.
+    /// </summary>
+    /// <param name="nodeId">The node identifier.</param>
+    /// <param name="value">The value to write.</param>
+    /// <returns>A WriteValue object ready for being sent to the server.</returns>
     private static WriteValue BuildWriteValue(
         string nodeId,
         object value)

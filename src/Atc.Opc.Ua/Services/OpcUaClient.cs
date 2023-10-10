@@ -3,7 +3,7 @@
 namespace Atc.Opc.Ua.Services;
 
 /// <summary>
-/// OpcUaClient.
+/// Provides functionality for connecting to, and interacting with, OPC UA servers.
 /// </summary>
 [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "OK - By Design")]
 public partial class OpcUaClient : IOpcUaClient
@@ -11,21 +11,44 @@ public partial class OpcUaClient : IOpcUaClient
     private const uint SessionTimeout = 30 * 60 * 1000;
     private const string ApplicationName = nameof(OpcUaClient);
     private readonly ApplicationConfiguration configuration;
+    private readonly OpcUaSecurityOptions securityOptions;
 
+    /// <summary>
+    /// Gets the current session with the OPC UA server.
+    /// </summary>
     public Session? Session { get; private set; }
+
+    [SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "OK - By Design")]
+    public OpcUaClient(
+        ILogger<OpcUaClient> logger,
+        IOptions<OpcUaSecurityOptions> opcUaSecurityOptions)
+    {
+        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        this.securityOptions = opcUaSecurityOptions.Value ?? throw new ArgumentNullException(nameof(opcUaSecurityOptions));
+        var application = BuildAndValidateOpcUaApplicationAsync().GetAwaiter().GetResult();
+        configuration = application.ApplicationConfiguration;
+        configuration.CertificateValidator.CertificateValidation += CertificateValidation;
+    }
 
     public OpcUaClient(
         ILogger<OpcUaClient> logger)
+        : this(
+            logger,
+            new OptionsWrapper<OpcUaSecurityOptions>(new OpcUaSecurityOptions()))
     {
-        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        var application = BuildAndValidateOpcUaApplicationAsync().GetAwaiter().GetResult();
-        this.configuration = application.ApplicationConfiguration;
-        this.configuration.CertificateValidator.CertificateValidation += CertificateValidation;
     }
 
+    /// <summary>
+    /// Determines whether the client is currently connected to an OPC UA server.
+    /// </summary>
+    /// <returns>A value indicating whether the client is connected.</returns>
     public bool IsConnected()
         => Session is not null && Session.Connected;
 
+    /// <summary>
+    /// Disconnects from the currently connected OPC UA server, if any.
+    /// </summary>
+    /// <returns>A tuple indicating whether the disconnection was successful, and an error message if not.</returns>
     public (bool Succeeded, string? ErrorMessage) Disconnect()
     {
         try
@@ -53,10 +76,22 @@ public partial class OpcUaClient : IOpcUaClient
         }
     }
 
+    /// <summary>
+    /// Asynchronously connects to an OPC UA server.
+    /// </summary>
+    /// <param name="serverUri">The URI of the OPC UA server.</param>
+    /// <returns>A task representing the asynchronous connect operation.</returns>
     public Task<(bool Succeeded, string? ErrorMessage)> ConnectAsync(
         Uri serverUri)
         => ConnectAsync(serverUri, string.Empty, string.Empty);
 
+    /// <summary>
+    /// Asynchronously connects to an OPC UA server with specified credentials.
+    /// </summary>
+    /// <param name="serverUri">The URI of the OPC UA server.</param>
+    /// <param name="userName">The user name.</param>
+    /// <param name="password">The password.</param>
+    /// <returns>A task representing the asynchronous connect operation.</returns>
     public Task<(bool Succeeded, string? ErrorMessage)> ConnectAsync(
         Uri serverUri,
         string userName,
@@ -67,6 +102,13 @@ public partial class OpcUaClient : IOpcUaClient
         return InvokeConnectAsync(serverUri, userName, password);
     }
 
+    /// <summary>
+    /// Asynchronously attempts to connect to the specified OPC UA server.
+    /// </summary>
+    /// <param name="serverUri">The URI of the server.</param>
+    /// <param name="userName">The user name.</param>
+    /// <param name="password">The password.</param>
+    /// <returns>A task representing the asynchronous operation, with a tuple indicating whether the connection was successful, and an error message if not.</returns>
     private async Task<(bool Succeeded, string? ErrorMessage)> InvokeConnectAsync(
         Uri serverUri,
         string userName,
@@ -105,10 +147,11 @@ public partial class OpcUaClient : IOpcUaClient
     }
 
     /// <summary>
-    /// Get the endpoint by connecting to server's discovery endpoint.
+    /// Retrieves the endpoint configuration from the specified server.
     /// </summary>
-    /// <param name="serverUri">The server to get endpoint from.</param>
-    /// <returns>The ConfiguredEndpoint on the server.</returns>
+    /// <param name="serverUri">The URI of the server.</param>
+    /// <param name="useSecurity">Indicates whether to use security while connecting.</param>
+    /// <returns>The configured endpoint on the server.</returns>
     private ConfiguredEndpoint GetServerEndpoint(
         Uri serverUri,
         bool useSecurity)
@@ -119,6 +162,11 @@ public partial class OpcUaClient : IOpcUaClient
         return endpoint;
     }
 
+    /// <summary>
+    /// Handles the certificate validation event.
+    /// </summary>
+    /// <param name="sender">The sender of the event.</param>
+    /// <param name="e">The event arguments.</param>
     private void CertificateValidation(
         CertificateValidator sender,
         CertificateValidationEventArgs e)
@@ -138,6 +186,12 @@ public partial class OpcUaClient : IOpcUaClient
         e.Accept = certificateAccepted;
     }
 
+    /// <summary>
+    /// Asynchronously creates a new session with the specified endpoint and user identity.
+    /// </summary>
+    /// <param name="endpoint">The endpoint configuration.</param>
+    /// <param name="userIdentity">The user identity.</param>
+    /// <returns>A task representing the asynchronous operation, with the created session as result.</returns>
     private Task<Session> CreateSession(
         ConfiguredEndpoint endpoint,
         IUserIdentity userIdentity)
@@ -151,6 +205,12 @@ public partial class OpcUaClient : IOpcUaClient
             userIdentity,
             preferredLocales: null);
 
+    /// <summary>
+    /// Builds a user identity object based on the specified credentials.
+    /// </summary>
+    /// <param name="userName">The user name.</param>
+    /// <param name="password">The password.</param>
+    /// <returns>The created user identity.</returns>
     private static UserIdentity BuildUserIdentity(
         string userName,
         string password)
@@ -175,9 +235,13 @@ public partial class OpcUaClient : IOpcUaClient
         return userIdentity;
     }
 
-    private static async Task<ApplicationInstance> BuildAndValidateOpcUaApplicationAsync()
+    /// <summary>
+    /// Asynchronously builds and validates an OPC UA application instance.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation, with the created application instance as result.</returns>
+    private async Task<ApplicationInstance> BuildAndValidateOpcUaApplicationAsync()
     {
-        var applicationConfiguration = ApplicationConfigurationFactory.Create(ApplicationName);
+        var applicationConfiguration = ApplicationConfigurationFactory.Create(ApplicationName, securityOptions);
         applicationConfiguration = ApplicationInstance.FixupAppConfig(applicationConfiguration);
         await applicationConfiguration.Validate(applicationConfiguration.ApplicationType);
 

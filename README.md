@@ -4,15 +4,93 @@
 
 OPC UA industrial library for executing commands, reads and writes on OPC UA servers
 
-## CLI Tool
+# Table of Contents
+
+- [Atc.Opc.Ua](#atcopcua)
+- [Table of Contents](#table-of-contents)
+- [OpcUaClient](#opcuaclient)
+  - [Configuring OPC UA Security Settings](#configuring-opc-ua-security-settings)
+- [CLI Tool](#cli-tool)
+  - [Requirements](#requirements)
+  - [Installation](#installation)
+  - [Update](#update)
+  - [Usage](#usage)
+    - [Option --help](#option---help)
+- [How to contribute](#how-to-contribute)
+
+# OpcUaClient
+
+After installing the latest [nuget package](https://www.nuget.org/packages/atc.opc.ua), the OpcUaClient can be wired up as follows:
+
+```csharp
+services.AddTransient<IOpcUaClient, OpcUaClient>(s =>
+{
+    var loggerFactory = s.GetRequiredService<ILoggerFactory>();
+    return new OpcUaClient(loggerFactory.CreateLogger<OpcUaClient>());
+});
+```
+
+## Configuring OPC UA Security Settings
+
+By default, the `OpcUaClient` will create its own self-signed certificate to present to external OPC UA Servers. However, if you have your own certificate to utilize, the service can be configured using the available `OpcUaSecurityOptions`. This class facilitates the configuration of certificate stores, the application certificate, and other essential security settings for secure communication.
+
+These settings can be wired up from an `appsettings.json` file or manually constructed in code. Another constructor overload in OpcUaClient is available for injecting an instance of `IOptions<SecurityOptions>`.
+
+An example of this configuration in `appsettings.json` could look like the following.
+
+> Note: The example values below will be the default values, if they are not provided.
+
+```json
+{
+  "OpcUaSecurityOptions": {
+    "PkiRootPath": "opc/pki",
+    "ApplicationCertificate": {
+      "StoreType": "Directory",
+      "StorePath": "own",
+      "SubjectName": "CN=YourApp"
+    },
+    "RejectedCertificates": {
+      "StoreType": "Directory",
+      "StorePath": "rejected"
+    },
+    "TrustedIssuerCertificates": {
+      "StoreType": "Directory",
+      "StorePath": "issuers"
+    },
+    "TrustedPeerCertificates": {
+      "StoreType": "Directory",
+      "StorePath": "trusted"
+    },
+    "AddAppCertToTrustedStore": true,
+    "AutoAcceptUntrustedCertificates": false,
+    "MinimumCertificateKeySize": 1024,
+    "RejectSha1SignedCertificates": true,
+    "RejectUnknownRevocationStatus": true
+  }
+}
+```
+
+and from your C# code:
+
+```csharp
+services
+    .AddOptions<OpcUaSecurityOptions>()
+    .Bind(configuration.GetRequiredSection(nameof(OpcUaSecurityOptions)))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+services.AddTransient<IOpcUaClient, OpcUaClient>();
+```
+
+# CLI Tool
 
 The `Atc.Opc.Ua.CLI` tool is available through a cross platform command line application.
 
-### Requirements
+## Requirements
 
 * [.NET 6 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
 
-### Installation
+## Installation
 
 The tool can be installed as a .NET global tool by the following command
 
@@ -29,7 +107,7 @@ The tool can be invoked by the following command: atc-opc-ua
 Tool 'atc-opc-ua' (version '1.0.xxx') was successfully installed.`
 ```
 
-### Update
+## Update
 
 The tool can be updated by the following command
 
@@ -37,11 +115,11 @@ The tool can be updated by the following command
 dotnet tool update --global atc-opc-ua
 ```
 
-### Usage
+## Usage
 
 Since the tool is published as a .NET Tool, it can be launched from anywhere using any shell or command-line interface by calling **atc-opc-ua**. The help information is displayed when providing the `--help` argument to **atc-opc-ua**
 
-#### Option <span style="color:yellow">--help</span>
+### Option <span style="color:yellow">--help</span>
 
 ```powershell
 atc-opc-ua --help
@@ -66,7 +144,7 @@ COMMANDS:
     node              Operations related to nodes
 ```
 
-## How to contribute
+# How to contribute
 
 [Contribution Guidelines](https://atc-net.github.io/introduction/about-atc#how-to-contribute)
 
