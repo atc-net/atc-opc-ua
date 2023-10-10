@@ -39,6 +39,7 @@ These settings can be wired up from an `appsettings.json` file or manually const
 An example of this configuration in `appsettings.json` could look like the following.
 
 > Note: The example values below will be the default values, if they are not provided.
+Except subjectName, which will be something like 'OpcUaClient [RANDOM_SERIAL_NUMBER]' for the self-signed certificate generated.
 
 ```json
 {
