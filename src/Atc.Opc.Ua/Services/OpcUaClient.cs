@@ -11,19 +11,31 @@ public partial class OpcUaClient : IOpcUaClient
     private const uint SessionTimeout = 30 * 60 * 1000;
     private const string ApplicationName = nameof(OpcUaClient);
     private readonly ApplicationConfiguration configuration;
+    private readonly OpcUaSecurityOptions securityOptions;
 
     /// <summary>
     /// Gets the current session with the OPC UA server.
     /// </summary>
     public Session? Session { get; private set; }
 
+    [SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "OK - By Design")]
     public OpcUaClient(
-        ILogger<OpcUaClient> logger)
+        ILogger<OpcUaClient> logger,
+        IOptions<OpcUaSecurityOptions> opcUaSecurityOptions)
     {
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        this.securityOptions = opcUaSecurityOptions.Value ?? throw new ArgumentNullException(nameof(opcUaSecurityOptions));
         var application = BuildAndValidateOpcUaApplicationAsync().GetAwaiter().GetResult();
-        this.configuration = application.ApplicationConfiguration;
-        this.configuration.CertificateValidator.CertificateValidation += CertificateValidation;
+        configuration = application.ApplicationConfiguration;
+        configuration.CertificateValidator.CertificateValidation += CertificateValidation;
+    }
+
+    public OpcUaClient(
+        ILogger<OpcUaClient> logger)
+        : this(
+            logger,
+            new OptionsWrapper<OpcUaSecurityOptions>(new OpcUaSecurityOptions()))
+    {
     }
 
     /// <summary>
@@ -223,13 +235,13 @@ public partial class OpcUaClient : IOpcUaClient
         return userIdentity;
     }
 
-    private static async Task<ApplicationInstance> BuildAndValidateOpcUaApplicationAsync()
     /// <summary>
     /// Asynchronously builds and validates an OPC UA application instance.
     /// </summary>
     /// <returns>A task representing the asynchronous operation, with the created application instance as result.</returns>
+    private async Task<ApplicationInstance> BuildAndValidateOpcUaApplicationAsync()
     {
-        var applicationConfiguration = ApplicationConfigurationFactory.Create(ApplicationName);
+        var applicationConfiguration = ApplicationConfigurationFactory.Create(ApplicationName, securityOptions);
         applicationConfiguration = ApplicationInstance.FixupAppConfig(applicationConfiguration);
         await applicationConfiguration.Validate(applicationConfiguration.ApplicationType);
 

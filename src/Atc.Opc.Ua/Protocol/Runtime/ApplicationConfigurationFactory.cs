@@ -3,9 +3,11 @@ namespace Atc.Opc.Ua.Protocol.Runtime;
 public static class ApplicationConfigurationFactory
 {
     public static ApplicationConfiguration Create(
-        string applicationName)
+        string applicationName,
+        OpcUaSecurityOptions opaUaSecurityOptions)
     {
         ArgumentNullException.ThrowIfNull(applicationName);
+        ArgumentNullException.ThrowIfNull(opaUaSecurityOptions);
 
         var config = new ApplicationConfiguration
         {
@@ -18,29 +20,30 @@ public static class ApplicationConfigurationFactory
             {
                 ApplicationCertificate = new CertificateIdentifier
                 {
-                    StoreType = CertificateStoreType.Directory,
-                    StorePath = "opc/pki/own",
-                    SubjectName = applicationName,
-                },
-                TrustedPeerCertificates = new CertificateTrustList
-                {
-                    StoreType = CertificateStoreType.Directory,
-                    StorePath = "opc/pki/trusted",
-                },
-                TrustedIssuerCertificates = new CertificateTrustList
-                {
-                    StoreType = CertificateStoreType.Directory,
-                    StorePath = "opc/pki/issuers",
+                    StoreType = opaUaSecurityOptions.ApplicationCertificate.StoreType,
+                    StorePath = $"{opaUaSecurityOptions.PkiRootPath}/{opaUaSecurityOptions.ApplicationCertificate.StorePath}",
+                    SubjectName = opaUaSecurityOptions.ApplicationCertificate.SubjectName ?? applicationName,
                 },
                 RejectedCertificateStore = new CertificateTrustList
                 {
-                    StoreType = CertificateStoreType.Directory,
-                    StorePath = "opc/pki/rejected",
+                    StoreType = opaUaSecurityOptions.RejectedCertificates.StoreType,
+                    StorePath = $"{opaUaSecurityOptions.PkiRootPath}/{opaUaSecurityOptions.RejectedCertificates.StorePath}",
                 },
-                MinimumCertificateKeySize = 1024,
-                RejectSHA1SignedCertificates = false,
-                AddAppCertToTrustedStore = true,
-                AutoAcceptUntrustedCertificates = false,
+                TrustedIssuerCertificates = new CertificateTrustList
+                {
+                    StoreType = opaUaSecurityOptions.TrustedIssuerCertificates.StoreType,
+                    StorePath = $"{opaUaSecurityOptions.PkiRootPath}/{opaUaSecurityOptions.TrustedIssuerCertificates.StorePath}",
+                },
+                TrustedPeerCertificates = new CertificateTrustList
+                {
+                    StoreType = opaUaSecurityOptions.TrustedPeerCertificates.StoreType,
+                    StorePath = $"{opaUaSecurityOptions.PkiRootPath}/{opaUaSecurityOptions.TrustedPeerCertificates.StorePath}",
+                },
+                AddAppCertToTrustedStore = opaUaSecurityOptions.AddAppCertToTrustedStore,
+                AutoAcceptUntrustedCertificates = opaUaSecurityOptions.AutoAcceptUntrustedCertificates,
+                MinimumCertificateKeySize = opaUaSecurityOptions.MinimumCertificateKeySize,
+                RejectSHA1SignedCertificates = opaUaSecurityOptions.RejectSha1SignedCertificates,
+                RejectUnknownRevocationStatus = opaUaSecurityOptions.RejectUnknownRevocationStatus,
             },
             TransportConfigurations = new TransportConfigurationCollection(),
             TransportQuotas = TransportQuotaConfigExtensions.DefaultTransportQuotas(),
