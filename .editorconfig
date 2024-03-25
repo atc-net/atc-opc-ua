@@ -1,8 +1,8 @@
 # ATC coding rules - https://github.com/atc-net/atc-coding-rules
-# Version: 1.0.9
-# Updated: 01-02-2022
+# Version: 1.0.0
+# Updated: 25-09-2023
 # Location: Root
-# Distribution: DotNet6
+# Distribution: DotNet8
 # Inspired by: https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/code-style-rule-options
 
 ##########################################
@@ -87,6 +87,7 @@ dotnet_separate_import_directive_groups = false
 # .NET Code Style Settings
 # https://docs.microsoft.com/visualstudio/ide/editorconfig-language-conventions#net-code-style-settings
 [*.{cs,csx,cake}]
+
 # "this." and "Me." qualifiers
 # https://docs.microsoft.com/visualstudio/ide/editorconfig-language-conventions#this-and-me
 dotnet_style_qualification_for_field = false
@@ -146,11 +147,16 @@ dotnet_style_operator_placement_when_wrapping = end_of_line
 # C# Code Style Settings
 # https://docs.microsoft.com/visualstudio/ide/editorconfig-language-conventions#c-code-style-settings
 [*.{cs,csx,cake}]
+
 # Implicit and explicit types
 # https://docs.microsoft.com/visualstudio/ide/editorconfig-language-conventions#implicit-and-explicit-types
 csharp_style_var_for_built_in_types = true                                      # IDE0007 and IDE0008
 csharp_style_var_when_type_is_apparent = true                                   # IDE0007 and IDE0008
 csharp_style_var_elsewhere = true                                               # IDE0007 and IDE0008
+
+# Namespace declaration preferences
+# https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/ide0160-ide0161?view=vs-2022
+csharp_style_namespace_declarations = file_scoped                               # IDE0160 and IDE0161
 
 # Expression-bodied members
 # https://docs.microsoft.com/visualstudio/ide/editorconfig-language-conventions#expression-bodied-members
@@ -457,6 +463,7 @@ dotnet_diagnostic.CA1014.severity = none            # https://github.com/atc-net
 dotnet_diagnostic.CA1068.severity = error           # https://github.com/atc-net/atc-coding-rules/blob/main/documentation/CodeAnalyzersRules/MicrosoftCodeAnalysis/CA1068.md
 dotnet_diagnostic.CA1707.severity = error           # https://github.com/atc-net/atc-coding-rules/blob/main/documentation/CodeAnalyzersRules/MicrosoftCodeAnalysis/CA1707.md
 dotnet_diagnostic.CA2007.severity = suggestion      # https://github.com/atc-net/atc-coding-rules/blob/main/documentation/CodeAnalyzersRules/MicrosoftCodeAnalysis/CA2007.md
+dotnet_diagnostic.IDE0005.severity = warning        # https://github.com/atc-net/atc-coding-rules/blob/main/documentation/CodeAnalyzersRules/MicrosoftCodeAnalysis/IDE0005.md
 dotnet_diagnostic.IDE0058.severity = none           # https://github.com/atc-net/atc-coding-rules/blob/main/documentation/CodeAnalyzersRules/MicrosoftCodeAnalysis/IDE0058.md
 
 
@@ -507,6 +514,7 @@ dotnet_diagnostic.S1135.severity = suggestion       # https://github.com/atc-net
 dotnet_diagnostic.CA1002.severity = none            # Collection abstraction
 dotnet_diagnostic.CA1056.severity = none            # URI properties should not be strings
 dotnet_diagnostic.CA1812.severity = none            # Internal class that is apparently never instantiated.
+dotnet_diagnostic.CA1860.severity = none            #
 dotnet_diagnostic.CA2007.severity = none            # Consider calling ConfigureAwait on the awaited task
 dotnet_diagnostic.CA5400.severity = none            # Ensure HttpClient certificate revocation list check is not disabled
 
@@ -515,5 +523,6 @@ dotnet_diagnostic.MA0016.severity = none            # Collection abstraction
 
 dotnet_diagnostic.S1172.severity = none             # Temporary, due to false positive in latest version of the analyzer package
 dotnet_diagnostic.S2589.severity = none             # Boolean expressions should not be gratuitous
+dotnet_diagnostic.S2629.severity = none             #
 dotnet_diagnostic.S6605.severity = none             # Collection-specific "Exists" method should be used instead of the "Any" extension
 dotnet_diagnostic.S6608.severity = none             # Prefer indexing instead of "Enumerable" methods on types implementing "IList"
