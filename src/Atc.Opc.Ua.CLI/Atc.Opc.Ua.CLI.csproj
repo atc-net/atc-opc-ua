@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <PackageId>atc-opc-ua</PackageId>
     <PackageTags>opc-ua</PackageTags>
-    <Description>A .NET Tool that can interact with and OPCUA server.</Description>
+    <Description>A .NET Tool that can interact with OPCUA servers.</Description>
     <Title>ATC OPCUA CLI</Title>
     <OutputType>Exe</OutputType>
     <AssemblyName>atc-opc-ua</AssemblyName>
