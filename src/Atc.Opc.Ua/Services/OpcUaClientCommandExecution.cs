@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace Atc.Opc.Ua.Services;
 
 /// <summary>
