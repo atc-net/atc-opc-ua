@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <PackageId>atc-opc-ua</PackageId>
     <PackageTags>opc-ua</PackageTags>
     <Description>A .NET Tool that can interact with and OPCUA server.</Description>
