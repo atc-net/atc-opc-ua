@@ -2,10 +2,9 @@
 namespace System;
 
 /// <summary>
-/// The exception that is thrown when an certificate is not valid.
+/// The exception that is thrown when an OPC UA connection could not be disconnected.
 /// </summary>
 /// <seealso cref="Exception" />
-[Serializable]
 public class OpcUaDisconnectException : Exception
 {
     private const string ExceptionMessage = "Could not disconnect from Opc Ua session.";
@@ -37,13 +36,6 @@ public class OpcUaDisconnectException : Exception
         string message,
         Exception innerException)
         : base(message, innerException)
-    {
-    }
-
-    protected OpcUaDisconnectException(
-        SerializationInfo serializationInfo,
-        StreamingContext streamingContext)
-        : base(ExceptionMessage)
     {
     }
 }
