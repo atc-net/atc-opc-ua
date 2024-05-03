@@ -38,7 +38,8 @@ public class WriteNodeCommandSettings : OpcUaBaseCommandSettings
             return ValidationResult.Error("DataValue is missing.");
         }
 
-        if (!SimpleTypeHelper.TryGetTypeByName(DataType, out _))
+        var dataTypeResolver = new DataTypeResolver();
+        if (!dataTypeResolver.TryGetTypeByName(DataType, out _))
         {
             return ValidationResult.Error("DataType is not supported.");
         }

@@ -34,7 +34,8 @@ public sealed class NodeWriteVariableSingleCommand : AsyncCommand<WriteNodeComma
         var dataTypeAsString = settings.DataType;
         var value = settings.Value;
 
-        var dataType = SimpleTypeHelper.GetTypeByName(dataTypeAsString);
+        var dataTypeResolver = new DataTypeResolver();
+        var dataType = dataTypeResolver.GetTypeByName(dataTypeAsString);
         var typeConverter = TypeDescriptor.GetConverter(dataType);
         var convertedValue = typeConverter.ConvertFromString(value);
 
