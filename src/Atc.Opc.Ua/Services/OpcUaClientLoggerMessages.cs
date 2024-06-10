@@ -137,7 +137,7 @@ public partial class OpcUaClient
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionReadParentNodeFailure,
-        Level = LogLevel.Error,
+        Level = LogLevel.Warning,
         Message = "Reading parent node of nodeId '{nodeId}' failed: '{errorMessage}'.")]
     private partial void LogSessionReadParentNodeFailure(string nodeId, string errorMessage);
 
