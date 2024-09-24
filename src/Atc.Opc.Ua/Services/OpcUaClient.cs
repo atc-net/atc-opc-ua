@@ -10,6 +10,7 @@ public partial class OpcUaClient : IOpcUaClient
 {
     private const uint SessionTimeout = 30 * 60 * 1000;
     private const string ApplicationName = nameof(OpcUaClient);
+    private const int KeepAliveInterval = 5 * 1000;
     private readonly ApplicationConfiguration configuration;
     private readonly OpcUaSecurityOptions securityOptions;
 
@@ -58,6 +59,7 @@ public partial class OpcUaClient : IOpcUaClient
                 var sessionName = Session.SessionName ?? "unknown";
                 LogSessionDisconnecting(sessionName);
 
+                Session.KeepAlive -= SessionOnKeepAlive;
                 Session.Close();
                 Session.Dispose();
                 Session = null;
@@ -132,6 +134,10 @@ public partial class OpcUaClient : IOpcUaClient
                 if (session.Connected)
                 {
                     Session = session;
+
+                    // Keep alive
+                    Session.KeepAliveInterval = KeepAliveInterval;
+                    Session.KeepAlive += SessionOnKeepAlive;
                 }
 
                 LogSessionConnected(Session?.SessionName ?? "unknown");
@@ -258,5 +264,40 @@ public partial class OpcUaClient : IOpcUaClient
         }
 
         return application;
+    }
+
+    /// <summary>
+    /// Handles keep alive events for the session
+    /// </summary>
+    /// <param name="session">The session the keep alive event is received for</param>
+    /// <param name="e">The event arguments</param>
+    private void SessionOnKeepAlive(ISession session, KeepAliveEventArgs e)
+    {
+        try
+        {
+            // There is no current session
+            if (Session is null)
+            {
+                return;
+            }
+
+            // The keep alive came from a different session
+            if (!Session.Equals(session))
+            {
+                return;
+            }
+
+            // The server has not responded to the keep alive
+            if (ServiceResult.IsBad(e.Status))
+            {
+                // Disconnect the session and ensure that there will be no further keep alive requests
+                e.CancelKeepAlive = true;
+                Disconnect();
+            }
+        }
+        catch (Exception exception)
+        {
+            LogSessionKeepAliveRequestFailure(exception);
+        }
     }
 }
