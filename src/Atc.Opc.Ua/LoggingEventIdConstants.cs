@@ -32,4 +32,6 @@ internal static class LoggingEventIdConstants
 
     public const int SessionExecuteCommandRequest = 10060;
     public const int SessionExecuteCommandFailure = 10061;
+
+    public const int SessionKeepAliveRequestFailure = 10070;
 }

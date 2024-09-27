@@ -152,4 +152,10 @@ public partial class OpcUaClient
         Level = LogLevel.Error,
         Message = "Executing method for parentNodeId '{parentNodeId}' and methodNodeId '{methodNodeId}' failed: '{errorMessage}'.")]
     private partial void LogSessionExecuteCommandFailure(string parentNodeId, string methodNodeId, string errorMessage);
+
+    [LoggerMessage(
+        EventId = LoggingEventIdConstants.SessionKeepAliveRequestFailure,
+        Level = LogLevel.Error,
+        Message = "KeepAlive request failed: ")]
+    private partial void LogSessionKeepAliveRequestFailure(Exception ex);
 }
