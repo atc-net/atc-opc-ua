@@ -8,10 +8,7 @@ namespace Atc.Opc.Ua.Services;
 [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OK")]
 public partial class OpcUaClient
 {
-    private readonly List<NodeId> excludeNodes = new()
-    {
-        ObjectIds.Server,
-    };
+    private readonly List<NodeId> excludeNodes = [ObjectIds.Server];
 
     /// <summary>
     /// Asynchronously reads the variable of a specified node in the OPC UA server.
@@ -373,7 +370,7 @@ public partial class OpcUaClient
         catch (Exception ex)
         {
             LogSessionReadNodeFailure(nodeId, ex.Message);
-            return new ReferenceDescriptionCollection();
+            return [];
         }
     }
 
@@ -393,7 +390,7 @@ public partial class OpcUaClient
         catch (Exception ex)
         {
             LogSessionReadParentNodeFailure(nodeId, ex.Message);
-            return new ReferenceDescriptionCollection();
+            return [];
         }
     }
 
