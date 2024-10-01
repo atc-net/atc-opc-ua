@@ -129,8 +129,7 @@ public partial class OpcUaClient
     /// </summary>
     /// <param name="nodeId">The identifier of the node.</param>
     /// <returns>The identifier of the parent node.</returns>
-    private string? GetParentNodeId(
-        string nodeId)
+    private string? GetParentNodeId(string nodeId)
     {
         if (nodeId.Equals(ObjectIds.RootFolder.ToString(), StringComparison.OrdinalIgnoreCase))
         {
@@ -359,8 +358,7 @@ public partial class OpcUaClient
     /// </summary>
     /// <param name="nodeId">The identifier of the node.</param>
     /// <returns>A collection of reference descriptions for child nodes.</returns>
-    private ReferenceDescriptionCollection BrowseForwardByNodeId(
-        string nodeId)
+    private ReferenceDescriptionCollection BrowseForwardByNodeId(string nodeId)
     {
         try
         {
