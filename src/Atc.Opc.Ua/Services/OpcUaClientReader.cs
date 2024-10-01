@@ -436,7 +436,7 @@ public partial class OpcUaClient
 
         var nodesToRead = new ReadValueIdCollection
         {
-            new()
+            new ReadValueId
             {
                 NodeId = node.NodeId,
                 AttributeId = Attributes.Value,
