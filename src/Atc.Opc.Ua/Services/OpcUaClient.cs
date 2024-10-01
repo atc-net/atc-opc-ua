@@ -179,11 +179,6 @@ public partial class OpcUaClient : IOpcUaClient
     {
         const bool certificateAccepted = true;
 
-        //// ****
-        //// Implement a custom logic to decide if the certificate should be accepted or not and set certificateAccepted flag accordingly.
-        //// The certificate can be retrieved from the e.Certificate field
-        //// ***
-
         if (certificateAccepted)
         {
             LogSessionUntrustedCertificateAccepted(e.Certificate.SubjectName.Name);
