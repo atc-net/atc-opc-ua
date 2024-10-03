@@ -257,7 +257,12 @@ public partial class OpcUaClient
     /// </summary>
     /// <param name="nodeIds">The identifiers of the nodes.</param>
     /// <param name="includeSampleValues">Indicates whether to include the sample values of the variables.</param>
-    /// <returns>A Task representing the result of the asynchronous operation.</returns>
+    /// <returns>
+    /// A tuple containing:
+    /// - `Succeeded`: True if all node variables were successfully read; false if any read operation failed.
+    /// - `NodeVariables`: A list of successfully read node variables. If no variables were successfully read, this will be null.
+    /// - `ErrorMessage`: A string containing error messages if any operation failed; otherwise, null.
+    /// </returns>
     private async Task<(bool Succeeded, IList<NodeVariable>? NodeVariables, string? ErrorMessage)> InvokeReadNodeVariablesAsync(
         string[] nodeIds,
         bool includeSampleValues)
@@ -292,7 +297,7 @@ public partial class OpcUaClient
         }
 
         return errors.Any()
-            ? (true, result, string.Join(',', errors))
+            ? (false, result, string.Join(',', errors))
             : (true, result, null);
     }
 
