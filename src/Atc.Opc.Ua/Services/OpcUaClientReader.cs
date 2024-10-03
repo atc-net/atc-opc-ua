@@ -8,10 +8,7 @@ namespace Atc.Opc.Ua.Services;
 [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OK")]
 public partial class OpcUaClient
 {
-    private readonly List<NodeId> excludeNodes = new()
-    {
-        ObjectIds.Server,
-    };
+    private readonly List<NodeId> excludeNodes = [ObjectIds.Server];
 
     /// <summary>
     /// Asynchronously reads the variable of a specified node in the OPC UA server.
@@ -132,8 +129,7 @@ public partial class OpcUaClient
     /// </summary>
     /// <param name="nodeId">The identifier of the node.</param>
     /// <returns>The identifier of the parent node.</returns>
-    private string? GetParentNodeId(
-        string nodeId)
+    private string? GetParentNodeId(string nodeId)
     {
         if (nodeId.Equals(ObjectIds.RootFolder.ToString(), StringComparison.OrdinalIgnoreCase))
         {
@@ -261,7 +257,12 @@ public partial class OpcUaClient
     /// </summary>
     /// <param name="nodeIds">The identifiers of the nodes.</param>
     /// <param name="includeSampleValues">Indicates whether to include the sample values of the variables.</param>
-    /// <returns>A Task representing the result of the asynchronous operation.</returns>
+    /// <returns>
+    /// A tuple containing:
+    /// - `Succeeded`: True if all node variables were successfully read; false if any read operation failed.
+    /// - `NodeVariables`: A list of successfully read node variables. If no variables were successfully read, this will be null.
+    /// - `ErrorMessage`: A string containing error messages if any operation failed; otherwise, null.
+    /// </returns>
     private async Task<(bool Succeeded, IList<NodeVariable>? NodeVariables, string? ErrorMessage)> InvokeReadNodeVariablesAsync(
         string[] nodeIds,
         bool includeSampleValues)
@@ -296,7 +297,7 @@ public partial class OpcUaClient
         }
 
         return errors.Any()
-            ? (true, result, string.Join(',', errors))
+            ? (false, result, string.Join(',', errors))
             : (true, result, null);
     }
 
@@ -362,8 +363,7 @@ public partial class OpcUaClient
     /// </summary>
     /// <param name="nodeId">The identifier of the node.</param>
     /// <returns>A collection of reference descriptions for child nodes.</returns>
-    private ReferenceDescriptionCollection BrowseForwardByNodeId(
-        string nodeId)
+    private ReferenceDescriptionCollection BrowseForwardByNodeId(string nodeId)
     {
         try
         {
@@ -373,7 +373,7 @@ public partial class OpcUaClient
         catch (Exception ex)
         {
             LogSessionReadNodeFailure(nodeId, ex.Message);
-            return new ReferenceDescriptionCollection();
+            return [];
         }
     }
 
@@ -393,7 +393,7 @@ public partial class OpcUaClient
         catch (Exception ex)
         {
             LogSessionReadParentNodeFailure(nodeId, ex.Message);
-            return new ReferenceDescriptionCollection();
+            return [];
         }
     }
 
@@ -439,7 +439,7 @@ public partial class OpcUaClient
 
         var nodesToRead = new ReadValueIdCollection
         {
-            new()
+            new ReadValueId
             {
                 NodeId = node.NodeId,
                 AttributeId = Attributes.Value,

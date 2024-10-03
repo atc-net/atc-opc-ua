@@ -109,7 +109,7 @@ public enum OpcUaDataEncodingType
     QualifiedName = 20,
 
     /// <summary>
-    /// Human readable text with an optional locale identifier.
+    /// Human-readable text with an optional locale identifier.
     /// </summary>
     LocalizedText = 21,
 
@@ -124,7 +124,7 @@ public enum OpcUaDataEncodingType
     DataValue = 23,
 
     /// <summary>
-    /// A union of all of the types specified above.
+    /// A union of all the types specified above.
     /// </summary>
     Variant = 24,
 

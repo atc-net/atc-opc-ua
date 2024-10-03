@@ -91,7 +91,7 @@ public partial class OpcUaClient : IOpcUaClient
     /// Asynchronously connects to an OPC UA server with specified credentials.
     /// </summary>
     /// <param name="serverUri">The URI of the OPC UA server.</param>
-    /// <param name="userName">The user name.</param>
+    /// <param name="userName">The username.</param>
     /// <param name="password">The password.</param>
     /// <returns>A task representing the asynchronous connect operation.</returns>
     public Task<(bool Succeeded, string? ErrorMessage)> ConnectAsync(
@@ -108,7 +108,7 @@ public partial class OpcUaClient : IOpcUaClient
     /// Asynchronously attempts to connect to the specified OPC UA server.
     /// </summary>
     /// <param name="serverUri">The URI of the server.</param>
-    /// <param name="userName">The user name.</param>
+    /// <param name="userName">The username.</param>
     /// <param name="password">The password.</param>
     /// <returns>A task representing the asynchronous operation, with a tuple indicating whether the connection was successful, and an error message if not.</returns>
     private async Task<(bool Succeeded, string? ErrorMessage)> InvokeConnectAsync(
@@ -179,11 +179,6 @@ public partial class OpcUaClient : IOpcUaClient
     {
         const bool certificateAccepted = true;
 
-        //// ****
-        //// Implement a custom logic to decide if the certificate should be accepted or not and set certificateAccepted flag accordingly.
-        //// The certificate can be retrieved from the e.Certificate field
-        //// ***
-
         if (certificateAccepted)
         {
             LogSessionUntrustedCertificateAccepted(e.Certificate.SubjectName.Name);
@@ -214,7 +209,7 @@ public partial class OpcUaClient : IOpcUaClient
     /// <summary>
     /// Builds a user identity object based on the specified credentials.
     /// </summary>
-    /// <param name="userName">The user name.</param>
+    /// <param name="userName">The username.</param>
     /// <param name="password">The password.</param>
     /// <returns>The created user identity.</returns>
     private static UserIdentity BuildUserIdentity(

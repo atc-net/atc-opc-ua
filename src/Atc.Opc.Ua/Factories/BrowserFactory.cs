@@ -1,9 +1,16 @@
 namespace Atc.Opc.Ua.Factories;
 
+/// <summary>
+/// Factory class for creating instances of OPC UA Browsers.
+/// </summary>
 public static class BrowserFactory
 {
-    public static Browser GetForwardBrowser(
-        Session session)
+    /// <summary>
+    /// Creates a Browser instance that browses in the forward direction.
+    /// </summary>
+    /// <param name="session">The OPC UA session for browsing.</param>
+    /// <returns>A new Browser instance configured to browse forward.</returns>
+    public static Browser GetForwardBrowser(ISession session)
         => new(session)
         {
             BrowseDirection = BrowseDirection.Forward,
@@ -12,8 +19,12 @@ public static class BrowserFactory
             IncludeSubtypes = true,
         };
 
-    public static Browser GetBackwardsBrowser(
-        Session session)
+    /// <summary>
+    /// Creates a Browser instance that browses in the backward direction.
+    /// </summary>
+    /// <param name="session">The OPC UA session for browsing.</param>
+    /// <returns>A new Browser instance configured to browse backward.</returns>
+    public static Browser GetBackwardsBrowser(ISession session)
         => new(session)
         {
             BrowseDirection = BrowseDirection.Inverse,

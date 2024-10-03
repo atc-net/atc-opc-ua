@@ -31,7 +31,7 @@ public partial class OpcUaClient
 
             Session!.Call(
                 requestHeader: null,
-                new CallMethodRequestCollection { request },
+                [request],
                 out var results,
                 out _);
 
