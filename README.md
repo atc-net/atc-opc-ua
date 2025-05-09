@@ -89,7 +89,7 @@ The `Atc.Opc.Ua.CLI` tool is available through a cross platform command line app
 
 ## Requirements
 
-* [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+* [.NET 9 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
 
 ## Installation
 
