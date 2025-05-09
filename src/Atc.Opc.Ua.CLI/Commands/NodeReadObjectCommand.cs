@@ -35,6 +35,7 @@ internal sealed class NodeReadObjectCommand : AsyncCommand<ReadObjectNodeCommand
         var includeVariables = settings.IncludeVariables;
         var includeSampleValues = settings.IncludeSampleValues;
         var nodeObjectReadDepth = settings.NodeObjectReadDepth;
+        var nodeVariableReadDepth = settings.NodeVariableReadDepth;
 
         var sw = Stopwatch.StartNew();
 
@@ -49,7 +50,8 @@ internal sealed class NodeReadObjectCommand : AsyncCommand<ReadObjectNodeCommand
                 includeObjects,
                 includeVariables,
                 includeSampleValues,
-                nodeObjectReadDepth);
+                nodeObjectReadDepth,
+                nodeVariableReadDepth);
 
             if (succeededReading)
             {
