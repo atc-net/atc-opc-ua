@@ -32,6 +32,7 @@ public class NodeReadVariableMultiCommand : AsyncCommand<MultiNodeCommandSetting
         var password = settings.Password;
         var nodeIds = settings.NodeIds;
         var includeSampleValues = settings.IncludeSampleValues;
+        var nodeVariableReadDepth = settings.NodeVariableReadDepth;
 
         var sw = Stopwatch.StartNew();
 
@@ -41,7 +42,7 @@ public class NodeReadVariableMultiCommand : AsyncCommand<MultiNodeCommandSetting
 
         if (succeeded)
         {
-            var (succeededReading, nodeVariables, _) = await opcUaClient.ReadNodeVariablesAsync(nodeIds, includeSampleValues);
+            var (succeededReading, nodeVariables, _) = await opcUaClient.ReadNodeVariablesAsync(nodeIds, includeSampleValues, nodeVariableReadDepth);
             if (succeededReading)
             {
                 logger.LogInformation($"Received the following data: {GetSimpleStrings(nodeVariables!)}");

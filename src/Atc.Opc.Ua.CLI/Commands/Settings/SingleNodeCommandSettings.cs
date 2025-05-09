@@ -11,6 +11,11 @@ public class SingleNodeCommandSettings : OpcUaBaseCommandSettings
     [DefaultValue(false)]
     public bool IncludeSampleValue { get; init; }
 
+    [CommandOption("--node-variable-read-depth")]
+    [Description("Sets the max depth for variable hierarchy retrieval. Default set to 0.")]
+    [DefaultValue(0)]
+    public int NodeVariableReadDepth { get; init; }
+
     public override ValidationResult Validate()
     {
         var validationResult = base.Validate();
