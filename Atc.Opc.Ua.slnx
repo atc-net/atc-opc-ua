@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/docs/">
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/sample/">
+    <Project Path="sample/Atc.Opc.Ua.Sample/Atc.Opc.Ua.Sample.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Atc.Opc.Ua.CLI/Atc.Opc.Ua.CLI.csproj" />
+    <Project Path="src/Atc.Opc.Ua/Atc.Opc.Ua.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/Atc.Opc.Ua.Tests/Atc.Opc.Ua.Tests.csproj" />
+  </Folder>
+</Solution>
