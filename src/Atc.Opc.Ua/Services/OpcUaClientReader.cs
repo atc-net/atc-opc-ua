@@ -67,13 +67,15 @@ public partial class OpcUaClient
     /// <param name="includeVariables">Indicates whether to include variables in the result.</param>
     /// <param name="includeSampleValues">Indicates whether to include sample values of the variables.</param>
     /// <param name="nodeObjectReadDepth">The depth to read the node object.</param>
+    /// <param name="nodeVariableReadDepth">The depth to read the node variable.</param>
     /// <returns>A Task representing the result of the asynchronous operation.</returns>
     public async Task<(bool Succeeded, NodeObject? NodeObject, string? ErrorMessage)> ReadNodeObjectAsync(
         string nodeId,
         bool includeObjects,
         bool includeVariables,
         bool includeSampleValues,
-        int nodeObjectReadDepth = 1)
+        int nodeObjectReadDepth = 1,
+        int nodeVariableReadDepth = 0)
     {
         if (string.IsNullOrWhiteSpace(nodeId))
         {
@@ -121,7 +123,8 @@ public partial class OpcUaClient
                 includeObjects,
                 includeVariables,
                 includeSampleValues,
-                nodeObjectReadDepth);
+                nodeObjectReadDepth,
+                nodeVariableReadDepth);
         }
 
         LogSessionReadNodeObjectSucceeded(nodeId);
@@ -160,6 +163,7 @@ public partial class OpcUaClient
     /// <param name="includeVariables">Indicates whether to include variables in the result.</param>
     /// <param name="includeSampleValues">Indicates whether to include sample values of the variables.</param>
     /// <param name="nodeObjectReadDepth">The depth to read the node object.</param>
+    /// <param name="nodeVariableReadDepth">The depth to read the node variable.</param>
     /// <returns>A Task representing the result of the asynchronous operation.</returns>
     private async Task ReadChildNodesFromNodeObject(
         NodeObject currentNode,
@@ -167,7 +171,8 @@ public partial class OpcUaClient
         bool includeObjects,
         bool includeVariables,
         bool includeSampleValues,
-        int nodeObjectReadDepth)
+        int nodeObjectReadDepth,
+        int nodeVariableReadDepth)
     {
         ArgumentNullException.ThrowIfNull(currentNode);
 
@@ -186,10 +191,44 @@ public partial class OpcUaClient
 
         foreach (var result in browseChildResults)
         {
-            await HandleChildBrowseResultsFromNodeObject(currentNode, level, includeObjects, includeVariables, includeSampleValues, nodeObjectReadDepth, result);
+            await HandleChildBrowseResultsFromNodeObject(
+                currentNode,
+                level,
+                includeObjects,
+                includeVariables,
+                includeSampleValues,
+                nodeObjectReadDepth,
+                nodeVariableReadDepth,
+                result);
         }
     }
 
+    /// <summary>
+    /// Recursively browses the children of a <see cref="NodeVariable"/> and
+    /// materialises them as <see cref="NodeVariable"/> instances in the in‑memory model.
+    /// Skips the call if the node appears in the <c>excludeNodes</c> list, or if
+    /// the server reports no forward references.
+    /// </summary>
+    /// <param name="currentNode">
+    /// The <see cref="NodeVariable"/> whose forward references are to be browsed.
+    /// Must not be <see langword="null"/>.
+    /// </param>
+    /// <param name="level">
+    /// Current recursion depth (0 = root variable). Used to decide whether the
+    /// maximum depth (<paramref name="nodeVariableReadDepth"/>) has been reached
+    /// when processing grandchildren further down the call chain.
+    /// </param>
+    /// <param name="includeSampleValues">
+    /// <see langword="true"/> to attempt reading a sample <see cref="DataValue"/>
+    /// for each discovered child variable; otherwise the value is omitted.
+    /// </param>
+    /// <param name="nodeVariableReadDepth">
+    /// Maximum recursion depth allowed for variable nodes. When
+    /// <paramref name="level"/> equals or exceeds this value, no further browsing
+    /// is performed.
+    /// </param>
+    /// <returns>A task that completes once all child variables (up to the
+    /// specified depth) have been processed.</returns>
     private async Task ReadChildNodesFromNodeVariable(
         NodeVariable currentNode,
         int level,
@@ -366,37 +405,38 @@ public partial class OpcUaClient
         bool includeVariables,
         bool includeSampleValues,
         int nodeObjectReadDepth,
+        int nodeVariableReadDepth,
         ReferenceDescription result)
     {
         switch (result.NodeClass)
         {
-            case NodeClass.Object:
-                if (includeObjects)
+            case NodeClass.Object when includeObjects:
+                var childNode = result.MapToNodeObject(currentNode.NodeId);
+                if (childNode is not null)
                 {
-                    var childNode = result.MapToNodeObject(currentNode.NodeId);
-                    if (childNode is not null)
+                    if (nodeObjectReadDepth > level)
                     {
-                        if (nodeObjectReadDepth > level)
-                        {
-                            await ReadChildNodesFromNodeObject(
-                                childNode,
-                                level + 1,
-                                includeObjects,
-                                includeVariables,
-                                includeSampleValues,
-                                nodeObjectReadDepth);
-                        }
-
-                        currentNode.NodeObjects.Add(childNode);
+                        await ReadChildNodesFromNodeObject(
+                            childNode,
+                            level + 1,
+                            includeObjects,
+                            includeVariables,
+                            includeSampleValues,
+                            nodeObjectReadDepth,
+                            nodeVariableReadDepth);
                     }
+
+                    currentNode.NodeObjects.Add(childNode);
                 }
 
                 break;
-            case NodeClass.Variable:
-                if (includeVariables)
-                {
-                    await HandleBrowseResultVariableNode(currentNode, result, includeSampleValues);
-                }
+            case NodeClass.Variable when includeVariables:
+                await HandleVariableChild(
+                        currentNode,
+                        level,
+                        includeSampleValues,
+                        nodeVariableReadDepth,
+                        result.NodeId.ToString());
 
                 break;
             default:
@@ -405,6 +445,20 @@ public partial class OpcUaClient
         }
     }
 
+    /// <summary>
+    /// Handles a browse result returned while exploring the children of a
+    /// <see cref="NodeVariable"/>. Only <see cref="NodeClass.Variable"/> references
+    /// are valid; any other class is logged and ignored.
+    /// </summary>
+    /// <param name="currentNode">The parent <see cref="NodeVariable"/>.</param>
+    /// <param name="level">Current recursion level (0 = root variable).</param>
+    /// <param name="includeSampleValues">
+    /// <see langword="true"/> to attempt reading a sample value for each variable;
+    /// otherwise no value is read.
+    /// </param>
+    /// <param name="nodeVariableReadDepth">Maximum recursion depth for variable nodes.</param>
+    /// <param name="result">The browse result that describes the child variable.</param>
+    /// <returns>A task that completes when the child has been processed.</returns>
     private async Task HandleChildBrowseResultsFromNodeVariable(
         NodeVariable currentNode,
         int level,
@@ -412,37 +466,69 @@ public partial class OpcUaClient
         int nodeVariableReadDepth,
         ReferenceDescription result)
     {
-        switch (result.NodeClass)
+        if (result.NodeClass != NodeClass.Variable)
         {
-            case NodeClass.Variable:
-                var childNodeId = result.NodeId.ToString();
-                var childNode = await Session!.ReadNodeAsync(childNodeId);
+            LogSessionReadNodeNotSupportedNodeClass(currentNode.NodeId, result.NodeClass);
+            return;
+        }
 
-                DataValue? sampleValue = null;
-                if (includeSampleValues)
-                {
-                    sampleValue = await TryGetDataValueForVariable((VariableNode)childNode);
-                }
+        await HandleVariableChild(
+                currentNode,
+                level,
+                includeSampleValues,
+                nodeVariableReadDepth,
+                result.NodeId.ToString());
+    }
 
-                var nodeVariable = childNode.MapToNodeVariableWithValue(currentNode.NodeId, sampleValue);
-                if (nodeVariable is not null)
-                {
-                    currentNode.NodeVariables.Add(nodeVariable);
+    /// <summary>
+    /// Shared helper that turns a server‑side <see cref="VariableNode"/> into a
+    /// client‑side <see cref="NodeVariable"/>, attaches it to
+    /// <paramref name="parentNode"/>, and—if permitted by
+    /// <paramref name="maxReadDepth"/>—recursively processes its own children.
+    /// </summary>
+    /// <param name="parentNode">
+    /// The node (either <see cref="NodeObject"/> or <see cref="NodeVariable"/>) that becomes
+    /// the parent of the new variable.
+    /// </param>
+    /// <param name="level">Current recursion depth.</param>
+    /// <param name="includeSampleValues">
+    /// <see langword="true"/> to read a sample value for the variable;
+    /// otherwise the value is omitted.
+    /// </param>
+    /// <param name="maxReadDepth">Maximum recursion depth allowed for variable nodes.</param>
+    /// <param name="childNodeId">The OPC UA node‑id of the child variable.</param>
+    /// <returns>A task that completes when the variable (and optionally its
+    /// descendants) have been processed.</returns>
+    private async Task HandleVariableChild(
+        NodeBase parentNode,
+        int level,
+        bool includeSampleValues,
+        int maxReadDepth,
+        string childNodeId)
+    {
+        var childNode = await Session!.ReadNodeAsync(childNodeId);
 
-                    if (nodeVariableReadDepth > level)
-                    {
-                        await ReadChildNodesFromNodeVariable(
-                            nodeVariable,
-                            level + 1,
-                            includeSampleValues,
-                            nodeVariableReadDepth);
-                    }
-                }
+        DataValue? sampleValue = null;
+        if (includeSampleValues)
+        {
+            sampleValue = await TryGetDataValueForVariable((VariableNode)childNode);
+        }
 
-                break;
-            default:
-                LogSessionReadNodeNotSupportedNodeClass(currentNode.NodeId, result.NodeClass);
-                return;
+        var nodeVariable = childNode.MapToNodeVariableWithValue(parentNode.NodeId, sampleValue);
+        if (nodeVariable is null)
+        {
+            return;
+        }
+
+        parentNode.NodeVariables.Add(nodeVariable);
+
+        if (level < maxReadDepth)
+        {
+            await ReadChildNodesFromNodeVariable(
+                    nodeVariable,
+                    level + 1,
+                    includeSampleValues,
+                    maxReadDepth);
         }
     }
 
@@ -482,34 +568,6 @@ public partial class OpcUaClient
         {
             LogSessionReadParentNodeFailure(nodeId, ex.Message);
             return [];
-        }
-    }
-
-    /// <summary>
-    /// Handles the browse result for a variable node.
-    /// </summary>
-    /// <param name="node">The current node object.</param>
-    /// <param name="referenceDescription">The reference description of the child node.</param>
-    /// <param name="includeSampleValue">Indicates whether to include the sample value of the variable.</param>
-    /// <returns>A Task representing the result of the asynchronous operation.</returns>
-    private async Task HandleBrowseResultVariableNode(
-        NodeBase node,
-        ReferenceDescription referenceDescription,
-        bool includeSampleValue)
-    {
-        var childNodeId = referenceDescription.NodeId.ToString();
-        var childNode = await Session!.ReadNodeAsync(childNodeId);
-
-        DataValue? sampleValue = null;
-        if (includeSampleValue)
-        {
-            sampleValue = await TryGetDataValueForVariable((VariableNode)childNode);
-        }
-
-        var nodeVariable = childNode.MapToNodeVariableWithValue(node.NodeId, sampleValue);
-        if (nodeVariable is not null)
-        {
-            node.NodeVariables.Add(nodeVariable);
         }
     }
 
