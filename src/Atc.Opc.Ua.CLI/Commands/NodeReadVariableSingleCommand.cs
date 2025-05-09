@@ -32,6 +32,7 @@ public sealed class NodeReadVariableSingleCommand : AsyncCommand<SingleNodeComma
         var password = settings.Password;
         var nodeId = settings.NodeId;
         var includeSampleValue = settings.IncludeSampleValue;
+        var nodeVariableReadDepth = settings.NodeVariableReadDepth;
 
         var sw = Stopwatch.StartNew();
 
@@ -41,7 +42,7 @@ public sealed class NodeReadVariableSingleCommand : AsyncCommand<SingleNodeComma
 
         if (succeeded)
         {
-            var (succeededReading, nodeVariable, _) = await opcUaClient.ReadNodeVariableAsync(nodeId, includeSampleValue);
+            var (succeededReading, nodeVariable, _) = await opcUaClient.ReadNodeVariableAsync(nodeId, includeSampleValue, nodeVariableReadDepth);
             if (succeededReading)
             {
                 logger.LogInformation($"Received the following data: '{nodeVariable!.ToStringSimple()}'");
