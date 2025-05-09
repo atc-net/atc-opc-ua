@@ -88,6 +88,12 @@ public partial class OpcUaClient
     private partial void LogSessionReadNodeObject(string nodeId);
 
     [LoggerMessage(
+        EventId = LoggingEventIdConstants.SessionReadNodeVariable,
+        Level = LogLevel.Information,
+        Message = "Reading node with nodeId '{nodeId}'.")]
+    private partial void LogSessionReadNodeVariable(string nodeId);
+
+    [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionReadNodeObjectWithMaxDepth,
         Level = LogLevel.Information,
         Message = "Starting to read node tree from node with nodeId '{nodeId}' with max depth set to '{nodeObjectReadDepth}'.")]

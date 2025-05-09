@@ -22,11 +22,12 @@ internal static class LoggingEventIdConstants
     public const int SessionReadNodeObject = 10040;
     public const int SessionReadNodeObjectWithMaxDepth = 10041;
     public const int SessionReadNodeObjectSucceeded = 10042;
-    public const int SessionReadNodeVariableSucceeded = 10043;
-    public const int SessionReadNodeVariableValueFailure = 10044;
-    public const int SessionReadNodeNotSupportedNodeClass = 10045;
-    public const int SessionReadNodeFailure = 10046;
-    public const int SessionReadParentNodeFailure = 10047;
+    public const int SessionReadNodeVariable = 10043;
+    public const int SessionReadNodeVariableSucceeded = 10044;
+    public const int SessionReadNodeVariableValueFailure = 10045;
+    public const int SessionReadNodeNotSupportedNodeClass = 10046;
+    public const int SessionReadNodeFailure = 10047;
+    public const int SessionReadParentNodeFailure = 10048;
 
     public const int SessionWriteNodeVariableFailure = 10050;
 

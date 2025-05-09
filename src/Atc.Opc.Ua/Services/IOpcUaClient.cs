@@ -16,11 +16,13 @@ public interface IOpcUaClient
 
     Task<(bool Succeeded, NodeVariable? NodeVariable, string? ErrorMessage)> ReadNodeVariableAsync(
         string nodeId,
-        bool includeSampleValue);
+        bool includeSampleValue,
+        int nodeVariableReadDepth = 0);
 
     Task<(bool Succeeded, IList<NodeVariable>? NodeVariables, string? ErrorMessage)> ReadNodeVariablesAsync(
         string[] nodeIds,
-        bool includeSampleValues);
+        bool includeSampleValues,
+        int nodeVariableReadDepth = 0);
 
     Task<(bool Succeeded, NodeObject? NodeObject, string? ErrorMessage)> ReadNodeObjectAsync(
         string nodeId,
