@@ -162,7 +162,7 @@ public partial class OpcUaClient : IOpcUaClient
         Uri serverUri,
         bool useSecurity)
     {
-        var endpointDescription = CoreClientUtils.SelectEndpoint(serverUri.AbsoluteUri, useSecurity);
+        var endpointDescription = CoreClientUtils.SelectEndpoint(configuration, serverUri.AbsoluteUri, useSecurity);
         var endpointConfiguration = EndpointConfiguration.Create(configuration);
         var endpoint = new ConfiguredEndpoint(collection: null, endpointDescription, endpointConfiguration);
         return endpoint;
@@ -248,14 +248,13 @@ public partial class OpcUaClient : IOpcUaClient
 
         var application = new ApplicationInstance(applicationConfiguration);
 
-        var hasAppCertificate = await application.CheckApplicationInstanceCertificate(
+        var hasAppCertificate = await application.CheckApplicationInstanceCertificates(
             silent: true,
-            CertificateFactory.DefaultKeySize,
-            CertificateFactory.DefaultHashSize);
+            lifeTimeInMonths: CertificateFactory.DefaultLifeTime);
 
         if (!hasAppCertificate)
         {
-            throw new CertificateValidationException("OPC UA application certificate can not be validated");
+            throw new CertificateValidationException("OPC UA application certificate cannot be validated.");
         }
 
         return application;
