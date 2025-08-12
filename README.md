@@ -16,6 +16,7 @@ OPC UA industrial library for executing commands, reads and writes on OPC UA ser
   - [Update](#update)
   - [Usage](#usage)
     - [Option --help](#option---help)
+    - [Scanning the Address Space](#scanning-the-address-space)
 - [How to contribute](#how-to-contribute)
 
 # OpcUaClient
@@ -89,7 +90,7 @@ The `Atc.Opc.Ua.CLI` tool is available through a cross platform command line app
 
 ## Requirements
 
-* [.NET 9 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
+- [.NET 9 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
 
 ## Installation
 
@@ -135,6 +136,7 @@ EXAMPLES:
     atc-opc-ua.exe node read object -s opc.tcp://opcuaserver.com:48010 -n "ns=2;s=Demo.Dynamic.Scalar"
     atc-opc-ua.exe node read variable single -s opc.tcp://opcuaserver.com:48010 -n "ns=2;s=Demo.Dynamic.Scalar.Float"
     atc-opc-ua.exe node read variable multi -s opc.tcp://opcuaserver.com:48010 -n "ns=2;s=Demo.Dynamic.Scalar.Float" -n "ns=2;s=Demo.Dynamic.Scalar.Int32"
+    atc-opc-ua.exe node scan -s opc.tcp://opcuaserver.com:48010 --starting-node-id "ns=2;s=Demo.Dynamic.Scalar" --object-depth 2 --variable-depth 1
 
 OPTIONS:
     -h, --help       Prints help information
@@ -143,6 +145,33 @@ OPTIONS:
 COMMANDS:
     testconnection    Tests if a connection can be made to a given server
     node              Operations related to nodes
+```
+
+### Scanning the Address Space
+
+The scan command builds an object/variable tree starting from a specified node (default: ObjectsFolder). Include / exclude filters are applied DURING traversal so unwanted branches are skipped early (reducing server browse load) rather than pruned afterwards:
+
+```powershell
+atc-opc-ua node scan -s opc.tcp://opcuaserver.com:48010 --starting-node-id "ns=2;s=Demo.Dynamic.Scalar" --object-depth 2 --variable-depth 1 --include-sample-values
+```
+
+Key options:
+
+- `--starting-node-id` Starting object node (defaults to ObjectsFolder when omitted/empty).
+- `--object-depth` Maximum depth of object traversal (0 = only starting object). Default 1.
+- `--variable-depth` Maximum depth for nested variable browsing (0 = only direct variables). Default 0.
+- `--include-sample-values` If set, attempts to read a representative value for variables.
+- `--include-object-node-id` One or more object NodeIds to explicitly include (acts as allow‑list). When provided, objects not listed are skipped during traversal (unless explicitly excluded).
+- `--exclude-object-node-id` One or more object NodeIds to exclude.
+- `--include-variable-node-id` One or more variable NodeIds to explicitly include.
+- `--exclude-variable-node-id` One or more variable NodeIds to exclude.
+
+In conflicts (the same id both included and excluded) exclusion wins. When an include list is present it acts as a whitelist and nodes not listed are never browsed deeper.
+
+Example restricting to a single variable while excluding an object:
+
+```powershell
+atc-opc-ua node scan -s opc.tcp://opcuaserver.com:48010 --starting-node-id "ns=2;s=Demo.Dynamic.Scalar" --include-variable-node-id "ns=2;s=Demo.Dynamic.Scalar.Float" --exclude-object-node-id "ns=2;s=Unwanted.Object"
 ```
 
 # How to contribute
