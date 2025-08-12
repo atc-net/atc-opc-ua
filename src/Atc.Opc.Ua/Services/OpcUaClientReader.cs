@@ -68,6 +68,10 @@ public partial class OpcUaClient
     /// <param name="includeSampleValues">Indicates whether to include sample values of the variables.</param>
     /// <param name="nodeObjectReadDepth">The depth to read the node object.</param>
     /// <param name="nodeVariableReadDepth">The depth to read the node variable.</param>
+    /// <param name="includeObjectNodeIds">The object node IDs to include.</param>
+    /// <param name="excludeObjectNodeIds">The object node IDs to exclude.</param>
+    /// <param name="includeVariableNodeIds">The variable node IDs to include.</param>
+    /// <param name="excludeVariableNodeIds">The variable node IDs to exclude.</param>
     /// <returns>A Task representing the result of the asynchronous operation.</returns>
     public async Task<(bool Succeeded, NodeObject? NodeObject, string? ErrorMessage)> ReadNodeObjectAsync(
         string nodeId,
@@ -75,7 +79,11 @@ public partial class OpcUaClient
         bool includeVariables,
         bool includeSampleValues,
         int nodeObjectReadDepth = 1,
-        int nodeVariableReadDepth = 0)
+        int nodeVariableReadDepth = 0,
+        IReadOnlyCollection<string>? includeObjectNodeIds = null,
+        IReadOnlyCollection<string>? excludeObjectNodeIds = null,
+        IReadOnlyCollection<string>? includeVariableNodeIds = null,
+        IReadOnlyCollection<string>? excludeVariableNodeIds = null)
     {
         if (string.IsNullOrWhiteSpace(nodeId))
         {
@@ -117,14 +125,25 @@ public partial class OpcUaClient
             (includeObjects || includeVariables) &&
             nodeObjectReadDepth >= 1)
         {
+            // Track visited NodeIds to avoid reprocessing the same nodes when multiple references point to them
+            var visited = new HashSet<string>(StringComparer.Ordinal)
+            {
+                nodeObject.NodeId,
+            };
+
             await ReadChildNodesFromNodeObject(
                 nodeObject,
-                1,
+                objectLevel: 1,
                 includeObjects,
                 includeVariables,
                 includeSampleValues,
                 nodeObjectReadDepth,
-                nodeVariableReadDepth);
+                nodeVariableReadDepth,
+                includeObjectNodeIds,
+                excludeObjectNodeIds,
+                includeVariableNodeIds,
+                excludeVariableNodeIds,
+                visited);
         }
 
         LogSessionReadNodeObjectSucceeded(nodeId);
@@ -158,23 +177,33 @@ public partial class OpcUaClient
     /// Asynchronously reads child nodes of a specified node object.
     /// </summary>
     /// <param name="currentNode">The current node object.</param>
-    /// <param name="level">The level of node object read depth.</param>
+    /// <param name="objectLevel">The level of node object read depth.</param>
     /// <param name="includeObjects">Indicates whether to include objects in the result.</param>
     /// <param name="includeVariables">Indicates whether to include variables in the result.</param>
     /// <param name="includeSampleValues">Indicates whether to include sample values of the variables.</param>
     /// <param name="nodeObjectReadDepth">The depth to read the node object.</param>
     /// <param name="nodeVariableReadDepth">The depth to read the node variable.</param>
+    /// <param name="includeObjectNodeIds">The object node IDs to include.</param>
+    /// <param name="excludeObjectNodeIds">The object node IDs to exclude.</param>
+    /// <param name="includeVariableNodeIds">The variable node IDs to include.</param>
+    /// <param name="excludeVariableNodeIds">The variable node IDs to exclude.</param>
     /// <returns>A Task representing the result of the asynchronous operation.</returns>
     private async Task ReadChildNodesFromNodeObject(
         NodeObject currentNode,
-        int level,
+        int objectLevel,
         bool includeObjects,
         bool includeVariables,
         bool includeSampleValues,
         int nodeObjectReadDepth,
-        int nodeVariableReadDepth)
+        int nodeVariableReadDepth,
+        IReadOnlyCollection<string>? includeObjectNodeIds,
+        IReadOnlyCollection<string>? excludeObjectNodeIds,
+        IReadOnlyCollection<string>? includeVariableNodeIds,
+        IReadOnlyCollection<string>? excludeVariableNodeIds,
+        ISet<string> visited)
     {
         ArgumentNullException.ThrowIfNull(currentNode);
+        ArgumentNullException.ThrowIfNull(visited);
 
         if (excludeNodes.Find(x => x.ToString().Equals(currentNode.NodeId, StringComparison.Ordinal)) != null)
         {
@@ -191,15 +220,22 @@ public partial class OpcUaClient
 
         foreach (var result in browseChildResults)
         {
+            LogSessionHandlingNode(result.NodeId.ToString());
+
             await HandleChildBrowseResultsFromNodeObject(
                 currentNode,
-                level,
+                objectLevel,
                 includeObjects,
                 includeVariables,
                 includeSampleValues,
                 nodeObjectReadDepth,
                 nodeVariableReadDepth,
-                result);
+                result,
+                includeObjectNodeIds,
+                excludeObjectNodeIds,
+                includeVariableNodeIds,
+                excludeVariableNodeIds,
+                visited);
         }
     }
 
@@ -213,7 +249,7 @@ public partial class OpcUaClient
     /// The <see cref="NodeVariable"/> whose forward references are to be browsed.
     /// Must not be <see langword="null"/>.
     /// </param>
-    /// <param name="level">
+    /// <param name="variableLevel">
     /// Current recursion depth (0 = root variable). Used to decide whether the
     /// maximum depth (<paramref name="nodeVariableReadDepth"/>) has been reached
     /// when processing grandchildren further down the call chain.
@@ -224,14 +260,14 @@ public partial class OpcUaClient
     /// </param>
     /// <param name="nodeVariableReadDepth">
     /// Maximum recursion depth allowed for variable nodes. When
-    /// <paramref name="level"/> equals or exceeds this value, no further browsing
+    /// <paramref name="variableLevel"/> equals or exceeds this value, no further browsing
     /// is performed.
     /// </param>
     /// <returns>A task that completes once all child variables (up to the
     /// specified depth) have been processed.</returns>
     private async Task ReadChildNodesFromNodeVariable(
         NodeVariable currentNode,
-        int level,
+        int variableLevel,
         bool includeSampleValues,
         int nodeVariableReadDepth)
     {
@@ -242,8 +278,6 @@ public partial class OpcUaClient
             return;
         }
 
-        LogSessionReadNodeVariable(currentNode.NodeId);
-
         var browseChildResults = BrowseForwardByNodeId(currentNode.NodeId);
         if (!browseChildResults.Any())
         {
@@ -252,7 +286,12 @@ public partial class OpcUaClient
 
         foreach (var result in browseChildResults)
         {
-            await HandleChildBrowseResultsFromNodeVariable(currentNode, level, includeSampleValues, nodeVariableReadDepth, result);
+            await HandleChildBrowseResultsFromNodeVariable(
+                currentNode,
+                variableLevel + 1,
+                includeSampleValues,
+                nodeVariableReadDepth,
+                result);
         }
     }
 
@@ -277,7 +316,7 @@ public partial class OpcUaClient
 
         try
         {
-            LogSessionReadNodeObject(nodeId);
+            LogSessionReadNodeVariable(nodeId);
 
             var readNode = await Session!.ReadNodeAsync(nodeId);
             if (readNode is null)
@@ -323,7 +362,7 @@ public partial class OpcUaClient
             {
                 await ReadChildNodesFromNodeVariable(
                     nodeVariable,
-                    1,
+                    variableLevel: 1,
                     includeSampleValue,
                     nodeVariableReadDepth);
             }
@@ -391,22 +430,31 @@ public partial class OpcUaClient
     /// Handles the browse results for child nodes.
     /// </summary>
     /// <param name="currentNode">The current node object.</param>
-    /// <param name="level">The level of node object read depth.</param>
+    /// <param name="objectLevel">The level of node object read depth.</param>
     /// <param name="includeObjects">Indicates whether to include objects in the result.</param>
     /// <param name="includeVariables">Indicates whether to include variables in the result.</param>
     /// <param name="includeSampleValues">Indicates whether to include sample values of the variables.</param>
     /// <param name="nodeObjectReadDepth">The depth to read the node object.</param>
     /// <param name="result">The browse result for a child node.</param>
+    /// <param name="includeObjectNodeIds">The object node IDs to include.</param>
+    /// <param name="excludeObjectNodeIds">The object node IDs to exclude.</param>
+    /// <param name="includeVariableNodeIds">The variable node IDs to include.</param>
+    /// <param name="excludeVariableNodeIds">The variable node IDs to exclude.</param>
     /// <returns>A Task representing the result of the asynchronous operation.</returns>
     private async Task HandleChildBrowseResultsFromNodeObject(
         NodeObject currentNode,
-        int level,
+        int objectLevel,
         bool includeObjects,
         bool includeVariables,
         bool includeSampleValues,
         int nodeObjectReadDepth,
         int nodeVariableReadDepth,
-        ReferenceDescription result)
+        ReferenceDescription result,
+        IReadOnlyCollection<string>? includeObjectNodeIds,
+        IReadOnlyCollection<string>? excludeObjectNodeIds,
+        IReadOnlyCollection<string>? includeVariableNodeIds,
+        IReadOnlyCollection<string>? excludeVariableNodeIds,
+        ISet<string> visited)
     {
         switch (result.NodeClass)
         {
@@ -414,29 +462,58 @@ public partial class OpcUaClient
                 var childNode = result.MapToNodeObject(currentNode.NodeId);
                 if (childNode is not null)
                 {
-                    if (nodeObjectReadDepth > level)
+                    // Skip if already processed elsewhere in the graph to avoid duplicates and cycles
+                    if (!visited.Add(childNode.NodeId))
+                    {
+                        break;
+                    }
+
+                    if (ShouldSkipObject(childNode.NodeId, includeObjectNodeIds, excludeObjectNodeIds))
+                    {
+                        break;
+                    }
+
+                    if (nodeObjectReadDepth > objectLevel)
                     {
                         await ReadChildNodesFromNodeObject(
                             childNode,
-                            level + 1,
+                            objectLevel + 1,
                             includeObjects,
                             includeVariables,
                             includeSampleValues,
                             nodeObjectReadDepth,
-                            nodeVariableReadDepth);
+                            nodeVariableReadDepth,
+                            includeObjectNodeIds,
+                            excludeObjectNodeIds,
+                            includeVariableNodeIds,
+                            excludeVariableNodeIds,
+                            visited);
                     }
 
-                    currentNode.NodeObjects.Add(childNode);
+                    // De-duplicate per parent
+                    if (!currentNode.NodeObjects.Any(o => string.Equals(o.NodeId, childNode.NodeId, StringComparison.Ordinal)))
+                    {
+                        currentNode.NodeObjects.Add(childNode);
+                    }
                 }
 
                 break;
             case NodeClass.Variable when includeVariables:
-                await HandleVariableChild(
+                if (ShouldSkipVariable(result.NodeId.ToString(), includeVariableNodeIds, excludeVariableNodeIds))
+                {
+                    break;
+                }
+
+                // Respect variable depth to avoid excessive scanning
+                if (nodeVariableReadDepth > 0)
+                {
+                    await HandleVariableChild(
                         currentNode,
-                        level,
+                        variableLevel: 0,
                         includeSampleValues,
                         nodeVariableReadDepth,
                         result.NodeId.ToString());
+                }
 
                 break;
             default:
@@ -445,13 +522,40 @@ public partial class OpcUaClient
         }
     }
 
+    private static bool ShouldSkipObject(
+        string nodeId,
+        IReadOnlyCollection<string>? includeList,
+        IReadOnlyCollection<string>? excludeList)
+        => ShouldSkipNode(nodeId, includeList, excludeList);
+
+    private static bool ShouldSkipVariable(
+        string nodeId,
+        IReadOnlyCollection<string>? includeList,
+        IReadOnlyCollection<string>? excludeList)
+        => ShouldSkipNode(nodeId, includeList, excludeList);
+
+    private static bool ShouldSkipNode(
+        string nodeId,
+        IReadOnlyCollection<string>? includeList,
+        IReadOnlyCollection<string>? excludeList)
+    {
+        if (excludeList is not null && excludeList.Contains(nodeId, StringComparer.Ordinal))
+        {
+            return true;
+        }
+
+        return includeList is not null &&
+               includeList.Count > 0 &&
+               !includeList.Contains(nodeId, StringComparer.Ordinal);
+    }
+
     /// <summary>
     /// Handles a browse result returned while exploring the children of a
     /// <see cref="NodeVariable"/>. Only <see cref="NodeClass.Variable"/> references
     /// are valid; any other class is logged and ignored.
     /// </summary>
     /// <param name="currentNode">The parent <see cref="NodeVariable"/>.</param>
-    /// <param name="level">Current recursion level (0 = root variable).</param>
+    /// <param name="variableLevel">Current recursion level (0 = root variable).</param>
     /// <param name="includeSampleValues">
     /// <see langword="true"/> to attempt reading a sample value for each variable;
     /// otherwise no value is read.
@@ -461,7 +565,7 @@ public partial class OpcUaClient
     /// <returns>A task that completes when the child has been processed.</returns>
     private async Task HandleChildBrowseResultsFromNodeVariable(
         NodeVariable currentNode,
-        int level,
+        int variableLevel,
         bool includeSampleValues,
         int nodeVariableReadDepth,
         ReferenceDescription result)
@@ -474,7 +578,7 @@ public partial class OpcUaClient
 
         await HandleVariableChild(
                 currentNode,
-                level,
+                variableLevel: variableLevel,
                 includeSampleValues,
                 nodeVariableReadDepth,
                 result.NodeId.ToString());
@@ -490,7 +594,7 @@ public partial class OpcUaClient
     /// The node (either <see cref="NodeObject"/> or <see cref="NodeVariable"/>) that becomes
     /// the parent of the new variable.
     /// </param>
-    /// <param name="level">Current recursion depth.</param>
+    /// <param name="variableLevel">Current recursion depth.</param>
     /// <param name="includeSampleValues">
     /// <see langword="true"/> to read a sample value for the variable;
     /// otherwise the value is omitted.
@@ -501,11 +605,13 @@ public partial class OpcUaClient
     /// descendants) have been processed.</returns>
     private async Task HandleVariableChild(
         NodeBase parentNode,
-        int level,
+        int variableLevel,
         bool includeSampleValues,
         int maxReadDepth,
         string childNodeId)
     {
+        LogSessionReadNodeVariable(childNodeId);
+
         var childNode = await Session!.ReadNodeAsync(childNodeId);
 
         DataValue? sampleValue = null;
@@ -520,13 +626,17 @@ public partial class OpcUaClient
             return;
         }
 
-        parentNode.NodeVariables.Add(nodeVariable);
+        // De-duplicate per parent
+        if (!parentNode.NodeVariables.Any(v => string.Equals(v.NodeId, nodeVariable.NodeId, StringComparison.Ordinal)))
+        {
+            parentNode.NodeVariables.Add(nodeVariable);
+        }
 
-        if (level < maxReadDepth)
+        if (variableLevel <= maxReadDepth)
         {
             await ReadChildNodesFromNodeVariable(
                     nodeVariable,
-                    level + 1,
+                    variableLevel: variableLevel + 1,
                     includeSampleValues,
                     maxReadDepth);
         }

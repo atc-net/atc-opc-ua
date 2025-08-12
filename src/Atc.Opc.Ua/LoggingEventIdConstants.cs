@@ -2,6 +2,7 @@ namespace Atc.Opc.Ua;
 
 internal static class LoggingEventIdConstants
 {
+    // OpcUaClient
     public const int SessionConnecting = 10000;
     public const int SessionConnected = 10001;
     public const int SessionConnectionFailure = 10002;
@@ -28,6 +29,7 @@ internal static class LoggingEventIdConstants
     public const int SessionReadNodeNotSupportedNodeClass = 10046;
     public const int SessionReadNodeFailure = 10047;
     public const int SessionReadParentNodeFailure = 10048;
+    public const int SessionHandlingNode = 10049;
 
     public const int SessionWriteNodeVariableFailure = 10050;
 

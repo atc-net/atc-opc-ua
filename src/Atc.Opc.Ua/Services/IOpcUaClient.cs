@@ -30,7 +30,11 @@ public interface IOpcUaClient
         bool includeVariables,
         bool includeSampleValues,
         int nodeObjectReadDepth = 1,
-        int nodeVariableReadDepth = 0);
+        int nodeVariableReadDepth = 0,
+        IReadOnlyCollection<string>? includeObjectNodeIds = null,
+        IReadOnlyCollection<string>? excludeObjectNodeIds = null,
+        IReadOnlyCollection<string>? includeVariableNodeIds = null,
+        IReadOnlyCollection<string>? excludeVariableNodeIds = null);
 
     (bool Succeeded, string? ErrorMessage) WriteNode(
         string nodeId,
