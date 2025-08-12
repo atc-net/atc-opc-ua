@@ -54,7 +54,7 @@ public partial class OpcUaClient : IOpcUaClient
     {
         try
         {
-            if (Session != null)
+            if (Session is not null)
             {
                 var sessionName = Session.SessionName ?? "unknown";
                 LogSessionDisconnecting(sessionName);
