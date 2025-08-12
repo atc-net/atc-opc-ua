@@ -574,6 +574,8 @@ dotnet_diagnostic.S6964.severity = none             # Value type property used a
 ##########################################
 [*.{cs,csx,cake}]
 
+MA0051.maximum_lines_per_method = 100
+
 dotnet_diagnostic.CA1002.severity = none            # Collection abstraction
 dotnet_diagnostic.CA1056.severity = none            # URI properties should not be strings
 dotnet_diagnostic.CA1860.severity = none            #
