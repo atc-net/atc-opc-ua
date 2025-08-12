@@ -32,6 +32,9 @@ public static class CommandAppExtensions
             node.SetDescription("Operations related to nodes.");
             ConfigureNodeReadCommands(node);
             ConfigureNodeWriteCommands(node);
+            node.AddCommand<NodeScanCommand>("scan")
+                .WithDescription("Scans part of the address space starting at a given node.")
+                .WithExample($"node scan -s {SampleOpcUaServerUrl} --starting-node-id \"ns=2;s=Demo.Dynamic.Scalar\" --object-depth 2 --variable-depth 1");
         };
 
     private static Action<IConfigurator<CommandSettings>> ConfigureMethodCommands()

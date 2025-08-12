@@ -11,6 +11,7 @@ global using Atc.Opc.Ua.CLI.Commands;
 global using Atc.Opc.Ua.CLI.Commands.Settings;
 global using Atc.Opc.Ua.CLI.Extensions;
 global using Atc.Opc.Ua.Contracts;
+global using Atc.Opc.Ua.Options;
 global using Atc.Opc.Ua.Resolvers;
 global using Atc.Opc.Ua.Services;
 global using Microsoft.Extensions.Configuration;
