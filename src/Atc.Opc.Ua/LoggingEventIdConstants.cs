@@ -37,4 +37,9 @@ internal static class LoggingEventIdConstants
     public const int SessionExecuteCommandFailure = 10061;
 
     public const int SessionKeepAliveRequestFailure = 10070;
+
+    // OpcUaScanner
+    public const int ScannerClientNotConnected = 11000;
+    public const int ScannerStart = 11001;
+    public const int ScannerReadRootFailure = 11002;
 }
