@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.3.0](https://github.com/atc-net/atc-opc-ua/compare/v1.2.0...v1.3.0) (2025-08-12)
+
+
+### Features
+
+* add gpt5-chatmode agent prompt ([3380a3d](https://github.com/atc-net/atc-opc-ua/commit/3380a3de7b14d24bc787d02ffc2c69fe55fab720))
+* add mcp server configuration for project ([3004f8e](https://github.com/atc-net/atc-opc-ua/commit/3004f8e5f8f0e98e6993420ee8e25fe6ab3799ea))
+* add NodeTreeDiffer, which can be used to report differences between two OPC UA node trees ([be329a5](https://github.com/atc-net/atc-opc-ua/commit/be329a57c02600c7cd1cdc50963ddfe04b37e224))
+* add OPC UA scanner ([9e4a700](https://github.com/atc-net/atc-opc-ua/commit/9e4a700fe73046262d65c058110d9d19cf37cbf7))
+* improve OpcUaClient with inclusion/exclude lists and traversal to prevent double-processing ([88863b0](https://github.com/atc-net/atc-opc-ua/commit/88863b0d5c85f0f2b5f612df1d1801b350f61b99))
+
 ## [1.2.0](https://github.com/atc-net/atc-opc-ua/compare/v1.1.0...v1.2.0) (2025-05-09)
 
 
