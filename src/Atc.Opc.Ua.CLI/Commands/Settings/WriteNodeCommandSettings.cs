@@ -1,7 +1,7 @@
 // ReSharper disable ConvertIfStatementToReturnStatement
 namespace Atc.Opc.Ua.CLI.Commands.Settings;
 
-public class WriteNodeCommandSettings : OpcUaBaseCommandSettings
+public sealed class WriteNodeCommandSettings : OpcUaBaseCommandSettings
 {
     [CommandOption("-n|--node-id <NODE-ID>")]
     [Description("OPC UA NodeId")]

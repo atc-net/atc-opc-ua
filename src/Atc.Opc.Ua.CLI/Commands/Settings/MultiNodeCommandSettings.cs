@@ -1,6 +1,6 @@
 namespace Atc.Opc.Ua.CLI.Commands.Settings;
 
-public class MultiNodeCommandSettings : OpcUaBaseCommandSettings
+public sealed class MultiNodeCommandSettings : OpcUaBaseCommandSettings
 {
     [CommandOption("-n|--node-id <NODE-ID>")]
     [Description("OPC UA NodeIds")]

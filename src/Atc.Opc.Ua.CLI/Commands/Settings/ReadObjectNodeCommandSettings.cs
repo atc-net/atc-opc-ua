@@ -1,6 +1,6 @@
 namespace Atc.Opc.Ua.CLI.Commands.Settings;
 
-public class ReadObjectNodeCommandSettings : OpcUaBaseCommandSettings
+public sealed class ReadObjectNodeCommandSettings : OpcUaBaseCommandSettings
 {
     [CommandOption("-n|--node-id <NODE-ID>")]
     [Description("OPC UA NodeId")]
