@@ -1,6 +1,6 @@
 namespace Atc.Opc.Ua.CLI.Commands.Settings;
 
-public class ExecuteMethodCommandSettings : OpcUaBaseCommandSettings
+public sealed class ExecuteMethodCommandSettings : OpcUaBaseCommandSettings
 {
     [CommandOption("--parent-node-id <PARENT-NODE-ID>")]
     [Description("OPC UA ParentNodeId")]
@@ -12,11 +12,11 @@ public class ExecuteMethodCommandSettings : OpcUaBaseCommandSettings
 
     [CommandOption("--data-types <DATA-TYPES>")]
     [Description("OPC UA Argument Data Types")]
-    public string[] DataTypes { get; init; } = Array.Empty<string>();
+    public string[] DataTypes { get; init; } = [];
 
     [CommandOption("--data-values <DATA-VALUES>")]
     [Description("OPC UA Argument Data Values")]
-    public string[] DataValues { get; init; } = Array.Empty<string>();
+    public string[] DataValues { get; init; } = [];
 
     public override ValidationResult Validate()
     {
