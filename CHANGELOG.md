@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/atc-net/atc-opc-ua/compare/v1.3.0...v1.3.1) (2025-08-14)
+
+
+### Bug Fixes
+
+* ensure OpcUaDataType Name is properly set for non built-in dataTypes ([a259b64](https://github.com/atc-net/atc-opc-ua/commit/a259b64c970d441c95affe1f3c6346bf9f1c03ea))
+
 ## [1.3.0](https://github.com/atc-net/atc-opc-ua/compare/v1.2.0...v1.3.0) (2025-08-12)
 
 
