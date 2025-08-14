@@ -29,7 +29,7 @@ public static class NodeExtensions
         {
             data.DataTypeOpcUa = new OpUaDataType
             {
-                Name = TypeInfo.GetBuiltInType(variableNode.DataType).ToString(),
+                Name = GetOpcUaDataTypeName(variableNode),
                 IsArray = variableNode.ArrayDimensions.Count > 0,
             };
 
@@ -39,6 +39,40 @@ public static class NodeExtensions
         }
 
         return data;
+    }
+
+    private static string GetOpcUaDataTypeName(VariableNode variableNode)
+    {
+        var builtInType = TypeInfo.GetBuiltInType(variableNode.DataType);
+
+        if (builtInType != BuiltInType.Null)
+        {
+            return builtInType.ToString();
+        }
+
+        try
+        {
+            return variableNode.DataType.IdType switch
+            {
+                IdType.Numeric or IdType.String or IdType.Guid =>
+                    variableNode.DataType.Identifier?.ToString() is { } str
+                        ? (str.Length > 1 && str[0] == '"' && str[^1] == '"'
+                            ? str[1..^1]
+                            : str)
+                        : "N/A",
+
+                IdType.Opaque =>
+                    variableNode.DataType.Identifier is byte[] bytes
+                        ? BitConverter.ToString(bytes)
+                        : "N/A",
+
+                _ => throw new SwitchCaseDefaultException(variableNode.DataType.IdType),
+            };
+        }
+        catch
+        {
+            return "N/A";
+        }
     }
 
     public static NodeVariable? MapToNodeVariableWithValue(
