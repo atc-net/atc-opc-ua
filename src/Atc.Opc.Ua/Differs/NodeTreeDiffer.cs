@@ -76,7 +76,9 @@ public static class NodeTreeDiffer
         return list;
     }
 
-    private static void Traverse(NodeBase node, ICollection<NodeBase> output)
+    private static void Traverse(
+        NodeBase node,
+        ICollection<NodeBase> output)
     {
         output.Add(node);
 
@@ -84,24 +86,25 @@ public static class NodeTreeDiffer
         {
             case NodeObject obj:
             {
-                // Include child variables directly attached to this object
-                foreach (var nv in obj.NodeVariables)
+                foreach (var no in obj.NodeObjects)
                 {
-                    output.Add(nv);
+                    Traverse(no, output);
                 }
 
-                // Recurse into child objects
-                foreach (var child in obj.NodeObjects)
+                foreach (var nv in obj.NodeVariables)
                 {
-                    Traverse(child, output);
+                    Traverse(nv, output);
                 }
 
                 break;
             }
 
             case NodeVariable var:
-                // Variables have no children; already added
-                _ = var;
+                foreach (var nv in var.NodeVariables)
+                {
+                    Traverse(nv, output);
+                }
+
                 break;
         }
     }

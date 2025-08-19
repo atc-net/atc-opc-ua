@@ -1,10 +1,13 @@
+global using System.Globalization;
 global using System.Text.Json;
+global using System.Text.Json.Serialization;
 global using Atc.Opc.Ua.Contracts;
 global using Atc.Opc.Ua.Differs;
 global using Atc.Opc.Ua.Factories;
 global using Atc.Opc.Ua.Options;
 global using Atc.Opc.Ua.Serialization.JsonConverters;
 global using Atc.Opc.Ua.Services;
+global using Atc.Serialization;
 global using Microsoft.Extensions.Logging;
 global using Opc.Ua;
 global using Opc.Ua.Client;
