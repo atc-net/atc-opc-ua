@@ -27,7 +27,7 @@ public static class Program
 
         using var cts = new CancellationTokenSource();
 
-        var client = new OpcUaClient(logger);
+        using var client = new OpcUaClient(logger);
         await client.ConnectAsync(ServerUri, UserName!, Password!);
 
         using PeriodicTimer timer = new(TimeSpan.FromSeconds(1));
