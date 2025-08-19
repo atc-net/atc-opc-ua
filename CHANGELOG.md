@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.4.0](https://github.com/atc-net/atc-opc-ua/compare/v1.3.1...v1.4.0) (2025-08-19)
+
+
+### Features
+
+* improve KeepAlive pattern ([9c36dec](https://github.com/atc-net/atc-opc-ua/commit/9c36dec71b4582f9b3bef6c66bec0d66ffbe8cd6))
+* introduce OpcUaClientOptions and OpcUaClientKeepAliveOptions incl. OpcUaClient constructor overloads ([9feca8f](https://github.com/atc-net/atc-opc-ua/commit/9feca8fc7d2cf926ec2da110630a67153dcb838a))
+
+
+### Bug Fixes
+
+* ensure proper traversal for child NodeVariables in NodeTreeDiffer ([1c54734](https://github.com/atc-net/atc-opc-ua/commit/1c547340263d5f3776871852e86af3e98e7f9a91))
+
 ## [1.3.1](https://github.com/atc-net/atc-opc-ua/compare/v1.3.0...v1.3.1) (2025-08-14)
 
 
