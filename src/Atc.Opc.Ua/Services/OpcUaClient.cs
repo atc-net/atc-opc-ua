@@ -1,5 +1,6 @@
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable InvertIf
+// ReSharper disable MemberCanBePrivate.Global
 namespace Atc.Opc.Ua.Services;
 
 /// <summary>
@@ -8,34 +9,50 @@ namespace Atc.Opc.Ua.Services;
 [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "OK - By Design")]
 public partial class OpcUaClient : IOpcUaClient
 {
-    private const uint SessionTimeout = 30 * 60 * 1000;
-    private const string ApplicationName = nameof(OpcUaClient);
-
-    private const int KeepAliveInterval = 15_000;
-    private const int KeepAliveMaxFailuresBeforeReconnect = 3;
-    private const int KeepAliveReconnectPeriodMilliseconds = 10_000;
-
     private readonly ApplicationConfiguration configuration;
     private readonly OpcUaSecurityOptions securityOptions;
+    private readonly OpcUaClientOptions clientOptions;
+    private readonly OpcUaClientKeepAliveOptions keepAliveOptions;
 
     private SessionReconnectHandler? reconnectHandler;
     private int consecutiveKeepAliveFailures;
+
+    private bool disposed;
 
     /// <summary>
     /// Gets the current session with the OPC UA server.
     /// </summary>
     public Session? Session { get; private set; }
 
-    [SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "OK - By Design")]
     public OpcUaClient(
         ILogger<OpcUaClient> logger,
-        IOptions<OpcUaSecurityOptions> opcUaSecurityOptions)
+        IOptions<OpcUaSecurityOptions> opcUaSecurityOptions,
+        IOptions<OpcUaClientOptions> opcUaClientOptions,
+        IOptions<OpcUaClientKeepAliveOptions> opcUaClientKeepAliveOptions)
     {
-        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        this.securityOptions = opcUaSecurityOptions.Value ?? throw new ArgumentNullException(nameof(opcUaSecurityOptions));
+        ArgumentNullException.ThrowIfNull(logger);
+        ArgumentNullException.ThrowIfNull(opcUaSecurityOptions);
+        ArgumentNullException.ThrowIfNull(opcUaClientOptions);
+        ArgumentNullException.ThrowIfNull(opcUaClientKeepAliveOptions);
+
+        this.logger = logger;
+        securityOptions = opcUaSecurityOptions.Value ?? throw new ArgumentNullException(nameof(opcUaSecurityOptions));
+        clientOptions = opcUaClientOptions.Value ?? throw new ArgumentNullException(nameof(opcUaClientOptions));
+        keepAliveOptions = opcUaClientKeepAliveOptions.Value ?? throw new ArgumentNullException(nameof(opcUaClientKeepAliveOptions));
         var application = BuildAndValidateOpcUaApplicationAsync().GetAwaiter().GetResult();
         configuration = application.ApplicationConfiguration;
         configuration.CertificateValidator.CertificateValidation += CertificateValidation;
+    }
+
+    public OpcUaClient(
+        ILogger<OpcUaClient> logger,
+        IOptions<OpcUaSecurityOptions> opcUaSecurityOptions)
+        : this(
+            logger,
+            opcUaSecurityOptions,
+            new OptionsWrapper<OpcUaClientOptions>(new OpcUaClientOptions()),
+            new OptionsWrapper<OpcUaClientKeepAliveOptions>(new OpcUaClientKeepAliveOptions()))
+    {
     }
 
     public OpcUaClient(
@@ -66,7 +83,11 @@ public partial class OpcUaClient : IOpcUaClient
                 var sessionName = Session.SessionName ?? "unknown";
                 LogSessionDisconnecting(sessionName);
 
-                Session.KeepAlive -= SessionOnKeepAlive;
+                if (keepAliveOptions.Enable)
+                {
+                    Session.KeepAlive -= SessionOnKeepAlive;
+                }
+
                 reconnectHandler?.Dispose();
                 reconnectHandler = null;
                 consecutiveKeepAliveFailures = 0;
@@ -147,8 +168,16 @@ public partial class OpcUaClient : IOpcUaClient
                     Session = session;
 
                     // Keep alive
-                    Session.KeepAliveInterval = KeepAliveInterval;
-                    Session.KeepAlive += SessionOnKeepAlive;
+                    if (keepAliveOptions.Enable)
+                    {
+                        Session.KeepAliveInterval = keepAliveOptions.IntervalMilliseconds;
+                        Session.KeepAlive += SessionOnKeepAlive;
+                    }
+                    else
+                    {
+                        // Disable keep-alive by setting interval to 0 and not subscribing to the event.
+                        Session.KeepAliveInterval = 0;
+                    }
                 }
 
                 LogSessionConnected(Session?.SessionName ?? "unknown");
@@ -213,7 +242,7 @@ public partial class OpcUaClient : IOpcUaClient
             updateBeforeConnect: false,
             checkDomain: false,
             configuration.ApplicationName + Guid.NewGuid(),
-            SessionTimeout,
+            clientOptions.SessionTimeoutMilliseconds,
             userIdentity,
             preferredLocales: null);
 
@@ -253,7 +282,7 @@ public partial class OpcUaClient : IOpcUaClient
     /// <returns>A task representing the asynchronous operation, with the created application instance as result.</returns>
     private async Task<ApplicationInstance> BuildAndValidateOpcUaApplicationAsync()
     {
-        var applicationConfiguration = ApplicationConfigurationFactory.Create(ApplicationName, securityOptions);
+        var applicationConfiguration = ApplicationConfigurationFactory.Create(clientOptions.ApplicationName, securityOptions);
         applicationConfiguration = ApplicationInstance.FixupAppConfig(applicationConfiguration);
 
         await applicationConfiguration.Validate(applicationConfiguration.ApplicationType);
@@ -307,11 +336,11 @@ public partial class OpcUaClient : IOpcUaClient
                 return;
             }
 
-            if (consecutiveKeepAliveFailures >= KeepAliveMaxFailuresBeforeReconnect)
+            if (consecutiveKeepAliveFailures >= keepAliveOptions.MaxFailuresBeforeReconnect)
             {
                 // Start background reconnect; session remains usable if server recovers quickly.
                 reconnectHandler = new SessionReconnectHandler();
-                reconnectHandler.BeginReconnect(Session, KeepAliveReconnectPeriodMilliseconds, OnReconnectComplete);
+                reconnectHandler.BeginReconnect(Session, keepAliveOptions.ReconnectPeriodMilliseconds, OnReconnectComplete);
             }
         }
         catch (Exception exception)
@@ -338,7 +367,13 @@ public partial class OpcUaClient : IOpcUaClient
             if (handler.Session is Session reconnected)
             {
                 Session = reconnected;
-                Session.KeepAliveInterval = KeepAliveInterval;
+
+                // Re-apply keep-alive interval based on options. The event subscription remains
+                // on the Session instance when enabled; if disabled we ensure interval is 0.
+                Session.KeepAliveInterval = keepAliveOptions.Enable
+                    ? keepAliveOptions.IntervalMilliseconds
+                    : 0;
+
                 LogSessionReconnected(Session.SessionName ?? "unknown");
             }
         }
@@ -352,5 +387,79 @@ public partial class OpcUaClient : IOpcUaClient
             reconnectHandler = null;
             consecutiveKeepAliveFailures = 0;
         }
+    }
+
+    /// <summary>
+    /// Releases all resources used by the client.
+    /// </summary>
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Releases the unmanaged resources used by the client and optionally releases the managed resources.
+    /// </summary>
+    /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            try
+            {
+                configuration.CertificateValidator.CertificateValidation -= CertificateValidation;
+            }
+            catch
+            {
+                // Ignore: best-effort detach
+            }
+
+            try
+            {
+                if (Session is not null)
+                {
+                    if (keepAliveOptions.Enable)
+                    {
+                        Session.KeepAlive -= SessionOnKeepAlive;
+                    }
+
+                    try
+                    {
+                        Session.Close();
+                    }
+                    catch
+                    {
+                        // Ignore: best-effort close
+                    }
+
+                    Session.Dispose();
+                    Session = null;
+                }
+            }
+            catch
+            {
+                // Ignore: best-effort dispose
+            }
+
+            try
+            {
+                reconnectHandler?.Dispose();
+                reconnectHandler = null;
+            }
+            catch
+            {
+                // Ignore: best-effort dispose
+            }
+
+            consecutiveKeepAliveFailures = 0;
+        }
+
+        disposed = true;
     }
 }
