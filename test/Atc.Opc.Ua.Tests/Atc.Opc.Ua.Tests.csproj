@@ -7,6 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="XUnitTestData\001_scan_current_result.json" />
+    <None Remove="XUnitTestData\001_scan_previous_result.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="XUnitTestData\001_scan_current_result.json" />
+    <EmbeddedResource Include="XUnitTestData\001_scan_previous_result.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Atc.Opc.Ua\Atc.Opc.Ua.csproj" />
   </ItemGroup>
 

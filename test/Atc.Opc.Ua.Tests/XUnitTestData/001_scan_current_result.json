@@ -1,0 +1,151 @@
+﻿{
+  "EndpointUrl": "opc.tcp://1.1.1.1:4840/",
+  "StartingNodeId": "i=85",
+  "Result": {
+    "$type": "object",
+    "ParentNodeId": "i=84",
+    "NodeId": "i=85",
+    "NodeIdentifier": "85",
+    "NodeClass": "Object",
+    "DisplayName": "Objects",
+    "NodeObjects": [
+      {
+        "$type": "object",
+        "ParentNodeId": "i=85",
+        "NodeId": "ns=4;s=\u0022Root.Objects.IoT data\u0022",
+        "NodeIdentifier": "\u0022Root.Objects.IoT data\u0022",
+        "NodeClass": "Object",
+        "DisplayName": "IoT data",
+        "NodeObjects": [],
+        "NodeVariables": [
+          {
+            "$type": "variable",
+            "ParentNodeId": "ns=4;s=\u0022Root.Objects.IoT data\u0022",
+            "NodeId": "ns=4;s=\u0022Root.Objects.IoT data.instanceConverted\u0022",
+            "NodeIdentifier": "\u0022Root.Objects.IoT data.instanceConverted\u0022",
+            "NodeClass": "Variable",
+            "DisplayName": "instanceConverted",
+            "DataTypeDotnet": "Variant",
+            "SampleValue": "",
+            "DataTypeOpcUa": {
+              "Name": "Root.Types.DataTypes.BaseDataType.Structure.IoT_DeviceConverted",
+              "IsArray": true
+            },
+            "NodeVariables": [
+              {
+                "$type": "variable",
+                "ParentNodeId": "ns=4;s=\u0022Root.Objects.IoT data.instanceConverted\u0022",
+                "NodeId": "ns=4;s=\u0022Root.Objects.IoT data.instanceConverted.instanceConverted[0]\u0022",
+                "NodeIdentifier": "\u0022Root.Objects.IoT data.instanceConverted.instanceConverted[0]\u0022",
+                "NodeClass": "Variable",
+                "DisplayName": "instanceConverted[0]",
+                "DataTypeDotnet": "object",
+                "SampleValue": "",
+                "DataTypeOpcUa": {
+                  "Name": "Root.Types.DataTypes.BaseDataType.Structure.IoT_DeviceConverted",
+                  "IsArray": false
+                },
+                "NodeVariables": [
+                  {
+                    "$type": "variable",
+                    "ParentNodeId": "ns=4;s=\u0022Root.Objects.IoT data.instanceConverted.instanceConverted[0]\u0022",
+                    "NodeId": "ns=4;s=\u0022Root.Objects.IoT data.instanceConverted.instanceConverted[0].deviceId\u0022",
+                    "NodeIdentifier": "\u0022Root.Objects.IoT data.instanceConverted.instanceConverted[0].deviceId\u0022",
+                    "NodeClass": "Variable",
+                    "DisplayName": "deviceId",
+                    "DataTypeDotnet": "string",
+                    "SampleValue": "",
+                    "DataTypeOpcUa": {
+                      "Name": "String",
+                      "IsArray": false
+                    },
+                    "NodeVariables": []
+                  },
+                  {
+                    "$type": "variable",
+                    "ParentNodeId": "ns=4;s=\u0022Root.Objects.IoT data.instanceConverted.instanceConverted[0]\u0022",
+                    "NodeId": "ns=4;s=\u0022Root.Objects.IoT data.instanceConverted.instanceConverted[0].deviceValue\u0022",
+                    "NodeIdentifier": "\u0022Root.Objects.IoT data.instanceConverted.instanceConverted[0].deviceValue\u0022",
+                    "NodeClass": "Variable",
+                    "DisplayName": "deviceValue",
+                    "DataTypeDotnet": "float",
+                    "SampleValue": "-999,9",
+                    "DataTypeOpcUa": {
+                      "Name": "Float",
+                      "IsArray": false
+                    },
+                    "NodeVariables": []
+                  }
+                ]
+              },
+              {
+                "$type": "variable",
+                "ParentNodeId": "ns=4;s=\u0022Root.Objects.IoT data.instanceConverted\u0022",
+                "NodeId": "ns=4;s=\u0022Root.Objects.IoT data.instanceConverted.instanceConverted[1]\u0022",
+                "NodeIdentifier": "\u0022Root.Objects.IoT data.instanceConverted.instanceConverted[1]\u0022",
+                "NodeClass": "Variable",
+                "DisplayName": "instanceConverted[1]",
+                "DataTypeDotnet": "object",
+                "SampleValue": "",
+                "DataTypeOpcUa": {
+                  "Name": "Root.Types.DataTypes.BaseDataType.Structure.IoT_DeviceConverted",
+                  "IsArray": false
+                },
+                "NodeVariables": [
+                  {
+                    "$type": "variable",
+                    "ParentNodeId": "ns=4;s=\u0022Root.Objects.IoT data.instanceConverted.instanceConverted[1]\u0022",
+                    "NodeId": "ns=4;s=\u0022Root.Objects.IoT data.instanceConverted.instanceConverted[1].deviceId\u0022",
+                    "NodeIdentifier": "\u0022Root.Objects.IoT data.instanceConverted.instanceConverted[1].deviceId\u0022",
+                    "NodeClass": "Variable",
+                    "DisplayName": "deviceId",
+                    "DataTypeDotnet": "string",
+                    "SampleValue": "",
+                    "DataTypeOpcUa": {
+                      "Name": "String",
+                      "IsArray": false
+                    },
+                    "NodeVariables": []
+                  },
+                  {
+                    "$type": "variable",
+                    "ParentNodeId": "ns=4;s=\u0022Root.Objects.IoT data.instanceConverted.instanceConverted[1]\u0022",
+                    "NodeId": "ns=4;s=\u0022Root.Objects.IoT data.instanceConverted.instanceConverted[1].deviceValue\u0022",
+                    "NodeIdentifier": "\u0022Root.Objects.IoT data.instanceConverted.instanceConverted[1].deviceValue\u0022",
+                    "NodeClass": "Variable",
+                    "DisplayName": "deviceValue",
+                    "DataTypeDotnet": "float",
+                    "SampleValue": "-999,9",
+                    "DataTypeOpcUa": {
+                      "Name": "Float",
+                      "IsArray": false
+                    },
+                    "NodeVariables": []
+                  },
+                  {
+                    "$type": "variable",
+                    "ParentNodeId": "ns=4;s=\u0022Root.Objects.IoT data.instanceConverted.instanceConverted[1]\u0022",
+                    "NodeId": "ns=4;s=\u0022Root.Objects.IoT data.instanceConverted.instanceConverted[1].deviceDescription\u0022",
+                    "NodeIdentifier": "\u0022Root.Objects.IoT data.instanceConverted.instanceConverted[1].deviceDescription\u0022",
+                    "NodeClass": "Variable",
+                    "DisplayName": "deviceDescription",
+                    "DataTypeDotnet": "string",
+                    "SampleValue": "",
+                    "DataTypeOpcUa": {
+                      "Name": "String",
+                      "IsArray": false
+                    },
+                    "NodeVariables": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "NodeVariables": []
+  },
+  "Start": "2025-08-14T11:41:35.3827463+00:00",
+  "End": "2025-08-14T11:55:22.1271003+00:00"
+}
