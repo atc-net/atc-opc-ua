@@ -31,7 +31,7 @@ public sealed class NodeJsonConverter : JsonConverter<NodeBase>
 
         if (!root.TryGetProperty(Discriminator, out var discProp))
         {
-            throw new JsonException($"Missing discriminator '{Discriminator}' for NodeBase.");
+            throw new JsonException($"Missing discriminator '{Discriminator}' for NodeBase");
         }
 
         var disc = discProp.GetString();
@@ -39,7 +39,7 @@ public sealed class NodeJsonConverter : JsonConverter<NodeBase>
         {
             ObjectDiscriminatorValue => new NodeObject { NodeClass = NodeClassType.Object },
             VariableDiscriminatorValue => new NodeVariable { NodeClass = NodeClassType.Variable },
-            _ => throw new JsonException($"Unknown node discriminator '{disc}'."),
+            _ => throw new JsonException($"Unknown node discriminator '{disc}'"),
         };
 
         var namingHelper = NodeJsonConverterNameHelper.For(options.PropertyNamingPolicy);
