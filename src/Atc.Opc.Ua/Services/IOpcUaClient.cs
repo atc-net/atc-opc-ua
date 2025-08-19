@@ -1,6 +1,6 @@
 namespace Atc.Opc.Ua.Services;
 
-public interface IOpcUaClient
+public interface IOpcUaClient : IDisposable
 {
     Task<(bool Succeeded, string? ErrorMessage)> ConnectAsync(
         Uri serverUri);
