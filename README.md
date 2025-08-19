@@ -10,6 +10,8 @@ OPC UA industrial library for executing commands, reads and writes on OPC UA ser
 - [Table of Contents](#table-of-contents)
 - [OpcUaClient](#opcuaclient)
   - [Configuring OPC UA Security Settings](#configuring-opc-ua-security-settings)
+  - [Configuring OPC UA Client Options](#configuring-opc-ua-client-options)
+  - [Keep-alive behavior and options](#keep-alive-behavior-and-options)
 - [CLI Tool](#cli-tool)
   - [Requirements](#requirements)
   - [Installation](#installation)
@@ -35,7 +37,7 @@ services.AddTransient<IOpcUaClient, OpcUaClient>(s =>
 
 By default, the `OpcUaClient` will create its own self-signed certificate to present to external OPC UA Servers. However, if you have your own certificate to utilize, the service can be configured using the available `OpcUaSecurityOptions`. This class facilitates the configuration of certificate stores, the application certificate, and other essential security settings for secure communication.
 
-These settings can be wired up from an `appsettings.json` file or manually constructed in code. Another constructor overload in OpcUaClient is available for injecting an instance of `IOptions<SecurityOptions>`.
+These settings can be wired up from an `appsettings.json` file or manually constructed in code. Another constructor overload in OpcUaClient is available for injecting an instance of `IOptions<OpcUaSecurityOptions>`.
 
 An example of this configuration in `appsettings.json` could look like the following.
 
@@ -83,6 +85,80 @@ services
 
 services.AddTransient<IOpcUaClient, OpcUaClient>();
 ```
+
+## Configuring OPC UA Client Options
+
+You can customize the client application name and the OPC UA session timeout via `OpcUaClientOptions`. Bind them from configuration or construct them programmatically.
+
+Example `appsettings.json`:
+
+```json
+{
+  "OpcUaClientOptions": {
+    "ApplicationName": "MyOpcUaClientApp",
+    "SessionTimeoutMilliseconds": 1800000
+  }
+}
+```
+
+And wire them up:
+
+```csharp
+services
+    .AddOptions<OpcUaClientOptions>()
+    .Bind(configuration.GetRequiredSection(nameof(OpcUaClientOptions)))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+services.AddTransient<IOpcUaClient, OpcUaClient>();
+```
+
+Defaults (if not provided):
+
+- `ApplicationName`: "OpcUaClient"
+- `SessionTimeoutMilliseconds`: 1,800,000 (30 minutes)
+
+## Keep-alive behavior and options
+
+When enabled, the client monitors the connection using OPC UA keep-alive and will attempt a background reconnect after a configurable number of consecutive failures. You can tune or disable the behavior via `OpcUaClientKeepAliveOptions`.
+
+Example `appsettings.json`:
+
+```json
+{
+  "OpcUaClientKeepAliveOptions": {
+    "Enable": true,
+    "IntervalMilliseconds": 15000,
+    "MaxFailuresBeforeReconnect": 3,
+    "ReconnectPeriodMilliseconds": 10000
+  }
+}
+```
+
+And wire them up:
+
+```csharp
+services
+    .AddOptions<OpcUaClientKeepAliveOptions>()
+    .Bind(configuration.GetRequiredSection(nameof(OpcUaClientKeepAliveOptions)))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+services.AddTransient<IOpcUaClient, OpcUaClient>();
+```
+
+Behavior summary (when `Enable` is true):
+
+- Keep-alive pings the server at `IntervalMilliseconds`.
+- If status is bad, a failure counter increments. When `MaxFailuresBeforeReconnect` is reached, a background reconnect is started with period `ReconnectPeriodMilliseconds`.
+- On successful keep-alive, the failure counter resets.
+
+Defaults (if not provided):
+
+- `Enable`: true (keep-alive enabled)
+- `IntervalMilliseconds`: 15000
+- `MaxFailuresBeforeReconnect`: 3
+- `ReconnectPeriodMilliseconds`: 10000
 
 # CLI Tool
 
