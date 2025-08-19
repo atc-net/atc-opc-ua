@@ -586,6 +586,7 @@ dotnet_diagnostic.CA5400.severity = none            # Ensure HttpClient certific
 
 dotnet_diagnostic.MA0004.severity = none            # Use Task.ConfigureAwait(false) as the current SynchronizationContext is not needed
 dotnet_diagnostic.MA0016.severity = none            # Collection abstraction
+dotnet_diagnostic.MA0048.severity = none            # File name must match type name
 
 dotnet_diagnostic.SA1010.severity = none            # An opening square bracket within a C# statement is not spaced correctly - incorrect for Collection Expressions
 

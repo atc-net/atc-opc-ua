@@ -84,10 +84,8 @@ public sealed class NodeTreeDifferTests
     }
 }
 
-#pragma warning disable MA0048
-internal sealed record OpcUaScanResult( // TODO: 
-#pragma warning restore MA0048
-    string EndpointUrl, // TODO: 
+internal sealed record OpcUaScanResult(
+    string EndpointUrl,
     string StartingNodeId,
     NodeBase Result,
     DateTimeOffset Start,
