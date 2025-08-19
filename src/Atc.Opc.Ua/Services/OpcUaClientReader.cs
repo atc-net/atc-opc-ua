@@ -635,10 +635,10 @@ public partial class OpcUaClient
         if (variableLevel <= maxReadDepth)
         {
             await ReadChildNodesFromNodeVariable(
-                    nodeVariable,
-                    variableLevel: variableLevel + 1,
-                    includeSampleValues,
-                    maxReadDepth);
+                nodeVariable,
+                variableLevel: variableLevel + 1,
+                includeSampleValues,
+                maxReadDepth);
         }
     }
 
