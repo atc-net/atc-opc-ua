@@ -10,9 +10,16 @@ public partial class OpcUaClient : IOpcUaClient
 {
     private const uint SessionTimeout = 30 * 60 * 1000;
     private const string ApplicationName = nameof(OpcUaClient);
-    private const int KeepAliveInterval = 5 * 1000;
+
+    private const int KeepAliveInterval = 15_000;
+    private const int KeepAliveMaxFailuresBeforeReconnect = 3;
+    private const int KeepAliveReconnectPeriodMilliseconds = 10_000;
+
     private readonly ApplicationConfiguration configuration;
     private readonly OpcUaSecurityOptions securityOptions;
+
+    private SessionReconnectHandler? reconnectHandler;
+    private int consecutiveKeepAliveFailures;
 
     /// <summary>
     /// Gets the current session with the OPC UA server.
@@ -60,6 +67,10 @@ public partial class OpcUaClient : IOpcUaClient
                 LogSessionDisconnecting(sessionName);
 
                 Session.KeepAlive -= SessionOnKeepAlive;
+                reconnectHandler?.Dispose();
+                reconnectHandler = null;
+                consecutiveKeepAliveFailures = 0;
+
                 Session.Close();
                 Session.Dispose();
                 Session = null;
@@ -244,6 +255,7 @@ public partial class OpcUaClient : IOpcUaClient
     {
         var applicationConfiguration = ApplicationConfigurationFactory.Create(ApplicationName, securityOptions);
         applicationConfiguration = ApplicationInstance.FixupAppConfig(applicationConfiguration);
+
         await applicationConfiguration.Validate(applicationConfiguration.ApplicationType);
 
         var application = new ApplicationInstance(applicationConfiguration);
@@ -261,7 +273,8 @@ public partial class OpcUaClient : IOpcUaClient
     }
 
     /// <summary>
-    /// Handles keep alive events for the session
+    /// Handles keep-alive notifications. Tolerates temporary hiccups and triggers
+    /// a background reconnect after several consecutive failures.
     /// </summary>
     /// <param name="session">The session the keep alive event is received for</param>
     /// <param name="e">The event arguments</param>
@@ -269,29 +282,75 @@ public partial class OpcUaClient : IOpcUaClient
     {
         try
         {
-            // There is no current session
-            if (Session is null)
+            if (Session is null || !ReferenceEquals(Session, session))
             {
                 return;
             }
 
-            // The keep alive came from a different session
-            if (!Session.Equals(session))
+            if (ServiceResult.IsGood(e.Status))
+            {
+                if (consecutiveKeepAliveFailures != 0)
+                {
+                    consecutiveKeepAliveFailures = 0;
+                    LogSessionKeepAliveFailureCountReset();
+                }
+
+                return;
+            }
+
+            consecutiveKeepAliveFailures++;
+            LogSessionKeepAliveFailure(e.Status?.ToString() ?? "Unknown", consecutiveKeepAliveFailures);
+
+            // Avoid multiple concurrent reconnect attempts.
+            if (reconnectHandler is not null)
             {
                 return;
             }
 
-            // The server has not responded to the keep alive
-            if (ServiceResult.IsBad(e.Status))
+            if (consecutiveKeepAliveFailures >= KeepAliveMaxFailuresBeforeReconnect)
             {
-                // Disconnect the session and ensure that there will be no further keep alive requests
-                e.CancelKeepAlive = true;
-                Disconnect();
+                // Start background reconnect; session remains usable if server recovers quickly.
+                reconnectHandler = new SessionReconnectHandler();
+                reconnectHandler.BeginReconnect(Session, KeepAliveReconnectPeriodMilliseconds, OnReconnectComplete);
             }
         }
         catch (Exception exception)
         {
             LogSessionKeepAliveRequestFailure(exception);
+        }
+    }
+
+    /// <summary>
+    /// Called when the reconnect operation completes.
+    /// </summary>
+    /// <param name="sender">The sender.</param>
+    /// <param name="e">The event args.</param>
+    private void OnReconnectComplete(object? sender, EventArgs e)
+    {
+        try
+        {
+            if (sender is not SessionReconnectHandler handler)
+            {
+                return;
+            }
+
+            // Swap in the new, reconnected session.
+            if (handler.Session is Session reconnected)
+            {
+                Session = reconnected;
+                Session.KeepAliveInterval = KeepAliveInterval;
+                LogSessionReconnected(Session.SessionName ?? "unknown");
+            }
+        }
+        catch (Exception ex)
+        {
+            LogSessionReconnectFailure(ex);
+        }
+        finally
+        {
+            reconnectHandler?.Dispose();
+            reconnectHandler = null;
+            consecutiveKeepAliveFailures = 0;
         }
     }
 }
