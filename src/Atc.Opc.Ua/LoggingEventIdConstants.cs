@@ -6,6 +6,8 @@ internal static class LoggingEventIdConstants
     public const int SessionConnecting = 10000;
     public const int SessionConnected = 10001;
     public const int SessionConnectionFailure = 10002;
+    public const int SessionReconnected = 10003;
+    public const int SessionReconnectFailure = 10004;
 
     public const int SessionAlreadyConnected = 10010;
     public const int SessionNotConnected = 10011;
@@ -37,6 +39,8 @@ internal static class LoggingEventIdConstants
     public const int SessionExecuteCommandFailure = 10061;
 
     public const int SessionKeepAliveRequestFailure = 10070;
+    public const int SessionKeepAliveFailureCountReset = 10071;
+    public const int SessionKeepAliveFailure = 10072;
 
     // OpcUaScanner
     public const int ScannerClientNotConnected = 11000;

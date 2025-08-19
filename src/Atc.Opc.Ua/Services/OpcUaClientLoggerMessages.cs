@@ -28,6 +28,18 @@ public partial class OpcUaClient
     private partial void LogSessionConnectionFailure(string opcUaUri, string errorMessage);
 
     [LoggerMessage(
+        EventId = LoggingEventIdConstants.SessionReconnected,
+        Level = LogLevel.Trace,
+        Message = "Session with name '{sessionName}' was reconnected")]
+    private partial void LogSessionReconnected(string sessionName);
+
+    [LoggerMessage(
+        EventId = LoggingEventIdConstants.SessionReconnectFailure,
+        Level = LogLevel.Error,
+        Message = "Session failed to reconnect")]
+    private partial void LogSessionReconnectFailure(Exception ex);
+
+    [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionAlreadyConnected,
         Level = LogLevel.Warning,
         Message = "Session is already connected")]
@@ -102,7 +114,8 @@ public partial class OpcUaClient
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionReadNodeObjectWithMaxDepth,
         Level = LogLevel.Information,
-        Message = "Starting to read node tree from node with nodeId '{nodeId}' with max depth set to '{nodeObjectReadDepth}'")]
+        Message =
+            "Starting to read node tree from node with nodeId '{nodeId}' with max depth set to '{nodeObjectReadDepth}'")]
     private partial void LogSessionReadNodeObjectWithMaxDepth(string nodeId, int nodeObjectReadDepth);
 
     [LoggerMessage(
@@ -156,13 +169,15 @@ public partial class OpcUaClient
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionExecuteCommandRequest,
         Level = LogLevel.Trace,
-        Message = "Executing method for parentNodeId '{parentNodeId}' and methodNodeId '{methodNodeId}' with '{arguments}'")]
+        Message =
+            "Executing method for parentNodeId '{parentNodeId}' and methodNodeId '{methodNodeId}' with '{arguments}'")]
     private partial void LogSessionExecuteCommandRequest(string parentNodeId, string methodNodeId, string arguments);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionExecuteCommandFailure,
         Level = LogLevel.Error,
-        Message = "Executing method for parentNodeId '{parentNodeId}' and methodNodeId '{methodNodeId}' failed: '{errorMessage}'")]
+        Message =
+            "Executing method for parentNodeId '{parentNodeId}' and methodNodeId '{methodNodeId}' failed: '{errorMessage}'")]
     private partial void LogSessionExecuteCommandFailure(string parentNodeId, string methodNodeId, string errorMessage);
 
     [LoggerMessage(
@@ -170,4 +185,19 @@ public partial class OpcUaClient
         Level = LogLevel.Error,
         Message = "KeepAlive request failed")]
     private partial void LogSessionKeepAliveRequestFailure(Exception ex);
+
+    [LoggerMessage(
+        EventId = LoggingEventIdConstants.SessionKeepAliveFailureCountReset,
+        Level = LogLevel.Trace,
+        Message = "KeepAlive failure count reset")]
+    private partial void LogSessionKeepAliveFailureCountReset();
+
+    [LoggerMessage(
+        EventId = LoggingEventIdConstants.SessionKeepAliveFailure,
+        Level = LogLevel.Trace,
+        Message =
+            "KeepAlive request failed: '{ServiceResult}', consecutive failures: '{ConsecutiveKeepAliveFailures}'")]
+    private partial void LogSessionKeepAliveFailure(
+        string serviceResult,
+        int consecutiveKeepAliveFailures);
 }
