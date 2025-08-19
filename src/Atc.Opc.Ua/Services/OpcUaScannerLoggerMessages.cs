@@ -26,7 +26,7 @@ public partial class OpcUaScanner
     [LoggerMessage(
         EventId = LoggingEventIdConstants.ScannerReadRootFailure,
         Level = LogLevel.Error,
-        Message = "Failed reading starting node '{nodeId}': '{error}'.")]
+        Message = "Failed reading starting node '{nodeId}': '{error}'")]
     private partial void LogScannerReadRootFailure(
         string nodeId,
         string error);

@@ -104,13 +104,13 @@ public partial class OpcUaClient
         if (readNode is null)
         {
             LogSessionNodeNotFound(nodeId);
-            return (false, null, $"Could not find node by nodeId '{nodeId}'.");
+            return (false, null, $"Could not find node by nodeId '{nodeId}'");
         }
 
         if (readNode.NodeClass != NodeClass.Object)
         {
             LogSessionNodeHasWrongClass(nodeId, readNode.NodeClass, NodeClass.Object);
-            return (false, null, $"Node with nodeId '{nodeId}' has wrong NodeClass '{readNode.NodeClass}', expected '{NodeClass.Object}'.");
+            return (false, null, $"Node with nodeId '{nodeId}' has wrong NodeClass '{readNode.NodeClass}', expected '{nameof(NodeClass.Object)}'");
         }
 
         var parentNodeId = GetParentNodeId(nodeId);
@@ -322,13 +322,13 @@ public partial class OpcUaClient
             if (readNode is null)
             {
                 LogSessionNodeNotFound(nodeId);
-                return (false, null, $"Could not find node by nodeId '{nodeId}'.");
+                return (false, null, $"Could not find node by nodeId '{nodeId}'");
             }
 
             if (readNode.NodeClass != NodeClass.Variable)
             {
                 LogSessionNodeHasWrongClass(nodeId, readNode.NodeClass, NodeClass.Variable);
-                return (false, null, $"Node with nodeId '{nodeId}' has wrong NodeClass '{readNode.NodeClass}', expected '{NodeClass.Variable}'.");
+                return (false, null, $"Node with nodeId '{nodeId}' has wrong NodeClass '{readNode.NodeClass}', expected '{nameof(NodeClass.Variable)}'");
             }
 
             var browseParentResults = BrowseBackwardsByNodeId(nodeId);
@@ -372,7 +372,7 @@ public partial class OpcUaClient
         catch (Exception ex)
         {
             LogSessionReadNodeFailure(nodeId, ex.Message);
-            return (false, null, $"Reading node with nodeId '{nodeId}' failed: '{ex.Message}'.");
+            return (false, null, $"Reading node with nodeId '{nodeId}' failed: '{ex.Message}'");
         }
     }
 

@@ -71,7 +71,7 @@ public partial class OpcUaScanner : IOpcUaScanner
             return new NodeScanResult(Succeeded: true, nodeVariable, ErrorMessage: null);
         }
 
-        var errorMessage = scanErrorMessage ?? varError ?? $"Failed to read starting node '{startingNodeId}'.";
+        var errorMessage = scanErrorMessage ?? varError ?? $"Failed to read starting node '{startingNodeId}'";
         LogScannerReadRootFailure(startingNodeId, errorMessage);
         return new NodeScanResult(Succeeded: false, Root: null, errorMessage);
     }
