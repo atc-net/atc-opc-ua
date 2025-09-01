@@ -1,6 +1,6 @@
 namespace Atc.Opc.Ua.CLI.Commands;
 
-public class NodeReadVariableMultiCommand : AsyncCommand<MultiNodeCommandSettings>
+internal sealed class NodeReadVariableMultiCommand : AsyncCommand<MultiNodeCommandSettings>
 {
     private readonly IOpcUaClient opcUaClient;
     private readonly ILogger<NodeReadVariableMultiCommand> logger;

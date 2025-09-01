@@ -1,6 +1,6 @@
 namespace Atc.Opc.Ua.CLI.Commands;
 
-public sealed class NodeWriteVariableSingleCommand : AsyncCommand<WriteNodeCommandSettings>
+internal sealed class NodeWriteVariableSingleCommand : AsyncCommand<WriteNodeCommandSettings>
 {
     private readonly IOpcUaClient opcUaClient;
     private readonly ILogger<NodeWriteVariableSingleCommand> logger;

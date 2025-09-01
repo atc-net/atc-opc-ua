@@ -1,6 +1,6 @@
 namespace Atc.Opc.Ua.CLI.Commands;
 
-public class ExecuteMethodCommand : AsyncCommand<ExecuteMethodCommandSettings>
+internal sealed class ExecuteMethodCommand : AsyncCommand<ExecuteMethodCommandSettings>
 {
     private readonly IOpcUaClient opcUaClient;
     private readonly ILogger<ExecuteMethodCommand> logger;
