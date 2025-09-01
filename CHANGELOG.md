@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/atc-net/atc-opc-ua/compare/v1.4.0...v1.4.1) (2025-09-01)
+
+
+### Bug Fixes
+
+* add OpcUaScanner to CLI DI container ([97a356a](https://github.com/atc-net/atc-opc-ua/commit/97a356aa5b54b3c071142dc3e415aa33783fc4c8))
+
 ## [1.4.0](https://github.com/atc-net/atc-opc-ua/compare/v1.3.1...v1.4.0) (2025-08-19)
 
 
