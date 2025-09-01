@@ -20,6 +20,7 @@ public static class Program
         var serviceCollection = ServiceCollectionFactory.Create(consoleLoggerConfiguration);
 
         serviceCollection.AddTransient<IOpcUaClient, OpcUaClient>();
+        serviceCollection.AddTransient<IOpcUaScanner, OpcUaScanner>();
 
         var app = CommandAppFactory.Create(serviceCollection);
         app.ConfigureCommands();
