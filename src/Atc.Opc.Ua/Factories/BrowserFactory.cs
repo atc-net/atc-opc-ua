@@ -28,7 +28,7 @@ public static class BrowserFactory
         => new(session)
         {
             BrowseDirection = BrowseDirection.Inverse,
-            NodeClassMask = (int)NodeClass.Object,
+            NodeClassMask = (int)NodeClass.Object | (int)NodeClass.Variable,
             ReferenceTypeId = ReferenceTypeIds.HierarchicalReferences,
         };
 }

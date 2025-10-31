@@ -25,7 +25,7 @@ public sealed class BrowserFactoryTests
         // Assert
         Assert.NotNull(browser);
         Assert.Equal(BrowseDirection.Inverse, browser.BrowseDirection);
-        Assert.Equal((int)NodeClass.Object, browser.NodeClassMask);
+        Assert.Equal((int)NodeClass.Object | (int)NodeClass.Variable, browser.NodeClassMask);
         Assert.Equal(ReferenceTypeIds.HierarchicalReferences, browser.ReferenceTypeId);
     }
 }
