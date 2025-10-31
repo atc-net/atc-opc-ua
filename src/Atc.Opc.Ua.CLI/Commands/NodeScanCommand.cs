@@ -36,8 +36,8 @@ internal sealed class NodeScanCommand : AsyncCommand<ScanNodeCommandSettings>
         var sw = Stopwatch.StartNew();
 
         var (succeeded, _) = userName is not null && userName.IsSet
-            ? await opcUaClient.ConnectAsync(serverUrl, userName.Value, password!.Value)
-            : await opcUaClient.ConnectAsync(serverUrl);
+            ? await opcUaClient.ConnectAsync(serverUrl, userName.Value, password!.Value, CancellationToken.None)
+            : await opcUaClient.ConnectAsync(serverUrl, CancellationToken.None);
 
         if (succeeded)
         {
@@ -69,7 +69,7 @@ internal sealed class NodeScanCommand : AsyncCommand<ScanNodeCommandSettings>
                 options.ExcludeVariableNodeIds.Add(id);
             }
 
-            var scanResult = await scanner.ScanAsync(opcUaClient, options);
+            var scanResult = await scanner.ScanAsync(opcUaClient, options, CancellationToken.None);
             if (scanResult is { Succeeded: true, Root: not null })
             {
                 var (totalObjectCount, totalVariableCount) = CountNodes(scanResult.Root!);
@@ -80,7 +80,7 @@ internal sealed class NodeScanCommand : AsyncCommand<ScanNodeCommandSettings>
                 logger.LogError(scanResult.ErrorMessage ?? "Scan failed");
             }
 
-            opcUaClient.Disconnect();
+            await opcUaClient.DisconnectAsync(CancellationToken.None);
         }
 
         sw.Stop();

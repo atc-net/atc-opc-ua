@@ -15,7 +15,8 @@ public partial class OpcUaScanner : IOpcUaScanner
 
     public async Task<NodeScanResult> ScanAsync(
         IOpcUaClient client,
-        OpcUaScannerOptions options)
+        OpcUaScannerOptions options,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(client);
         ArgumentNullException.ThrowIfNull(options);
@@ -23,17 +24,17 @@ public partial class OpcUaScanner : IOpcUaScanner
         if (!client.IsConnected())
         {
             LogScannerClientNotConnected();
-            return new NodeScanResult(false, null, "Client is not connected.");
+            return new NodeScanResult(Succeeded: false, Root: null, "Client is not connected.");
         }
 
         if (options.ObjectDepth < 0)
         {
-            return new NodeScanResult(false, null, "ObjectDepth cannot be negative.");
+            return new NodeScanResult(Succeeded: false, Root: null, "ObjectDepth cannot be negative.");
         }
 
         if (options.VariableDepth < 0)
         {
-            return new NodeScanResult(false, null, "VariableDepth cannot be negative.");
+            return new NodeScanResult(Succeeded: false, Root: null, "VariableDepth cannot be negative.");
         }
 
         var startingNodeId = string.IsNullOrWhiteSpace(options.StartingNodeId)
@@ -48,6 +49,7 @@ public partial class OpcUaScanner : IOpcUaScanner
             includeObjects: true,
             includeVariables: true,
             includeSampleValues: options.IncludeSampleValues,
+            cancellationToken,
             nodeObjectReadDepth: options.ObjectDepth,
             nodeVariableReadDepth: options.VariableDepth,
             includeObjectNodeIds: (IReadOnlyCollection<string>?)options.IncludeObjectNodeIds,
@@ -64,6 +66,7 @@ public partial class OpcUaScanner : IOpcUaScanner
         var (varSucceeded, nodeVariable, varError) = await client.ReadNodeVariableAsync(
             startingNodeId,
             includeSampleValue: options.IncludeSampleValues,
+            cancellationToken,
             nodeVariableReadDepth: options.VariableDepth);
 
         if (varSucceeded && nodeVariable is not null)

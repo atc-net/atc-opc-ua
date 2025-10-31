@@ -37,18 +37,23 @@ internal sealed class NodeReadVariableSingleCommand : AsyncCommand<SingleNodeCom
         var sw = Stopwatch.StartNew();
 
         var (succeeded, _) = userName is not null && userName.IsSet
-            ? await opcUaClient.ConnectAsync(serverUrl, userName.Value, password!.Value)
-            : await opcUaClient.ConnectAsync(serverUrl);
+            ? await opcUaClient.ConnectAsync(serverUrl, userName.Value, password!.Value, CancellationToken.None)
+            : await opcUaClient.ConnectAsync(serverUrl, CancellationToken.None);
 
         if (succeeded)
         {
-            var (succeededReading, nodeVariable, _) = await opcUaClient.ReadNodeVariableAsync(nodeId, includeSampleValue, nodeVariableReadDepth);
+            var (succeededReading, nodeVariable, _) = await opcUaClient.ReadNodeVariableAsync(
+                nodeId,
+                includeSampleValue,
+                CancellationToken.None,
+                nodeVariableReadDepth);
+
             if (succeededReading)
             {
                 logger.LogInformation($"Received the following data: '{nodeVariable!.ToStringSimple()}'");
             }
 
-            opcUaClient.Disconnect();
+            await opcUaClient.DisconnectAsync(CancellationToken.None);
         }
 
         sw.Stop();

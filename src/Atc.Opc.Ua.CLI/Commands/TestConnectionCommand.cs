@@ -34,12 +34,12 @@ internal sealed class TestConnectionCommand : AsyncCommand<OpcUaBaseCommandSetti
         var sw = Stopwatch.StartNew();
 
         var (succeeded, _) = userName is not null && userName.IsSet
-            ? await opcUaClient.ConnectAsync(serverUrl, userName.Value, password!.Value)
-            : await opcUaClient.ConnectAsync(serverUrl);
+            ? await opcUaClient.ConnectAsync(serverUrl, userName.Value, password!.Value, CancellationToken.None)
+            : await opcUaClient.ConnectAsync(serverUrl, CancellationToken.None);
 
         if (succeeded)
         {
-            opcUaClient.Disconnect();
+            await opcUaClient.DisconnectAsync(CancellationToken.None);
         }
 
         sw.Stop();

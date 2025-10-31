@@ -8,22 +8,71 @@ OPC UA industrial library for executing commands, reads and writes on OPC UA ser
 
 - [Atc.Opc.Ua](#atcopcua)
 - [Table of Contents](#table-of-contents)
+- [Quick Start](#quick-start)
 - [OpcUaClient](#opcuaclient)
+  - [Basic Usage](#basic-usage)
   - [Configuring OPC UA Security Settings](#configuring-opc-ua-security-settings)
   - [Configuring OPC UA Client Options](#configuring-opc-ua-client-options)
   - [Keep-alive behavior and options](#keep-alive-behavior-and-options)
+  - [Best Practices](#best-practices)
 - [CLI Tool](#cli-tool)
-  - [Requirements](#requirements)
   - [Installation](#installation)
   - [Update](#update)
   - [Usage](#usage)
     - [Option --help](#option---help)
     - [Scanning the Address Space](#scanning-the-address-space)
+- [Requirements](#requirements)
 - [How to contribute](#how-to-contribute)
+
+# Quick Start
+
+Here's a minimal example to connect to an OPC UA server, read a node, and disconnect:
+
+```csharp
+using Atc.Opc.Ua.Services;
+using Microsoft.Extensions.Logging;
+
+// Create logger
+using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+var logger = loggerFactory.CreateLogger<OpcUaClient>();
+
+// Create client
+using var client = new OpcUaClient(logger);
+
+// Connect
+var serverUri = new Uri("opc.tcp://opcuaserver.com:48010");
+var (connected, connectError) = await client.ConnectAsync(serverUri, CancellationToken.None);
+
+if (!connected)
+{
+    Console.WriteLine($"Connection failed: {connectError}");
+    return;
+}
+
+// Read a node variable
+var (succeeded, nodeVariable, readError) = await client.ReadNodeVariableAsync(
+    "ns=2;s=Demo.Dynamic.Scalar.Float",
+    includeSampleValue: true,
+    CancellationToken.None);
+
+if (succeeded && nodeVariable != null)
+{
+    Console.WriteLine($"Value: {nodeVariable.Value}");
+}
+else
+{
+    Console.WriteLine($"Read failed: {readError}");
+}
+
+// Disconnect
+await client.DisconnectAsync(CancellationToken.None);
+```
 
 # OpcUaClient
 
-After installing the latest [nuget package](https://www.nuget.org/packages/atc.opc.ua), the OpcUaClient can be wired up as follows:
+## Basic Usage
+
+After installing the latest [nuget package](https://www.nuget.org/packages/atc.opc.ua), the OpcUaClient can be wired up with dependency injection:
 
 ```csharp
 services.AddTransient<IOpcUaClient, OpcUaClient>(s =>
@@ -31,6 +80,47 @@ services.AddTransient<IOpcUaClient, OpcUaClient>(s =>
     var loggerFactory = s.GetRequiredService<ILoggerFactory>();
     return new OpcUaClient(loggerFactory.CreateLogger<OpcUaClient>());
 });
+```
+
+Then use it in your services:
+
+```csharp
+public class MyService
+{
+    private readonly IOpcUaClient opcUaClient;
+
+    public MyService(IOpcUaClient opcUaClient)
+    {
+        this.opcUaClient = opcUaClient;
+    }
+
+    public async Task ReadDataAsync(CancellationToken cancellationToken)
+    {
+        var serverUri = new Uri("opc.tcp://opcuaserver.com:48010");
+
+        // Connect
+        var (connected, error) = await opcUaClient.ConnectAsync(
+            serverUri,
+            cancellationToken);
+
+        if (!connected)
+        {
+            // Handle error
+            return;
+        }
+
+        // Read node
+        var (succeeded, nodeVariable, readError) = await opcUaClient.ReadNodeVariableAsync(
+            "ns=2;s=Demo.Dynamic.Scalar.Float",
+            includeSampleValue: true,
+            cancellationToken);
+
+        // Process data...
+
+        // Disconnect
+        await opcUaClient.DisconnectAsync(cancellationToken);
+    }
+}
 ```
 
 ## Configuring OPC UA Security Settings
@@ -84,6 +174,22 @@ services
     .ValidateOnStart();
 
 services.AddTransient<IOpcUaClient, OpcUaClient>();
+```
+
+Then use with proper async patterns:
+
+```csharp
+public async Task ConnectSecurelyAsync(CancellationToken cancellationToken)
+{
+    var serverUri = new Uri("opc.tcp://opcuaserver.com:48010");
+    var (connected, error) = await _opcUaClient.ConnectAsync(
+        serverUri,
+        userName: "myuser",
+        password: "mypassword",
+        cancellationToken);
+
+    // ... use client
+}
 ```
 
 ## Configuring OPC UA Client Options
@@ -147,26 +253,58 @@ services
 services.AddTransient<IOpcUaClient, OpcUaClient>();
 ```
 
-Behavior summary (when `Enable` is true):
+## Best Practices
 
-- Keep-alive pings the server at `IntervalMilliseconds`.
-- If status is bad, a failure counter increments. When `MaxFailuresBeforeReconnect` is reached, a background reconnect is started with period `ReconnectPeriodMilliseconds`.
-- On successful keep-alive, the failure counter resets.
+When working with `OpcUaClient`, follow these async/await best practices:
 
-Defaults (if not provided):
+- ✅ **Always pass CancellationToken**: All async methods require a `CancellationToken`. Use `CancellationToken.None` only for non-cancellable operations.
 
-- `Enable`: true (keep-alive enabled)
-- `IntervalMilliseconds`: 15000
-- `MaxFailuresBeforeReconnect`: 3
-- `ReconnectPeriodMilliseconds`: 10000
+  ```csharp
+  // Good - from method parameter
+  public async Task ProcessAsync(CancellationToken cancellationToken)
+  {
+      await client.ConnectAsync(serverUri, cancellationToken);
+  }
+
+  // Good - with timeout
+  using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+  await client.ConnectAsync(serverUri, cts.Token);
+  ```
+
+- ✅ **Use `using` statements**: Ensure proper disposal of the client to release resources.
+
+  ```csharp
+  using var client = new OpcUaClient(logger);
+  await client.ConnectAsync(serverUri, cancellationToken);
+  // Client is automatically disposed
+  ```
+
+- ✅ **Handle connection errors**: Always check the `Succeeded` flag from async operations.
+
+  ```csharp
+  var (succeeded, nodeVariable, error) = await client.ReadNodeVariableAsync(
+      nodeId,
+      includeSampleValue: true,
+      cancellationToken);
+
+  if (!succeeded)
+  {
+      _logger.LogError("Read failed: {Error}", error);
+      // Handle error appropriately
+  }
+  ```
+
+- ✅ **Disconnect explicitly**: Call `DisconnectAsync` before disposal for clean shutdown.
+
+  ```csharp
+  await client.DisconnectAsync(cancellationToken);
+  ```
+
+- ✅ **Reuse client instances**: For multiple operations, reuse the same connected client rather than creating new instances.
 
 # CLI Tool
 
 The `Atc.Opc.Ua.CLI` tool is available through a cross platform command line application.
-
-## Requirements
-
-- [.NET 9 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
 
 ## Installation
 
@@ -182,7 +320,7 @@ A successful installation will output something like
 
 ```powershell
 The tool can be invoked by the following command: atc-opc-ua
-Tool 'atc-opc-ua' (version '1.0.xxx') was successfully installed.`
+Tool 'atc-opc-ua' (version '2.0.xxx') was successfully installed.
 ```
 
 ## Update
@@ -249,6 +387,11 @@ Example restricting to a single variable while excluding an object:
 ```powershell
 atc-opc-ua node scan -s opc.tcp://opcuaserver.com:48010 --starting-node-id "ns=2;s=Demo.Dynamic.Scalar" --include-variable-node-id "ns=2;s=Demo.Dynamic.Scalar.Float" --exclude-object-node-id "ns=2;s=Unwanted.Object"
 ```
+
+# Requirements
+
+- **.NET 9 SDK** or later
+- **OPCFoundation.NetStandard.Opc.Ua** 1.5.377.21
 
 # How to contribute
 

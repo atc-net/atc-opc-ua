@@ -40,8 +40,8 @@ internal sealed class NodeReadObjectCommand : AsyncCommand<ReadObjectNodeCommand
         var sw = Stopwatch.StartNew();
 
         var (succeeded, _) = userName is not null && userName.IsSet
-            ? await opcUaClient.ConnectAsync(serverUrl, userName.Value, password!.Value)
-            : await opcUaClient.ConnectAsync(serverUrl);
+            ? await opcUaClient.ConnectAsync(serverUrl, userName.Value, password!.Value, CancellationToken.None)
+            : await opcUaClient.ConnectAsync(serverUrl, CancellationToken.None);
 
         if (succeeded)
         {
@@ -50,6 +50,7 @@ internal sealed class NodeReadObjectCommand : AsyncCommand<ReadObjectNodeCommand
                 includeObjects,
                 includeVariables,
                 includeSampleValues,
+                CancellationToken.None,
                 nodeObjectReadDepth,
                 nodeVariableReadDepth);
 
@@ -58,7 +59,7 @@ internal sealed class NodeReadObjectCommand : AsyncCommand<ReadObjectNodeCommand
                 logger.LogInformation($"Received the following data: '{nodeObject!.ToStringSimple()}'");
             }
 
-            opcUaClient.Disconnect();
+            await opcUaClient.DisconnectAsync(CancellationToken.None);
         }
 
         sw.Stop();

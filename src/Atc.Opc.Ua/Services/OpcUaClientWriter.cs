@@ -12,25 +12,29 @@ public partial class OpcUaClient
     /// </summary>
     /// <param name="nodeId">The node identifier.</param>
     /// <param name="value">The value to write.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>A tuple indicating success and an error message if applicable.</returns>
-    public (bool Succeeded, string? ErrorMessage) WriteNode(
+    public Task<(bool Succeeded, string? ErrorMessage)> WriteNodeAsync(
         string nodeId,
-        object value)
+        object value,
+        CancellationToken cancellationToken)
     {
         var nodesToWriteCollection = new WriteValueCollection();
         var writeVal = BuildWriteValue(nodeId, value);
         nodesToWriteCollection.Add(writeVal);
 
-        return WriteNodeValueCollection(nodesToWriteCollection);
+        return WriteNodeValueCollectionAsync(nodesToWriteCollection, cancellationToken);
     }
 
     /// <summary>
     /// Writes multiple nodes to the server.
     /// </summary>
     /// <param name="nodesToWrite">A dictionary containing node identifiers and values to write.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>A tuple indicating success and an error message if applicable.</returns>
-    public (bool Succeeded, string? ErrorMessage) WriteNodes(
-        IDictionary<string, object> nodesToWrite)
+    public Task<(bool Succeeded, string? ErrorMessage)> WriteNodesAsync(
+        IDictionary<string, object> nodesToWrite,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(nodesToWrite);
 
@@ -41,7 +45,7 @@ public partial class OpcUaClient
             nodesToWriteCollection.Add(writeVal);
         }
 
-        return WriteNodeValueCollection(nodesToWriteCollection);
+        return WriteNodeValueCollectionAsync(nodesToWriteCollection, cancellationToken);
     }
 
     /// <summary>
@@ -49,25 +53,25 @@ public partial class OpcUaClient
     /// </summary>
     /// <param name="nodesToWriteCollection">The collection of nodes to write.</param>
     /// <returns>A tuple indicating success and an error message if applicable.</returns>
-    private (bool Succeeded, string? ErrorMessage) WriteNodeValueCollection(
-        WriteValueCollection nodesToWriteCollection)
+    private async Task<(bool Succeeded, string? ErrorMessage)> WriteNodeValueCollectionAsync(
+        WriteValueCollection nodesToWriteCollection,
+        CancellationToken cancellationToken)
     {
         try
         {
-            Session!.Write(
-                requestHeader: null,
-                nodesToWriteCollection,
-                out StatusCodeCollection results,
-                out DiagnosticInfoCollection _);
+            var writeResponse = await Session!.WriteAsync(requestHeader: null, nodesToWriteCollection, cancellationToken);
+            if (writeResponse is null)
+            {
+                return (false, "Writing node variable(s) failed - missing write response");
+            }
 
-            if (results is not null &&
-                results.Any() &&
-                StatusCode.IsGood(results[0]))
+            if (writeResponse.Results.Any() &&
+                StatusCode.IsGood(writeResponse.Results[0]))
             {
                 return (true, null);
             }
 
-            var errorMessage = results![0].ToString();
+            var errorMessage = writeResponse.Results[0].ToString();
             LogSessionWriteNodeVariableFailure(errorMessage);
             return (false, $"Writing node variable(s) failed: {errorMessage}.");
         }
