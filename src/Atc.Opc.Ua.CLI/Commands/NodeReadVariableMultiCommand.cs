@@ -22,8 +22,7 @@ internal sealed class NodeReadVariableMultiCommand : AsyncCommand<MultiNodeComma
         return ExecuteInternalAsync(settings);
     }
 
-    private async Task<int> ExecuteInternalAsync(
-        MultiNodeCommandSettings settings)
+    private async Task<int> ExecuteInternalAsync(MultiNodeCommandSettings settings)
     {
         ConsoleHelper.WriteHeader();
 
@@ -37,18 +36,23 @@ internal sealed class NodeReadVariableMultiCommand : AsyncCommand<MultiNodeComma
         var sw = Stopwatch.StartNew();
 
         var (succeeded, _) = userName is not null && userName.IsSet
-            ? await opcUaClient.ConnectAsync(serverUrl, userName.Value, password!.Value)
-            : await opcUaClient.ConnectAsync(serverUrl);
+            ? await opcUaClient.ConnectAsync(serverUrl, userName.Value, password!.Value, CancellationToken.None)
+            : await opcUaClient.ConnectAsync(serverUrl, CancellationToken.None);
 
         if (succeeded)
         {
-            var (succeededReading, nodeVariables, _) = await opcUaClient.ReadNodeVariablesAsync(nodeIds, includeSampleValues, nodeVariableReadDepth);
+            var (succeededReading, nodeVariables, _) = await opcUaClient.ReadNodeVariablesAsync(
+                nodeIds,
+                includeSampleValues,
+                CancellationToken.None,
+                nodeVariableReadDepth);
+
             if (succeededReading)
             {
                 logger.LogInformation($"Received the following data: {GetSimpleStrings(nodeVariables!)}");
             }
 
-            opcUaClient.Disconnect();
+            await opcUaClient.DisconnectAsync(CancellationToken.None);
         }
 
         sw.Stop();

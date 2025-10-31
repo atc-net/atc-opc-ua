@@ -34,15 +34,16 @@ internal sealed class ExecuteMethodCommand : AsyncCommand<ExecuteMethodCommandSe
         var sw = Stopwatch.StartNew();
 
         var (succeeded, _) = userName is not null && userName.IsSet
-            ? await opcUaClient.ConnectAsync(serverUrl, userName.Value, password!.Value)
-            : await opcUaClient.ConnectAsync(serverUrl);
+            ? await opcUaClient.ConnectAsync(serverUrl, userName.Value, password!.Value, CancellationToken.None)
+            : await opcUaClient.ConnectAsync(serverUrl, CancellationToken.None);
 
         if (succeeded)
         {
-            var (succeededExecutingMethod, executionResults, errorMessage) = opcUaClient.ExecuteMethod(
+            var (succeededExecutingMethod, executionResults, errorMessage) = await opcUaClient.ExecuteMethodAsync(
                 settings.ParentNodeId,
                 settings.MethodNodeId,
-                MapSettingsToMethodExecutionParameters(settings));
+                MapSettingsToMethodExecutionParameters(settings),
+                CancellationToken.None);
 
             if (succeededExecutingMethod)
             {
@@ -61,7 +62,7 @@ internal sealed class ExecuteMethodCommand : AsyncCommand<ExecuteMethodCommandSe
                 logger.LogError(errorMessage);
             }
 
-            opcUaClient.Disconnect();
+            await opcUaClient.DisconnectAsync(CancellationToken.None);
         }
 
         sw.Stop();

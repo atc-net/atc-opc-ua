@@ -22,8 +22,7 @@ internal sealed class NodeWriteVariableSingleCommand : AsyncCommand<WriteNodeCom
         return ExecuteInternalAsync(settings);
     }
 
-    private async Task<int> ExecuteInternalAsync(
-        WriteNodeCommandSettings settings)
+    private async Task<int> ExecuteInternalAsync(WriteNodeCommandSettings settings)
     {
         ConsoleHelper.WriteHeader();
 
@@ -48,24 +47,24 @@ internal sealed class NodeWriteVariableSingleCommand : AsyncCommand<WriteNodeCom
         var sw = Stopwatch.StartNew();
 
         var (succeeded, _) = userName is not null && userName.IsSet
-            ? await opcUaClient.ConnectAsync(serverUrl, userName.Value, password!.Value)
-            : await opcUaClient.ConnectAsync(serverUrl);
+            ? await opcUaClient.ConnectAsync(serverUrl, userName.Value, password!.Value, CancellationToken.None)
+            : await opcUaClient.ConnectAsync(serverUrl, CancellationToken.None);
 
         if (succeeded)
         {
             logger.LogInformation("Connection succeeded");
 
-            var (succeededReading, _, _) = await opcUaClient.ReadNodeVariableAsync(nodeId, includeSampleValue: false);
+            var (succeededReading, _, _) = await opcUaClient.ReadNodeVariableAsync(nodeId, includeSampleValue: false, CancellationToken.None);
             if (succeededReading)
             {
-                var (succeededWriting, _) = opcUaClient.WriteNode(nodeId, convertedValue);
+                var (succeededWriting, _) = await opcUaClient.WriteNodeAsync(nodeId, convertedValue, CancellationToken.None);
                 if (succeededWriting)
                 {
                     logger.LogInformation("Value is updated.");
                 }
             }
 
-            opcUaClient.Disconnect();
+            await opcUaClient.DisconnectAsync(CancellationToken.None);
         }
         else
         {

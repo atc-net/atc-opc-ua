@@ -28,13 +28,13 @@ public static class Program
         using var cts = new CancellationTokenSource();
 
         using var client = new OpcUaClient(logger);
-        await client.ConnectAsync(ServerUri, UserName!, Password!);
+        await client.ConnectAsync(ServerUri, UserName!, Password!, cts.Token);
 
         using PeriodicTimer timer = new(TimeSpan.FromSeconds(1));
         while (await timer.WaitForNextTickAsync(cts.Token))
         {
-            await EnsureConnectedAsync(client);
-            var (succeeded, nodeVariables, errorMessage) = await client.ReadNodeVariablesAsync(NodeIds, true);
+            await EnsureConnectedAsync(client, cts.Token);
+            var (succeeded, nodeVariables, errorMessage) = await client.ReadNodeVariablesAsync(NodeIds, includeSampleValues: true, cts.Token);
 
             if (!succeeded)
             {
@@ -54,14 +54,16 @@ public static class Program
         }
     }
 
-    private static async ValueTask<bool> EnsureConnectedAsync(OpcUaClient client)
+    private static async ValueTask<bool> EnsureConnectedAsync(
+        OpcUaClient client,
+        CancellationToken cancellationToken)
     {
         if (client.IsConnected())
         {
             return true;
         }
 
-        (bool IsConnected, string? Message) result = await client.ConnectAsync(ServerUri, UserName!, Password!);
+        (bool IsConnected, string? Message) result = await client.ConnectAsync(ServerUri, UserName!, Password!, cancellationToken);
         if (!result.IsConnected)
         {
             logger!.LogError("Failed to connect to OPC server: {Message}", result.Message);

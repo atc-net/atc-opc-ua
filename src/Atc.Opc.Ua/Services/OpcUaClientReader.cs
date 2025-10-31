@@ -16,11 +16,13 @@ public partial class OpcUaClient
     /// </summary>
     /// <param name="nodeId">The identifier of the node.</param>
     /// <param name="includeSampleValue">Indicates whether to include the sample value of the variable.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <param name="nodeVariableReadDepth">The depth to read the node variable.</param>
     /// <returns>A Task representing the result of the asynchronous operation.</returns>
     public Task<(bool Succeeded, NodeVariable? NodeVariable, string? ErrorMessage)> ReadNodeVariableAsync(
         string nodeId,
         bool includeSampleValue,
+        CancellationToken cancellationToken,
         int nodeVariableReadDepth = 0)
     {
         if (string.IsNullOrWhiteSpace(nodeId))
@@ -30,7 +32,7 @@ public partial class OpcUaClient
 
         nodeId = nodeId.Trim();
 
-        return InvokeReadNodeVariableAsync(nodeId, includeSampleValue, nodeVariableReadDepth);
+        return InvokeReadNodeVariableAsync(nodeId, includeSampleValue, nodeVariableReadDepth, cancellationToken);
     }
 
     /// <summary>
@@ -38,11 +40,13 @@ public partial class OpcUaClient
     /// </summary>
     /// <param name="nodeIds">The identifiers of the nodes.</param>
     /// <param name="includeSampleValues">Indicates whether to include the sample values of the variables.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <param name="nodeVariableReadDepth">The depth to read the node variable.</param>
     /// <returns>A Task representing the result of the asynchronous operation.</returns>
     public Task<(bool Succeeded, IList<NodeVariable>? NodeVariables, string? ErrorMessage)> ReadNodeVariablesAsync(
         string[] nodeIds,
         bool includeSampleValues,
+        CancellationToken cancellationToken,
         int nodeVariableReadDepth = 0)
     {
         ArgumentNullException.ThrowIfNull(nodeIds);
@@ -56,7 +60,7 @@ public partial class OpcUaClient
 
         return nodeIds.Any(string.IsNullOrWhiteSpace)
             ? Task.FromResult<(bool Succeeded, IList<NodeVariable>? NodeVariables, string? ErrorMessage)>((false, null, "One or more nodeIds are invalid."))
-            : InvokeReadNodeVariablesAsync(nodeIds, includeSampleValues, nodeVariableReadDepth);
+            : InvokeReadNodeVariablesAsync(nodeIds, includeSampleValues, nodeVariableReadDepth, cancellationToken);
     }
 
     /// <summary>
@@ -66,6 +70,7 @@ public partial class OpcUaClient
     /// <param name="includeObjects">Indicates whether to include objects in the result.</param>
     /// <param name="includeVariables">Indicates whether to include variables in the result.</param>
     /// <param name="includeSampleValues">Indicates whether to include sample values of the variables.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <param name="nodeObjectReadDepth">The depth to read the node object.</param>
     /// <param name="nodeVariableReadDepth">The depth to read the node variable.</param>
     /// <param name="includeObjectNodeIds">The object node IDs to include.</param>
@@ -78,6 +83,7 @@ public partial class OpcUaClient
         bool includeObjects,
         bool includeVariables,
         bool includeSampleValues,
+        CancellationToken cancellationToken,
         int nodeObjectReadDepth = 1,
         int nodeVariableReadDepth = 0,
         IReadOnlyCollection<string>? includeObjectNodeIds = null,
@@ -100,7 +106,7 @@ public partial class OpcUaClient
 
         LogSessionReadNodeObjectWithMaxDepth(nodeId, nodeObjectReadDepth);
 
-        var readNode = await Session!.ReadNodeAsync(nodeId);
+        var readNode = await Session!.ReadNodeAsync(nodeId, cancellationToken);
         if (readNode is null)
         {
             LogSessionNodeNotFound(nodeId);
@@ -113,7 +119,7 @@ public partial class OpcUaClient
             return (false, null, $"Node with nodeId '{nodeId}' has wrong NodeClass '{readNode.NodeClass}', expected '{nameof(NodeClass.Object)}'");
         }
 
-        var parentNodeId = GetParentNodeId(nodeId);
+        var parentNodeId = await GetParentNodeIdAsync(nodeId, cancellationToken);
         if (parentNodeId is null)
         {
             LogSessionParentNodeNotFound(nodeId);
@@ -143,7 +149,8 @@ public partial class OpcUaClient
                 excludeObjectNodeIds,
                 includeVariableNodeIds,
                 excludeVariableNodeIds,
-                visited);
+                visited,
+                cancellationToken);
         }
 
         LogSessionReadNodeObjectSucceeded(nodeId);
@@ -155,15 +162,18 @@ public partial class OpcUaClient
     /// Gets the parent node identifier of a specified node.
     /// </summary>
     /// <param name="nodeId">The identifier of the node.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>The identifier of the parent node.</returns>
-    private string? GetParentNodeId(string nodeId)
+    private async Task<string?> GetParentNodeIdAsync(
+        string nodeId,
+        CancellationToken cancellationToken)
     {
         if (nodeId.Equals(ObjectIds.RootFolder.ToString(), StringComparison.OrdinalIgnoreCase))
         {
             return string.Empty;
         }
 
-        var browseParentResults = BrowseBackwardsByNodeId(nodeId);
+        var browseParentResults = await BrowseBackwardsByNodeIdAsync(nodeId, cancellationToken);
         if (browseParentResults.Count != 1)
         {
             return null;
@@ -187,6 +197,7 @@ public partial class OpcUaClient
     /// <param name="excludeObjectNodeIds">The object node IDs to exclude.</param>
     /// <param name="includeVariableNodeIds">The variable node IDs to include.</param>
     /// <param name="excludeVariableNodeIds">The variable node IDs to exclude.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>A Task representing the result of the asynchronous operation.</returns>
     private async Task ReadChildNodesFromNodeObject(
         NodeObject currentNode,
@@ -200,7 +211,8 @@ public partial class OpcUaClient
         IReadOnlyCollection<string>? excludeObjectNodeIds,
         IReadOnlyCollection<string>? includeVariableNodeIds,
         IReadOnlyCollection<string>? excludeVariableNodeIds,
-        ISet<string> visited)
+        ISet<string> visited,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(currentNode);
         ArgumentNullException.ThrowIfNull(visited);
@@ -212,7 +224,7 @@ public partial class OpcUaClient
 
         LogSessionReadNodeObject(currentNode.NodeId);
 
-        var browseChildResults = BrowseForwardByNodeId(currentNode.NodeId);
+        var browseChildResults = await BrowseForwardByNodeIdAsync(currentNode.NodeId);
         if (!browseChildResults.Any())
         {
             return;
@@ -235,7 +247,8 @@ public partial class OpcUaClient
                 excludeObjectNodeIds,
                 includeVariableNodeIds,
                 excludeVariableNodeIds,
-                visited);
+                visited,
+                cancellationToken);
         }
     }
 
@@ -263,13 +276,15 @@ public partial class OpcUaClient
     /// <paramref name="variableLevel"/> equals or exceeds this value, no further browsing
     /// is performed.
     /// </param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>A task that completes once all child variables (up to the
     /// specified depth) have been processed.</returns>
     private async Task ReadChildNodesFromNodeVariable(
         NodeVariable currentNode,
         int variableLevel,
         bool includeSampleValues,
-        int nodeVariableReadDepth)
+        int nodeVariableReadDepth,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(currentNode);
 
@@ -278,7 +293,7 @@ public partial class OpcUaClient
             return;
         }
 
-        var browseChildResults = BrowseForwardByNodeId(currentNode.NodeId);
+        var browseChildResults = await BrowseForwardByNodeIdAsync(currentNode.NodeId);
         if (!browseChildResults.Any())
         {
             return;
@@ -286,12 +301,13 @@ public partial class OpcUaClient
 
         foreach (var result in browseChildResults)
         {
-            await HandleChildBrowseResultsFromNodeVariable(
+            await HandleChildBrowseResultsFromNodeVariableAsync(
                 currentNode,
                 variableLevel + 1,
                 includeSampleValues,
                 nodeVariableReadDepth,
-                result);
+                result,
+                cancellationToken);
         }
     }
 
@@ -301,12 +317,14 @@ public partial class OpcUaClient
     /// <param name="nodeId">The identifier of the node.</param>
     /// <param name="includeSampleValue">Indicates whether to include the sample value of the variable.</param>
     /// <param name="nodeVariableReadDepth">The depth to read the node variable.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>A Task representing the result of the asynchronous operation.</returns>
     [SuppressMessage("Design", "MA0051:Method is too long", Justification = "OK")]
     private async Task<(bool Succeeded, NodeVariable? NodeVariable, string? ErrorMessage)> InvokeReadNodeVariableAsync(
         string nodeId,
         bool includeSampleValue,
-        int nodeVariableReadDepth)
+        int nodeVariableReadDepth,
+        CancellationToken cancellationToken)
     {
         if (!IsConnected())
         {
@@ -318,7 +336,7 @@ public partial class OpcUaClient
         {
             LogSessionReadNodeVariable(nodeId);
 
-            var readNode = await Session!.ReadNodeAsync(nodeId);
+            var readNode = await Session!.ReadNodeAsync(nodeId, cancellationToken);
             if (readNode is null)
             {
                 LogSessionNodeNotFound(nodeId);
@@ -331,7 +349,7 @@ public partial class OpcUaClient
                 return (false, null, $"Node with nodeId '{nodeId}' has wrong NodeClass '{readNode.NodeClass}', expected '{nameof(NodeClass.Variable)}'");
             }
 
-            var browseParentResults = BrowseBackwardsByNodeId(nodeId);
+            var browseParentResults = await BrowseBackwardsByNodeIdAsync(nodeId, cancellationToken);
             if (browseParentResults.Count != 1)
             {
                 LogSessionParentNodeNotFound(nodeId);
@@ -340,7 +358,7 @@ public partial class OpcUaClient
             DataValue? sampleValue = null;
             if (includeSampleValue)
             {
-                sampleValue = await TryGetDataValueForVariable((VariableNode)readNode);
+                sampleValue = await TryGetDataValueForVariableAsync((VariableNode)readNode, cancellationToken);
             }
 
             NodeVariable? nodeVariable;
@@ -364,7 +382,8 @@ public partial class OpcUaClient
                     nodeVariable,
                     variableLevel: 1,
                     includeSampleValue,
-                    nodeVariableReadDepth);
+                    nodeVariableReadDepth,
+                    cancellationToken);
             }
 
             return (true, nodeVariable, null);
@@ -390,7 +409,8 @@ public partial class OpcUaClient
     private async Task<(bool Succeeded, IList<NodeVariable>? NodeVariables, string? ErrorMessage)> InvokeReadNodeVariablesAsync(
         string[] nodeIds,
         bool includeSampleValues,
-        int nodeVariableReadDepth)
+        int nodeVariableReadDepth,
+        CancellationToken cancellationToken)
     {
         if (!nodeIds.Any())
         {
@@ -407,7 +427,7 @@ public partial class OpcUaClient
         var errors = new List<string>();
         foreach (var nodeId in nodeIds)
         {
-            var (succeeded, nodeVariable, errorMessage) = await ReadNodeVariableAsync(nodeId, includeSampleValues, nodeVariableReadDepth);
+            var (succeeded, nodeVariable, errorMessage) = await ReadNodeVariableAsync(nodeId, includeSampleValues, cancellationToken, nodeVariableReadDepth);
             if (succeeded)
             {
                 result.Add(nodeVariable!);
@@ -440,6 +460,7 @@ public partial class OpcUaClient
     /// <param name="excludeObjectNodeIds">The object node IDs to exclude.</param>
     /// <param name="includeVariableNodeIds">The variable node IDs to include.</param>
     /// <param name="excludeVariableNodeIds">The variable node IDs to exclude.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>A Task representing the result of the asynchronous operation.</returns>
     private async Task HandleChildBrowseResultsFromNodeObject(
         NodeObject currentNode,
@@ -454,7 +475,8 @@ public partial class OpcUaClient
         IReadOnlyCollection<string>? excludeObjectNodeIds,
         IReadOnlyCollection<string>? includeVariableNodeIds,
         IReadOnlyCollection<string>? excludeVariableNodeIds,
-        ISet<string> visited)
+        ISet<string> visited,
+        CancellationToken cancellationToken)
     {
         switch (result.NodeClass)
         {
@@ -487,7 +509,8 @@ public partial class OpcUaClient
                             excludeObjectNodeIds,
                             includeVariableNodeIds,
                             excludeVariableNodeIds,
-                            visited);
+                            visited,
+                            cancellationToken);
                     }
 
                     // De-duplicate per parent
@@ -507,12 +530,13 @@ public partial class OpcUaClient
                 // Respect variable depth to avoid excessive scanning
                 if (nodeVariableReadDepth > 0)
                 {
-                    await HandleVariableChild(
+                    await HandleVariableChildAsync(
                         currentNode,
                         variableLevel: 0,
                         includeSampleValues,
                         nodeVariableReadDepth,
-                        result.NodeId.ToString());
+                        result.NodeId.ToString(),
+                        cancellationToken);
                 }
 
                 break;
@@ -562,13 +586,15 @@ public partial class OpcUaClient
     /// </param>
     /// <param name="nodeVariableReadDepth">Maximum recursion depth for variable nodes.</param>
     /// <param name="result">The browse result that describes the child variable.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>A task that completes when the child has been processed.</returns>
-    private async Task HandleChildBrowseResultsFromNodeVariable(
+    private async Task HandleChildBrowseResultsFromNodeVariableAsync(
         NodeVariable currentNode,
         int variableLevel,
         bool includeSampleValues,
         int nodeVariableReadDepth,
-        ReferenceDescription result)
+        ReferenceDescription result,
+        CancellationToken cancellationToken)
     {
         if (result.NodeClass != NodeClass.Variable)
         {
@@ -576,12 +602,13 @@ public partial class OpcUaClient
             return;
         }
 
-        await HandleVariableChild(
+        await HandleVariableChildAsync(
                 currentNode,
                 variableLevel: variableLevel,
                 includeSampleValues,
                 nodeVariableReadDepth,
-                result.NodeId.ToString());
+                result.NodeId.ToString(),
+                cancellationToken);
     }
 
     /// <summary>
@@ -601,23 +628,25 @@ public partial class OpcUaClient
     /// </param>
     /// <param name="maxReadDepth">Maximum recursion depth allowed for variable nodes.</param>
     /// <param name="childNodeId">The OPC UA node‑id of the child variable.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>A task that completes when the variable (and optionally its
     /// descendants) have been processed.</returns>
-    private async Task HandleVariableChild(
+    private async Task HandleVariableChildAsync(
         NodeBase parentNode,
         int variableLevel,
         bool includeSampleValues,
         int maxReadDepth,
-        string childNodeId)
+        string childNodeId,
+        CancellationToken cancellationToken)
     {
         LogSessionReadNodeVariable(childNodeId);
 
-        var childNode = await Session!.ReadNodeAsync(childNodeId);
+        var childNode = await Session!.ReadNodeAsync(childNodeId, cancellationToken);
 
         DataValue? sampleValue = null;
         if (includeSampleValues)
         {
-            sampleValue = await TryGetDataValueForVariable((VariableNode)childNode);
+            sampleValue = await TryGetDataValueForVariableAsync((VariableNode)childNode, cancellationToken);
         }
 
         var nodeVariable = childNode.MapToNodeVariableWithValue(parentNode.NodeId, sampleValue);
@@ -638,7 +667,8 @@ public partial class OpcUaClient
                 nodeVariable,
                 variableLevel: variableLevel + 1,
                 includeSampleValues,
-                maxReadDepth);
+                maxReadDepth,
+                cancellationToken);
         }
     }
 
@@ -647,12 +677,12 @@ public partial class OpcUaClient
     /// </summary>
     /// <param name="nodeId">The identifier of the node.</param>
     /// <returns>A collection of reference descriptions for child nodes.</returns>
-    private ReferenceDescriptionCollection BrowseForwardByNodeId(string nodeId)
+    private async Task<ReferenceDescriptionCollection> BrowseForwardByNodeIdAsync(string nodeId)
     {
         try
         {
             var browser = BrowserFactory.GetForwardBrowser(Session!);
-            return browser.Browse(new NodeId(nodeId));
+            return await browser.BrowseAsync(new NodeId(nodeId));
         }
         catch (Exception ex)
         {
@@ -666,13 +696,15 @@ public partial class OpcUaClient
     /// </summary>
     /// <param name="nodeId">The identifier of the node.</param>
     /// <returns>A collection of reference descriptions for parent nodes.</returns>
-    private ReferenceDescriptionCollection BrowseBackwardsByNodeId(
-        string nodeId)
+    private async Task<ReferenceDescriptionCollection> BrowseBackwardsByNodeIdAsync(
+        string nodeId,
+        CancellationToken cancellationToken)
     {
         try
         {
             var browser = BrowserFactory.GetBackwardsBrowser(Session!);
-            return browser.Browse(new NodeId(nodeId));
+            var referenceDescriptionCollection = await browser.BrowseAsync(new NodeId(nodeId), cancellationToken);
+            return referenceDescriptionCollection;
         }
         catch (Exception ex)
         {
@@ -685,10 +717,12 @@ public partial class OpcUaClient
     /// Tries to get the data value for a specified variable node.
     /// </summary>
     /// <param name="node">The variable node.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <param name="loadComplexTypeSystem">Indicates whether to load the complex type system.</param>
     /// <returns>A Task representing the result of the asynchronous operation.</returns>
-    private async Task<DataValue?> TryGetDataValueForVariable(
+    private async Task<DataValue?> TryGetDataValueForVariableAsync(
         VariableNode node,
+        CancellationToken cancellationToken,
         bool loadComplexTypeSystem = false)
     {
         DataValue? sampleValue = null;
@@ -707,16 +741,22 @@ public partial class OpcUaClient
             var complexTypeSystem = new ComplexTypeSystem(Session!);
             var nodeDataType = node.DataType;
             LogLoadingComplexTypeSystem(node.NodeId.ToString(), nodeDataType.ToString());
-            await complexTypeSystem.LoadType(nodeDataType);
+            await complexTypeSystem.LoadTypeAsync(nodeDataType, subTypes: false, throwOnError: false, ct: cancellationToken);
         }
 
-        Session!.Read(
+        var readResponse = await Session!.ReadAsync(
             requestHeader: null,
             0,
             TimestampsToReturn.Both,
             nodesToRead,
-            out DataValueCollection resultValues,
-            out DiagnosticInfoCollection _);
+            cancellationToken);
+
+        if (readResponse is null)
+        {
+            return null;
+        }
+
+        var resultValues = readResponse.Results;
 
         if (resultValues is not null &&
             resultValues.Any() &&
@@ -730,7 +770,7 @@ public partial class OpcUaClient
                 if (!loadComplexTypeSystem &&
                     statusCode.Code == StatusCodes.BadDataTypeIdUnknown)
                 {
-                    return await TryGetDataValueForVariable(node, loadComplexTypeSystem: true);
+                    return await TryGetDataValueForVariableAsync(node, cancellationToken, loadComplexTypeSystem: true);
                 }
 
                 LogSessionReadNodeVariableValueFailure(node.NodeId.ToString(), statusCode.ToString());

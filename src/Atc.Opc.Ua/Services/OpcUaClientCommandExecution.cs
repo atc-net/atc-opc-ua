@@ -7,10 +7,11 @@ namespace Atc.Opc.Ua.Services;
 [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OK")]
 public partial class OpcUaClient
 {
-    public (bool Succeeded, IList<MethodExecutionResult>? ExecutionResults, string? ErrorMessage) ExecuteMethod(
+    public async Task<(bool Succeeded, IList<MethodExecutionResult>? ExecutionResults, string? ErrorMessage)> ExecuteMethodAsync(
         string parentNodeId,
         string methodNodeId,
-        List<MethodExecutionParameter> arguments)
+        List<MethodExecutionParameter> arguments,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(arguments);
 
@@ -29,23 +30,22 @@ public partial class OpcUaClient
 
             LogSessionExecuteCommandRequest(parentNodeId, methodNodeId, ArgumentsToString(arguments));
 
-            Session!.Call(
-                requestHeader: null,
-                [request],
-                out var results,
-                out _);
+            var callResponse = await Session!.CallAsync(requestHeader: null, [request], cancellationToken);
+            if (callResponse is null)
+            {
+                return (false, null, "Executing method failed - missing call response");
+            }
 
-            if (results is not null &&
-                results.Any() &&
-                StatusCode.IsGood(results[0].StatusCode))
+            if (callResponse.Results.Any() &&
+                StatusCode.IsGood(callResponse.Results[0].StatusCode))
             {
                 return (
                     Succeeded: true,
-                    MapMethodExecutionResults(results),
+                    MapMethodExecutionResults(callResponse.Results),
                     null);
             }
 
-            var errorMessage = results![0].StatusCode.ToString();
+            var errorMessage = callResponse.Results![0].StatusCode.ToString();
             LogSessionExecuteCommandFailure(parentNodeId, methodNodeId, errorMessage!);
             return (
                 Succeeded: false,

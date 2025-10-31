@@ -5,7 +5,8 @@ public sealed class OpcUaScannerTests
     [Theory, AutoNSubstituteData]
     public async Task ScanAsync_ShouldReturnError_WhenClientNotConnected(
         IOpcUaClient client,
-        ILogger<OpcUaScanner> logger)
+        ILogger<OpcUaScanner> logger,
+        CancellationToken cancellationToken)
     {
         // Arrange
         client
@@ -15,7 +16,7 @@ public sealed class OpcUaScannerTests
         var scanner = new OpcUaScanner(logger);
 
         // Act
-        var result = await scanner.ScanAsync(client, new OpcUaScannerOptions());
+        var result = await scanner.ScanAsync(client, new OpcUaScannerOptions(), cancellationToken);
 
         // Assert
         result.Succeeded.Should().BeFalse();
@@ -29,13 +30,15 @@ public sealed class OpcUaScannerTests
                 includeObjects: false,
                 includeVariables: false,
                 includeSampleValues: false,
+                cancellationToken: cancellationToken,
                 nodeObjectReadDepth: 0);
     }
 
     [Theory, AutoNSubstituteData]
     public async Task ScanAsync_ShouldReturnError_WhenObjectDepthNegative(
         IOpcUaClient client,
-        ILogger<OpcUaScanner> logger)
+        ILogger<OpcUaScanner> logger,
+        CancellationToken cancellationToken)
     {
         // Arrange
         client
@@ -46,7 +49,7 @@ public sealed class OpcUaScannerTests
         var options = new OpcUaScannerOptions { ObjectDepth = -1 };
 
         // Act
-        var result = await scanner.ScanAsync(client, options);
+        var result = await scanner.ScanAsync(client, options, cancellationToken);
 
         // Assert
         result.Succeeded.Should().BeFalse();
@@ -59,13 +62,15 @@ public sealed class OpcUaScannerTests
                 includeObjects: false,
                 includeVariables: false,
                 includeSampleValues: false,
+                cancellationToken: cancellationToken,
                 nodeObjectReadDepth: 0);
     }
 
     [Theory, AutoNSubstituteData]
     public async Task ScanAsync_ShouldReturnError_WhenVariableDepthNegative(
         IOpcUaClient client,
-        ILogger<OpcUaScanner> logger)
+        ILogger<OpcUaScanner> logger,
+        CancellationToken cancellationToken)
     {
         // Arrange
         client
@@ -76,7 +81,7 @@ public sealed class OpcUaScannerTests
         var options = new OpcUaScannerOptions { VariableDepth = -2 };
 
         // Act
-        var result = await scanner.ScanAsync(client, options);
+        var result = await scanner.ScanAsync(client, options, cancellationToken);
 
         // Assert
         result.Succeeded.Should().BeFalse();
@@ -89,13 +94,15 @@ public sealed class OpcUaScannerTests
                 includeObjects: false,
                 includeVariables: false,
                 includeSampleValues: false,
+                cancellationToken: cancellationToken,
                 nodeObjectReadDepth: 0);
     }
 
     [Theory, AutoNSubstituteData]
     public async Task ScanAsync_ShouldUseDefaultStartingNode_WhenStartingNodeEmpty(
         IOpcUaClient client,
-        ILogger<OpcUaScanner> logger)
+        ILogger<OpcUaScanner> logger,
+        CancellationToken cancellationToken)
     {
         // Arrange
         client
@@ -109,6 +116,7 @@ public sealed class OpcUaScannerTests
                 includeObjects: true,
                 includeVariables: true,
                 includeSampleValues: Arg.Any<bool>(),
+                cancellationToken: Arg.Any<CancellationToken>(),
                 nodeObjectReadDepth: Arg.Any<int>(),
                 nodeVariableReadDepth: Arg.Any<int>(),
                 includeObjectNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
@@ -120,7 +128,7 @@ public sealed class OpcUaScannerTests
         var scanner = new OpcUaScanner(logger);
 
         // Act
-        var result = await scanner.ScanAsync(client, new OpcUaScannerOptions { StartingNodeId = string.Empty });
+        var result = await scanner.ScanAsync(client, new OpcUaScannerOptions { StartingNodeId = string.Empty }, cancellationToken);
 
         // Assert
         result.Succeeded.Should().BeTrue();
@@ -132,6 +140,7 @@ public sealed class OpcUaScannerTests
             includeObjects: true,
             includeVariables: true,
             includeSampleValues: Arg.Any<bool>(),
+            cancellationToken: Arg.Any<CancellationToken>(),
             nodeObjectReadDepth: Arg.Any<int>(),
             nodeVariableReadDepth: Arg.Any<int>(),
             includeObjectNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
@@ -143,7 +152,8 @@ public sealed class OpcUaScannerTests
     [Theory, AutoNSubstituteData]
     public async Task ScanAsync_ShouldTrimStartingNodeId(
         IOpcUaClient client,
-        ILogger<OpcUaScanner> logger)
+        ILogger<OpcUaScanner> logger,
+        CancellationToken cancellationToken)
     {
         // Arrange
         client
@@ -157,6 +167,7 @@ public sealed class OpcUaScannerTests
                 includeObjects: true,
                 includeVariables: true,
                 includeSampleValues: Arg.Any<bool>(),
+                cancellationToken: Arg.Any<CancellationToken>(),
                 nodeObjectReadDepth: Arg.Any<int>(),
                 nodeVariableReadDepth: Arg.Any<int>(),
                 includeObjectNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
@@ -168,7 +179,7 @@ public sealed class OpcUaScannerTests
         var scanner = new OpcUaScanner(logger);
 
         // Act
-        var result = await scanner.ScanAsync(client, new OpcUaScannerOptions { StartingNodeId = "   ns=2;s=Demo.Dynamic.Scalar  " });
+        var result = await scanner.ScanAsync(client, new OpcUaScannerOptions { StartingNodeId = "   ns=2;s=Demo.Dynamic.Scalar  " }, cancellationToken);
 
             // Assert
         result.Succeeded.Should().BeTrue();
@@ -179,6 +190,7 @@ public sealed class OpcUaScannerTests
             includeObjects: true,
             includeVariables: true,
             includeSampleValues: Arg.Any<bool>(),
+            cancellationToken: Arg.Any<CancellationToken>(),
             nodeObjectReadDepth: Arg.Any<int>(),
             nodeVariableReadDepth: Arg.Any<int>(),
             includeObjectNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
@@ -190,7 +202,8 @@ public sealed class OpcUaScannerTests
     [Theory, AutoNSubstituteData]
     public async Task ScanAsync_ShouldPassOptionsToClient(
         IOpcUaClient client,
-        ILogger<OpcUaScanner> logger)
+        ILogger<OpcUaScanner> logger,
+        CancellationToken cancellationToken)
     {
         // Arrange
         client
@@ -208,6 +221,7 @@ public sealed class OpcUaScannerTests
                 includeObjects: true,
                 includeVariables: true,
                 includeSampleValues: true,
+                cancellationToken: Arg.Any<CancellationToken>(),
                 nodeObjectReadDepth: 2,
                 nodeVariableReadDepth: 3,
                 includeObjectNodeIds: Arg.Is<IReadOnlyCollection<string>>(c => c.SequenceEqual(includeObjects)),
@@ -245,7 +259,7 @@ public sealed class OpcUaScannerTests
         }
 
         // Act
-        var result = await scanner.ScanAsync(client, options);
+        var result = await scanner.ScanAsync(client, options, cancellationToken);
 
         // Assert
         result.Succeeded.Should().BeTrue();
@@ -256,7 +270,8 @@ public sealed class OpcUaScannerTests
     [Theory, AutoNSubstituteData]
     public async Task ScanAsync_ShouldReturnError_WhenClientReadFails(
         IOpcUaClient client,
-        ILogger<OpcUaScanner> logger)
+        ILogger<OpcUaScanner> logger,
+        CancellationToken cancellationToken)
     {
         // Arrange
         client
@@ -268,6 +283,7 @@ public sealed class OpcUaScannerTests
                 includeObjects: true,
                 includeVariables: true,
                 includeSampleValues: Arg.Any<bool>(),
+                cancellationToken: Arg.Any<CancellationToken>(),
                 nodeObjectReadDepth: Arg.Any<int>(),
                 nodeVariableReadDepth: Arg.Any<int>(),
                 includeObjectNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
@@ -279,7 +295,7 @@ public sealed class OpcUaScannerTests
         var scanner = new OpcUaScanner(logger);
 
         // Act
-        var result = await scanner.ScanAsync(client, new OpcUaScannerOptions { StartingNodeId = "root" });
+        var result = await scanner.ScanAsync(client, new OpcUaScannerOptions { StartingNodeId = "root" }, cancellationToken);
 
         // Assert
         result.Succeeded.Should().BeFalse();

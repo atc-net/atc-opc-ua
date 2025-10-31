@@ -3,25 +3,29 @@ namespace Atc.Opc.Ua.Services;
 public interface IOpcUaClient : IDisposable
 {
     Task<(bool Succeeded, string? ErrorMessage)> ConnectAsync(
-        Uri serverUri);
+        Uri serverUri,
+        CancellationToken cancellationToken);
 
     Task<(bool Succeeded, string? ErrorMessage)> ConnectAsync(
         Uri serverUri,
         string userName,
-        string password);
+        string password,
+        CancellationToken cancellationToken);
 
     bool IsConnected();
 
-    (bool Succeeded, string? ErrorMessage) Disconnect();
+    Task<(bool Succeeded, string? ErrorMessage)> DisconnectAsync(CancellationToken cancellationToken);
 
     Task<(bool Succeeded, NodeVariable? NodeVariable, string? ErrorMessage)> ReadNodeVariableAsync(
         string nodeId,
         bool includeSampleValue,
+        CancellationToken cancellationToken,
         int nodeVariableReadDepth = 0);
 
     Task<(bool Succeeded, IList<NodeVariable>? NodeVariables, string? ErrorMessage)> ReadNodeVariablesAsync(
         string[] nodeIds,
         bool includeSampleValues,
+        CancellationToken cancellationToken,
         int nodeVariableReadDepth = 0);
 
     Task<(bool Succeeded, NodeObject? NodeObject, string? ErrorMessage)> ReadNodeObjectAsync(
@@ -29,6 +33,7 @@ public interface IOpcUaClient : IDisposable
         bool includeObjects,
         bool includeVariables,
         bool includeSampleValues,
+        CancellationToken cancellationToken,
         int nodeObjectReadDepth = 1,
         int nodeVariableReadDepth = 0,
         IReadOnlyCollection<string>? includeObjectNodeIds = null,
@@ -36,15 +41,18 @@ public interface IOpcUaClient : IDisposable
         IReadOnlyCollection<string>? includeVariableNodeIds = null,
         IReadOnlyCollection<string>? excludeVariableNodeIds = null);
 
-    (bool Succeeded, string? ErrorMessage) WriteNode(
+    Task<(bool Succeeded, string? ErrorMessage)> WriteNodeAsync(
         string nodeId,
-        object value);
+        object value,
+        CancellationToken cancellationToken);
 
-    (bool Succeeded, string? ErrorMessage) WriteNodes(
-        IDictionary<string, object> nodesToWrite);
+    Task<(bool Succeeded, string? ErrorMessage)> WriteNodesAsync(
+        IDictionary<string, object> nodesToWrite,
+        CancellationToken cancellationToken);
 
-    (bool Succeeded, IList<MethodExecutionResult>? ExecutionResults, string? ErrorMessage) ExecuteMethod(
+    Task<(bool Succeeded, IList<MethodExecutionResult>? ExecutionResults, string? ErrorMessage)> ExecuteMethodAsync(
         string parentNodeId,
         string methodNodeId,
-        List<MethodExecutionParameter> arguments);
+        List<MethodExecutionParameter> arguments,
+        CancellationToken cancellationToken);
 }

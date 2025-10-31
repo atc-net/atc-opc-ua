@@ -11,7 +11,7 @@ public static class OpcUaToDotNetDataTypeMapper
 
         var systemType = arrayDimensions.Count > 0
             ? TypeInfo.GetSystemType(TypeInfo.GetBuiltInType(nodeId), arrayDimensions.Count)
-            : TypeInfo.GetSystemType(nodeId, new EncodeableFactory());
+            : TypeInfo.GetSystemType(nodeId, EncodeableFactory.GlobalFactory);
 
         return systemType.BeautifyTypeName();
     }

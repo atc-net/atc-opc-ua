@@ -14,10 +14,10 @@
 
 
   <ItemGroup>
-    <PackageReference Include="Atc" Version="2.0.555" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.8" />
-    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua" Version="1.5.376.244" />
-    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client.ComplexTypes" Version="1.5.376.244" />
+    <PackageReference Include="Atc" Version="2.0.562" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.10" />
+    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua" Version="[1.5.377.21]" />
+    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client.ComplexTypes" Version="[1.5.377.21]" />
   </ItemGroup>
 
   <ItemGroup>

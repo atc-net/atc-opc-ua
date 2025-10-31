@@ -1,6 +1,9 @@
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable InvertIf
 // ReSharper disable MemberCanBePrivate.Global
+
+using Atc.Helpers;
+
 namespace Atc.Opc.Ua.Services;
 
 /// <summary>
@@ -22,7 +25,7 @@ public partial class OpcUaClient : IOpcUaClient
     /// <summary>
     /// Gets the current session with the OPC UA server.
     /// </summary>
-    public Session? Session { get; private set; }
+    public ISession? Session { get; private set; }
 
     public OpcUaClient(
         ILogger<OpcUaClient> logger,
@@ -73,8 +76,9 @@ public partial class OpcUaClient : IOpcUaClient
     /// <summary>
     /// Disconnects from the currently connected OPC UA server, if any.
     /// </summary>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>A tuple indicating whether the disconnection was successful, and an error message if not.</returns>
-    public (bool Succeeded, string? ErrorMessage) Disconnect()
+    public async Task<(bool Succeeded, string? ErrorMessage)> DisconnectAsync(CancellationToken cancellationToken)
     {
         try
         {
@@ -92,7 +96,7 @@ public partial class OpcUaClient : IOpcUaClient
                 reconnectHandler = null;
                 consecutiveKeepAliveFailures = 0;
 
-                Session.Close();
+                await Session.CloseAsync(cancellationToken);
                 Session.Dispose();
                 Session = null;
 
@@ -114,10 +118,12 @@ public partial class OpcUaClient : IOpcUaClient
     /// Asynchronously connects to an OPC UA server.
     /// </summary>
     /// <param name="serverUri">The URI of the OPC UA server.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>A task representing the asynchronous connect operation.</returns>
     public Task<(bool Succeeded, string? ErrorMessage)> ConnectAsync(
-        Uri serverUri)
-        => ConnectAsync(serverUri, string.Empty, string.Empty);
+        Uri serverUri,
+        CancellationToken cancellationToken)
+        => ConnectAsync(serverUri, string.Empty, string.Empty, cancellationToken);
 
     /// <summary>
     /// Asynchronously connects to an OPC UA server with specified credentials.
@@ -125,15 +131,17 @@ public partial class OpcUaClient : IOpcUaClient
     /// <param name="serverUri">The URI of the OPC UA server.</param>
     /// <param name="userName">The username.</param>
     /// <param name="password">The password.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>A task representing the asynchronous connect operation.</returns>
     public Task<(bool Succeeded, string? ErrorMessage)> ConnectAsync(
         Uri serverUri,
         string userName,
-        string password)
+        string password,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(serverUri);
 
-        return InvokeConnectAsync(serverUri, userName, password);
+        return InvokeConnectAsync(serverUri, userName, password, cancellationToken);
     }
 
     /// <summary>
@@ -142,11 +150,13 @@ public partial class OpcUaClient : IOpcUaClient
     /// <param name="serverUri">The URI of the server.</param>
     /// <param name="userName">The username.</param>
     /// <param name="password">The password.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>A task representing the asynchronous operation, with a tuple indicating whether the connection was successful, and an error message if not.</returns>
     private async Task<(bool Succeeded, string? ErrorMessage)> InvokeConnectAsync(
         Uri serverUri,
         string userName,
-        string password)
+        string password,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -159,9 +169,9 @@ public partial class OpcUaClient : IOpcUaClient
                 LogSessionConnecting(serverUri.AbsoluteUri);
 
                 var useSecurity = !string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(password);
-                var endpoint = GetServerEndpoint(serverUri, useSecurity);
+                var endpoint = await GetServerEndpoint(serverUri, useSecurity);
                 var userIdentity = BuildUserIdentity(userName, password);
-                var session = await CreateSession(endpoint, userIdentity);
+                var session = await CreateSession(endpoint, userIdentity, cancellationToken);
 
                 if (session.Connected)
                 {
@@ -198,11 +208,11 @@ public partial class OpcUaClient : IOpcUaClient
     /// <param name="serverUri">The URI of the server.</param>
     /// <param name="useSecurity">Indicates whether to use security while connecting.</param>
     /// <returns>The configured endpoint on the server.</returns>
-    private ConfiguredEndpoint GetServerEndpoint(
+    private async Task<ConfiguredEndpoint> GetServerEndpoint(
         Uri serverUri,
         bool useSecurity)
     {
-        var endpointDescription = CoreClientUtils.SelectEndpoint(configuration, serverUri.AbsoluteUri, useSecurity);
+        var endpointDescription = await CoreClientUtils.SelectEndpointAsync(configuration, serverUri.AbsoluteUri, useSecurity);
         var endpointConfiguration = EndpointConfiguration.Create(configuration);
         var endpoint = new ConfiguredEndpoint(collection: null, endpointDescription, endpointConfiguration);
         return endpoint;
@@ -233,10 +243,12 @@ public partial class OpcUaClient : IOpcUaClient
     /// <param name="endpoint">The endpoint configuration.</param>
     /// <param name="userIdentity">The user identity.</param>
     /// <returns>A task representing the asynchronous operation, with the created session as result.</returns>
-    private Task<Session> CreateSession(
+    private async Task<Session> CreateSession(
         ConfiguredEndpoint endpoint,
-        IUserIdentity userIdentity)
-        => Session.Create(
+        IUserIdentity userIdentity,
+        CancellationToken cancellationToken)
+    {
+        var session = await DefaultSessionFactory.Instance.CreateAsync(
             configuration,
             endpoint,
             updateBeforeConnect: false,
@@ -244,7 +256,11 @@ public partial class OpcUaClient : IOpcUaClient
             configuration.ApplicationName + Guid.NewGuid(),
             clientOptions.SessionTimeoutMilliseconds,
             userIdentity,
-            preferredLocales: null);
+            preferredLocales: null,
+            cancellationToken);
+
+        return (Session)session;
+    }
 
     /// <summary>
     /// Builds a user identity object based on the specified credentials.
@@ -285,11 +301,11 @@ public partial class OpcUaClient : IOpcUaClient
         var applicationConfiguration = ApplicationConfigurationFactory.Create(clientOptions.ApplicationName, securityOptions);
         applicationConfiguration = ApplicationInstance.FixupAppConfig(applicationConfiguration);
 
-        await applicationConfiguration.Validate(applicationConfiguration.ApplicationType);
+        await applicationConfiguration.ValidateAsync(applicationConfiguration.ApplicationType);
 
         var application = new ApplicationInstance(applicationConfiguration);
 
-        var hasAppCertificate = await application.CheckApplicationInstanceCertificates(
+        var hasAppCertificate = await application.CheckApplicationInstanceCertificatesAsync(
             silent: true,
             lifeTimeInMonths: CertificateFactory.DefaultLifeTime);
 
@@ -431,7 +447,7 @@ public partial class OpcUaClient : IOpcUaClient
 
                     try
                     {
-                        Session.Close();
+                        TaskHelper.RunSync(async () => await Session.CloseAsync(CancellationToken.None));
                     }
                     catch
                     {
