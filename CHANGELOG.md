@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.0.0](https://github.com/atc-net/atc-opc-ua/compare/v1.4.1...v2.0.0) (2025-10-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* migrate to OPC UA 1.5.377.21 with async patterns
+
+### Features
+
+* migrate to OPC UA 1.5.377.21 with async patterns ([11d2647](https://github.com/atc-net/atc-opc-ua/commit/11d26475cdda8a734f243e0224a6c08806f49282))
+
+
+### Bug Fixes
+
+* include variables in backwards browser for parent node resolution ([a1b9d55](https://github.com/atc-net/atc-opc-ua/commit/a1b9d55c7bb12b1dcd955b43e0dd38eac31822ae))
+
 ## [1.4.1](https://github.com/atc-net/atc-opc-ua/compare/v1.4.0...v1.4.1) (2025-09-01)
 
 
