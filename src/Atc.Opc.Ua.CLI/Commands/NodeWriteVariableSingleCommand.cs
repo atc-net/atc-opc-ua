@@ -54,10 +54,18 @@ internal sealed class NodeWriteVariableSingleCommand : AsyncCommand<WriteNodeCom
         {
             logger.LogInformation("Connection succeeded");
 
-            var (succeededReading, _, _) = await opcUaClient.ReadNodeVariableAsync(nodeId, includeSampleValue: false, CancellationToken.None);
+            var (succeededReading, _, _) = await opcUaClient.ReadNodeVariableAsync(
+                nodeId,
+                includeSampleValue: false,
+                cancellationToken: CancellationToken.None);
+
             if (succeededReading)
             {
-                var (succeededWriting, _) = await opcUaClient.WriteNodeAsync(nodeId, convertedValue, CancellationToken.None);
+                var (succeededWriting, _) = await opcUaClient.WriteNodeAsync(
+                    nodeId,
+                    convertedValue,
+                    cancellationToken: CancellationToken.None);
+
                 if (succeededWriting)
                 {
                     logger.LogInformation("Value is updated.");

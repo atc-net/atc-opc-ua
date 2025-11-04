@@ -34,7 +34,10 @@ public static class Program
         while (await timer.WaitForNextTickAsync(cts.Token))
         {
             await EnsureConnectedAsync(client, cts.Token);
-            var (succeeded, nodeVariables, errorMessage) = await client.ReadNodeVariablesAsync(NodeIds, includeSampleValues: true, cts.Token);
+            var (succeeded, nodeVariables, errorMessage) = await client.ReadNodeVariablesAsync(
+                NodeIds,
+                includeSampleValues: true,
+                cancellationToken: cts.Token);
 
             if (!succeeded)
             {
@@ -56,7 +59,7 @@ public static class Program
 
     private static async ValueTask<bool> EnsureConnectedAsync(
         OpcUaClient client,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         if (client.IsConnected())
         {

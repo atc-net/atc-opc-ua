@@ -44,8 +44,8 @@ internal sealed class NodeReadVariableMultiCommand : AsyncCommand<MultiNodeComma
             var (succeededReading, nodeVariables, _) = await opcUaClient.ReadNodeVariablesAsync(
                 nodeIds,
                 includeSampleValues,
-                CancellationToken.None,
-                nodeVariableReadDepth);
+                nodeVariableReadDepth,
+                CancellationToken.None);
 
             if (succeededReading)
             {

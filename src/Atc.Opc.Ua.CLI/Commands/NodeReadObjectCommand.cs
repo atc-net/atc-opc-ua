@@ -49,9 +49,9 @@ internal sealed class NodeReadObjectCommand : AsyncCommand<ReadObjectNodeCommand
                 includeObjects,
                 includeVariables,
                 includeSampleValues,
-                CancellationToken.None,
                 nodeObjectReadDepth,
-                nodeVariableReadDepth);
+                nodeVariableReadDepth,
+                cancellationToken: CancellationToken.None);
 
             if (succeededReading)
             {

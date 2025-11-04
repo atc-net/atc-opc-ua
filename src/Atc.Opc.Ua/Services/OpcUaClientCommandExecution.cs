@@ -11,7 +11,7 @@ public partial class OpcUaClient
         string parentNodeId,
         string methodNodeId,
         List<MethodExecutionParameter> arguments,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(arguments);
 

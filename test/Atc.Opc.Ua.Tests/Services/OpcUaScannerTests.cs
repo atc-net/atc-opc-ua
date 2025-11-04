@@ -116,13 +116,13 @@ public sealed class OpcUaScannerTests
                 includeObjects: true,
                 includeVariables: true,
                 includeSampleValues: Arg.Any<bool>(),
-                cancellationToken: Arg.Any<CancellationToken>(),
                 nodeObjectReadDepth: Arg.Any<int>(),
                 nodeVariableReadDepth: Arg.Any<int>(),
                 includeObjectNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
                 excludeObjectNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
                 includeVariableNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
-                excludeVariableNodeIds: Arg.Any<IReadOnlyCollection<string>>())
+                excludeVariableNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
+                cancellationToken: Arg.Any<CancellationToken>())
             .Returns(Task.FromResult((true, root, (string?)null)));
 
         var scanner = new OpcUaScanner(logger);
@@ -140,13 +140,13 @@ public sealed class OpcUaScannerTests
             includeObjects: true,
             includeVariables: true,
             includeSampleValues: Arg.Any<bool>(),
-            cancellationToken: Arg.Any<CancellationToken>(),
             nodeObjectReadDepth: Arg.Any<int>(),
             nodeVariableReadDepth: Arg.Any<int>(),
             includeObjectNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
             excludeObjectNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
             includeVariableNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
-            excludeVariableNodeIds: Arg.Any<IReadOnlyCollection<string>>());
+            excludeVariableNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
+            cancellationToken: Arg.Any<CancellationToken>());
     }
 
     [Theory, AutoNSubstituteData]
@@ -167,13 +167,13 @@ public sealed class OpcUaScannerTests
                 includeObjects: true,
                 includeVariables: true,
                 includeSampleValues: Arg.Any<bool>(),
-                cancellationToken: Arg.Any<CancellationToken>(),
                 nodeObjectReadDepth: Arg.Any<int>(),
                 nodeVariableReadDepth: Arg.Any<int>(),
                 includeObjectNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
                 excludeObjectNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
                 includeVariableNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
-                excludeVariableNodeIds: Arg.Any<IReadOnlyCollection<string>>())
+                excludeVariableNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
+                cancellationToken: Arg.Any<CancellationToken>())
             .Returns(Task.FromResult((true, root, (string?)null)));
 
         var scanner = new OpcUaScanner(logger);
@@ -190,13 +190,13 @@ public sealed class OpcUaScannerTests
             includeObjects: true,
             includeVariables: true,
             includeSampleValues: Arg.Any<bool>(),
-            cancellationToken: Arg.Any<CancellationToken>(),
             nodeObjectReadDepth: Arg.Any<int>(),
             nodeVariableReadDepth: Arg.Any<int>(),
             includeObjectNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
             excludeObjectNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
             includeVariableNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
-            excludeVariableNodeIds: Arg.Any<IReadOnlyCollection<string>>());
+            excludeVariableNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
+            cancellationToken: Arg.Any<CancellationToken>());
     }
 
     [Theory, AutoNSubstituteData]
@@ -221,13 +221,13 @@ public sealed class OpcUaScannerTests
                 includeObjects: true,
                 includeVariables: true,
                 includeSampleValues: true,
-                cancellationToken: Arg.Any<CancellationToken>(),
                 nodeObjectReadDepth: 2,
                 nodeVariableReadDepth: 3,
                 includeObjectNodeIds: Arg.Is<IReadOnlyCollection<string>>(c => c.SequenceEqual(includeObjects)),
                 excludeObjectNodeIds: Arg.Is<IReadOnlyCollection<string>>(c => c.SequenceEqual(excludeObjects)),
                 includeVariableNodeIds: Arg.Is<IReadOnlyCollection<string>>(c => c.SequenceEqual(includeVariables)),
-                excludeVariableNodeIds: Arg.Is<IReadOnlyCollection<string>>(c => c.SequenceEqual(excludeVariables)))
+                excludeVariableNodeIds: Arg.Is<IReadOnlyCollection<string>>(c => c.SequenceEqual(excludeVariables)),
+                cancellationToken: Arg.Any<CancellationToken>())
             .Returns(Task.FromResult((true, root, (string?)null)));
 
         var scanner = new OpcUaScanner(logger);
@@ -283,13 +283,13 @@ public sealed class OpcUaScannerTests
                 includeObjects: true,
                 includeVariables: true,
                 includeSampleValues: Arg.Any<bool>(),
-                cancellationToken: Arg.Any<CancellationToken>(),
                 nodeObjectReadDepth: Arg.Any<int>(),
                 nodeVariableReadDepth: Arg.Any<int>(),
                 includeObjectNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
                 excludeObjectNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
                 includeVariableNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
-                excludeVariableNodeIds: Arg.Any<IReadOnlyCollection<string>>())
+                excludeVariableNodeIds: Arg.Any<IReadOnlyCollection<string>>(),
+                cancellationToken: Arg.Any<CancellationToken>())
             .Returns(Task.FromResult((false, (NodeObject?)null, "boom")));
 
         var scanner = new OpcUaScanner(logger);
