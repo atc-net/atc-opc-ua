@@ -12,25 +12,25 @@ public partial class OpcUaClient
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionConnecting,
         Level = LogLevel.Information,
-        Message = "Session is connecting to '{opcUaUri}'")]
+        Message = "Session is connecting to '{OpcUaUri}'")]
     private partial void LogSessionConnecting(string opcUaUri);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionConnected,
         Level = LogLevel.Information,
-        Message = "Session with name '{sessionName}' is connected")]
+        Message = "Session with name '{SessionName}' is connected")]
     private partial void LogSessionConnected(string sessionName);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionConnectionFailure,
         Level = LogLevel.Error,
-        Message = "Session failed to connect to '{opcUaUri}': '{errorMessage}'")]
+        Message = "Session failed to connect to '{OpcUaUri}': '{ErrorMessage}'")]
     private partial void LogSessionConnectionFailure(string opcUaUri, string errorMessage);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionReconnected,
         Level = LogLevel.Trace,
-        Message = "Session with name '{sessionName}' was reconnected")]
+        Message = "Session with name '{SessionName}' was reconnected")]
     private partial void LogSessionReconnected(string sessionName);
 
     [LoggerMessage(
@@ -54,130 +54,130 @@ public partial class OpcUaClient
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionUntrustedCertificateAccepted,
         Level = LogLevel.Information,
-        Message = "Untrusted Certificate accepted '{subjectName}'")]
+        Message = "Untrusted Certificate accepted '{SubjectName}'")]
     private partial void LogSessionUntrustedCertificateAccepted(string subjectName);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionDisconnecting,
         Level = LogLevel.Information,
-        Message = "Session with name '{sessionName}' is disconnecting")]
+        Message = "Session with name '{SessionName}' is disconnecting")]
     private partial void LogSessionDisconnecting(string sessionName);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionDisconnected,
         Level = LogLevel.Information,
-        Message = "Session with name '{sessionName}' is disconnected")]
+        Message = "Session with name '{SessionName}' is disconnected")]
     private partial void LogSessionDisconnected(string sessionName);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionDisconnectionFailure,
         Level = LogLevel.Error,
-        Message = "Session disconnection failure: '{errorMessage}'")]
+        Message = "Session disconnection failure: '{ErrorMessage}'")]
     private partial void LogSessionDisconnectionFailure(string errorMessage);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionNodeNotFound,
         Level = LogLevel.Warning,
-        Message = "Could not find node by nodeId '{nodeId}'")]
+        Message = "Could not find node by nodeId '{NodeId}'")]
     private partial void LogSessionNodeNotFound(string nodeId);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionParentNodeNotFound,
         Level = LogLevel.Trace,
-        Message = "Could not find parent for node with nodeId '{nodeId}'")]
+        Message = "Could not find parent for node with nodeId '{NodeId}'")]
     private partial void LogSessionParentNodeNotFound(string nodeId);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionLoadComplexTypeSystem,
         Level = LogLevel.Trace,
-        Message = "Loading Complex Type System for node with nodeId '{nodeId}' and dataTypeId '{dataTypeId}'")]
+        Message = "Loading Complex Type System for node with nodeId '{NodeId}' and dataTypeId '{DataTypeId}'")]
     private partial void LogLoadingComplexTypeSystem(string nodeId, string dataTypeId);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionReadNodeObject,
         Level = LogLevel.Information,
-        Message = "Reading node object with nodeId '{nodeId}'")]
+        Message = "Reading node object with nodeId '{NodeId}'")]
     private partial void LogSessionReadNodeObject(string nodeId);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionHandlingNode,
         Level = LogLevel.Information,
-        Message = "Handling node with nodeId '{nodeId}'")]
+        Message = "Handling node with nodeId '{NodeId}'")]
     private partial void LogSessionHandlingNode(string nodeId);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionReadNodeVariable,
         Level = LogLevel.Information,
-        Message = "Reading node variable with nodeId '{nodeId}'")]
+        Message = "Reading node variable with nodeId '{NodeId}'")]
     private partial void LogSessionReadNodeVariable(string nodeId);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionReadNodeObjectWithMaxDepth,
         Level = LogLevel.Information,
         Message =
-            "Starting to read node tree from node with nodeId '{nodeId}' with max depth set to '{nodeObjectReadDepth}'")]
+            "Starting to read node tree from node with nodeId '{NodeId}' with max depth set to '{NodeObjectReadDepth}'")]
     private partial void LogSessionReadNodeObjectWithMaxDepth(string nodeId, int nodeObjectReadDepth);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionReadNodeObjectSucceeded,
         Level = LogLevel.Trace,
-        Message = "Successfully read node object with nodeId '{nodeId}'")]
+        Message = "Successfully read node object with nodeId '{NodeId}'")]
     private partial void LogSessionReadNodeObjectSucceeded(string nodeId);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionReadNodeVariableSucceeded,
         Level = LogLevel.Trace,
-        Message = "Successfully read node variable with nodeId '{nodeId}'")]
+        Message = "Successfully read node variable with nodeId '{NodeId}'")]
     private partial void LogSessionReadNodeVariableSucceeded(string nodeId);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionWriteNodeVariableFailure,
         Level = LogLevel.Error,
-        Message = "Writing node variable(s) failed: {errorMessage}")]
+        Message = "Writing node variable(s) failed: {ErrorMessage}")]
     private partial void LogSessionWriteNodeVariableFailure(string errorMessage);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionReadNodeVariableValueFailure,
         Level = LogLevel.Error,
-        Message = "Retrieving value for variable with nodeId '{nodeId}' failed: '{errorMessage}'")]
+        Message = "Retrieving value for variable with nodeId '{NodeId}' failed: '{ErrorMessage}'")]
     private partial void LogSessionReadNodeVariableValueFailure(string nodeId, string errorMessage);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionNodeHasWrongClass,
         Level = LogLevel.Warning,
-        Message = "Node with nodeId '{nodeId}' has wrong NodeClass '{actual}', expected '{expected}'")]
+        Message = "Node with nodeId '{NodeId}' has wrong NodeClass '{Actual}', expected '{Expected}'")]
     private partial void LogSessionNodeHasWrongClass(string nodeId, NodeClass actual, NodeClass expected);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionReadNodeNotSupportedNodeClass,
         Level = LogLevel.Warning,
-        Message = "Encountered not supported node class '{nodeClass}', when reading node with nodeId '{nodeId}'")]
+        Message = "Encountered not supported node class '{NodeClass}', when reading node with nodeId '{NodeId}'")]
     private partial void LogSessionReadNodeNotSupportedNodeClass(string nodeId, NodeClass nodeClass);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionReadNodeFailure,
         Level = LogLevel.Error,
-        Message = "Reading node with nodeId '{nodeId}' failed: '{errorMessage}'")]
+        Message = "Reading node with nodeId '{NodeId}' failed: '{ErrorMessage}'")]
     private partial void LogSessionReadNodeFailure(string nodeId, string errorMessage);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionReadParentNodeFailure,
         Level = LogLevel.Warning,
-        Message = "Reading parent node of nodeId '{nodeId}' failed: '{errorMessage}'")]
+        Message = "Reading parent node of nodeId '{NodeId}' failed: '{ErrorMessage}'")]
     private partial void LogSessionReadParentNodeFailure(string nodeId, string errorMessage);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionExecuteCommandRequest,
         Level = LogLevel.Trace,
         Message =
-            "Executing method for parentNodeId '{parentNodeId}' and methodNodeId '{methodNodeId}' with '{arguments}'")]
+            "Executing method for parentNodeId '{ParentNodeId}' and methodNodeId '{MethodNodeId}' with '{Arguments}'")]
     private partial void LogSessionExecuteCommandRequest(string parentNodeId, string methodNodeId, string arguments);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionExecuteCommandFailure,
         Level = LogLevel.Error,
         Message =
-            "Executing method for parentNodeId '{parentNodeId}' and methodNodeId '{methodNodeId}' failed: '{errorMessage}'")]
+            "Executing method for parentNodeId '{ParentNodeId}' and methodNodeId '{MethodNodeId}' failed: '{ErrorMessage}'")]
     private partial void LogSessionExecuteCommandFailure(string parentNodeId, string methodNodeId, string errorMessage);
 
     [LoggerMessage(
@@ -195,8 +195,7 @@ public partial class OpcUaClient
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionKeepAliveFailure,
         Level = LogLevel.Trace,
-        Message =
-            "KeepAlive request failed: '{ServiceResult}', consecutive failures: '{ConsecutiveKeepAliveFailures}'")]
+        Message = "KeepAlive request failed: '{ServiceResult}', consecutive failures: '{ConsecutiveKeepAliveFailures}'")]
     private partial void LogSessionKeepAliveFailure(
         string serviceResult,
         int consecutiveKeepAliveFailures);

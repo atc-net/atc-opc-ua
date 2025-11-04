@@ -16,7 +16,7 @@ public partial class OpcUaScanner
     [LoggerMessage(
         EventId = LoggingEventIdConstants.ScannerStart,
         Level = LogLevel.Information,
-        Message = "Scanning starting nodeId '{nodeId}' with objectDepth={objectDepth}, variableDepth={variableDepth}, includeSampleValues={includeSampleValues}.")]
+        Message = "Scanning starting nodeId '{NodeId}' with objectDepth={ObjectDepth}, variableDepth={VariableDepth}, includeSampleValues={IncludeSampleValues}.")]
     private partial void LogScannerStart(
         string nodeId,
         int objectDepth,
@@ -26,7 +26,7 @@ public partial class OpcUaScanner
     [LoggerMessage(
         EventId = LoggingEventIdConstants.ScannerReadRootFailure,
         Level = LogLevel.Error,
-        Message = "Failed reading starting node '{nodeId}': '{error}'")]
+        Message = "Failed reading starting node '{NodeId}': '{Error}'")]
     private partial void LogScannerReadRootFailure(
         string nodeId,
         string error);
