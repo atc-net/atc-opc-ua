@@ -22,8 +22,7 @@ internal sealed class TestConnectionCommand : AsyncCommand<OpcUaBaseCommandSetti
         return ExecuteInternalAsync(settings);
     }
 
-    private async Task<int> ExecuteInternalAsync(
-        OpcUaBaseCommandSettings settings)
+    private async Task<int> ExecuteInternalAsync(OpcUaBaseCommandSettings settings)
     {
         ConsoleHelper.WriteHeader();
 

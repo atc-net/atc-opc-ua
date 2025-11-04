@@ -22,8 +22,7 @@ internal sealed class ExecuteMethodCommand : AsyncCommand<ExecuteMethodCommandSe
         return ExecuteInternalAsync(settings);
     }
 
-    private async Task<int> ExecuteInternalAsync(
-        ExecuteMethodCommandSettings settings)
+    private async Task<int> ExecuteInternalAsync(ExecuteMethodCommandSettings settings)
     {
         ConsoleHelper.WriteHeader();
 

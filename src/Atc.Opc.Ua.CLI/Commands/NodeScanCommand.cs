@@ -24,8 +24,7 @@ internal sealed class NodeScanCommand : AsyncCommand<ScanNodeCommandSettings>
         return ExecuteInternalAsync(settings);
     }
 
-    private async Task<int> ExecuteInternalAsync(
-        ScanNodeCommandSettings settings)
+    private async Task<int> ExecuteInternalAsync(ScanNodeCommandSettings settings)
     {
         ConsoleHelper.WriteHeader();
 

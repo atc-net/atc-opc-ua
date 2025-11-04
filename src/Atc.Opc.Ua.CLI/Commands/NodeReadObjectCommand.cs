@@ -22,8 +22,7 @@ internal sealed class NodeReadObjectCommand : AsyncCommand<ReadObjectNodeCommand
         return ExecuteInternalAsync(settings);
     }
 
-    private async Task<int> ExecuteInternalAsync(
-        ReadObjectNodeCommandSettings settings)
+    private async Task<int> ExecuteInternalAsync(ReadObjectNodeCommandSettings settings)
     {
         ConsoleHelper.WriteHeader();
 
