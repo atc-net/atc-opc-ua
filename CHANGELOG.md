@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.1](https://github.com/atc-net/atc-opc-ua/compare/v2.0.0...v2.0.1) (2025-11-04)
+
+
+### Bug Fixes
+
+* align usage of cancellationToken and Async suffix of methods ([bd6da3a](https://github.com/atc-net/atc-opc-ua/commit/bd6da3a30d0c438e72bb9de7f236e6d4a9efac4a))
+* ensure pascalcase is used in all LoggerMessages ([c1c62b1](https://github.com/atc-net/atc-opc-ua/commit/c1c62b1fec3b28fdd7baab0345d3096df4bd0c5e))
+
 ## [2.0.0](https://github.com/atc-net/atc-opc-ua/compare/v1.4.1...v2.0.0) (2025-10-31)
 
 
