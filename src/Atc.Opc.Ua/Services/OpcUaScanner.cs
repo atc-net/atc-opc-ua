@@ -5,13 +5,8 @@ namespace Atc.Opc.Ua.Services;
 /// </summary>
 public partial class OpcUaScanner : IOpcUaScanner
 {
-    private readonly ILogger<OpcUaScanner> logger;
-
-    public OpcUaScanner(
-        ILogger<OpcUaScanner> logger)
-    {
-        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
+    public OpcUaScanner(ILogger<OpcUaScanner> logger)
+        => this.logger = logger;
 
     public async Task<NodeScanResult> ScanAsync(
         IOpcUaClient client,

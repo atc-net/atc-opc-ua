@@ -7,6 +7,8 @@ namespace Atc.Opc.Ua.Services;
 [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OK")]
 public partial class OpcUaScanner
 {
+    private readonly ILogger<OpcUaScanner> logger;
+
     [LoggerMessage(
         EventId = LoggingEventIdConstants.ScannerClientNotConnected,
         Level = LogLevel.Warning,
