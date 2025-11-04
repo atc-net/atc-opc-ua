@@ -1,9 +1,6 @@
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable InvertIf
 // ReSharper disable MemberCanBePrivate.Global
-
-using Atc.Helpers;
-
 namespace Atc.Opc.Ua.Services;
 
 /// <summary>
