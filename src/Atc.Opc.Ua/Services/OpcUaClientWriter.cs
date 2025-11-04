@@ -17,7 +17,7 @@ public partial class OpcUaClient
     public Task<(bool Succeeded, string? ErrorMessage)> WriteNodeAsync(
         string nodeId,
         object value,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         var nodesToWriteCollection = new WriteValueCollection();
         var writeVal = BuildWriteValue(nodeId, value);
@@ -34,7 +34,7 @@ public partial class OpcUaClient
     /// <returns>A tuple indicating success and an error message if applicable.</returns>
     public Task<(bool Succeeded, string? ErrorMessage)> WriteNodesAsync(
         IDictionary<string, object> nodesToWrite,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(nodesToWrite);
 
@@ -55,7 +55,7 @@ public partial class OpcUaClient
     /// <returns>A tuple indicating success and an error message if applicable.</returns>
     private async Task<(bool Succeeded, string? ErrorMessage)> WriteNodeValueCollectionAsync(
         WriteValueCollection nodesToWriteCollection,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         try
         {

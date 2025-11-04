@@ -5,5 +5,5 @@ public interface IOpcUaScanner
     Task<NodeScanResult> ScanAsync(
         IOpcUaClient client,
         OpcUaScannerOptions options,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken = default);
 }

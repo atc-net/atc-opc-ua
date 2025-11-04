@@ -44,8 +44,8 @@ internal sealed class NodeReadVariableSingleCommand : AsyncCommand<SingleNodeCom
             var (succeededReading, nodeVariable, _) = await opcUaClient.ReadNodeVariableAsync(
                 nodeId,
                 includeSampleValue,
-                CancellationToken.None,
-                nodeVariableReadDepth);
+                nodeVariableReadDepth,
+                CancellationToken.None);
 
             if (succeededReading)
             {

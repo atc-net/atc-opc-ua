@@ -11,7 +11,7 @@ public partial class OpcUaScanner : IOpcUaScanner
     public async Task<NodeScanResult> ScanAsync(
         IOpcUaClient client,
         OpcUaScannerOptions options,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(client);
         ArgumentNullException.ThrowIfNull(options);
@@ -44,13 +44,13 @@ public partial class OpcUaScanner : IOpcUaScanner
             includeObjects: true,
             includeVariables: true,
             includeSampleValues: options.IncludeSampleValues,
-            cancellationToken,
             nodeObjectReadDepth: options.ObjectDepth,
             nodeVariableReadDepth: options.VariableDepth,
             includeObjectNodeIds: (IReadOnlyCollection<string>?)options.IncludeObjectNodeIds,
             excludeObjectNodeIds: (IReadOnlyCollection<string>?)options.ExcludeObjectNodeIds,
             includeVariableNodeIds: (IReadOnlyCollection<string>?)options.IncludeVariableNodeIds,
-            excludeVariableNodeIds: (IReadOnlyCollection<string>?)options.ExcludeVariableNodeIds);
+            excludeVariableNodeIds: (IReadOnlyCollection<string>?)options.ExcludeVariableNodeIds,
+            cancellationToken);
 
         if (objSucceeded && nodeObject is not null)
         {
@@ -61,8 +61,8 @@ public partial class OpcUaScanner : IOpcUaScanner
         var (varSucceeded, nodeVariable, varError) = await client.ReadNodeVariableAsync(
             startingNodeId,
             includeSampleValue: options.IncludeSampleValues,
-            cancellationToken,
-            nodeVariableReadDepth: options.VariableDepth);
+            nodeVariableReadDepth: options.VariableDepth,
+            cancellationToken);
 
         if (varSucceeded && nodeVariable is not null)
         {
