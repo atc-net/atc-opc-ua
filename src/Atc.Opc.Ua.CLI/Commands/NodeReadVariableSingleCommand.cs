@@ -22,8 +22,7 @@ internal sealed class NodeReadVariableSingleCommand : AsyncCommand<SingleNodeCom
         return ExecuteInternalAsync(settings);
     }
 
-    private async Task<int> ExecuteInternalAsync(
-        SingleNodeCommandSettings settings)
+    private async Task<int> ExecuteInternalAsync(SingleNodeCommandSettings settings)
     {
         ConsoleHelper.WriteHeader();
 
