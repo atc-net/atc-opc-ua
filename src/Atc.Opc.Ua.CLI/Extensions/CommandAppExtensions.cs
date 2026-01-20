@@ -66,6 +66,18 @@ public static class CommandAppExtensions
                     .WithDescription("Reads a list of node variables.")
                     .WithExample($"node read variable multi -s {SampleOpcUaServerUrl} -n \"ns=2;s=Demo.Dynamic.Scalar.Float\" -n \"ns=2;s=Demo.Dynamic.Scalar.Int32\"");
             });
+
+            read.AddBranch("datatype", datatype =>
+            {
+                datatype.SetDescription("Reads one or more DataType definition(s) (enumerations).");
+                datatype.AddCommand<NodeReadDataTypeSingleCommand>("single")
+                    .WithDescription("Reads a single enum DataType definition.")
+                    .WithExample($"node read datatype single -s {SampleOpcUaServerUrl} -n \"i=852\"");
+
+                datatype.AddCommand<NodeReadDataTypeMultiCommand>("multi")
+                    .WithDescription("Reads a list of enum DataType definitions.")
+                    .WithExample($"node read datatype multi -s {SampleOpcUaServerUrl} -n \"i=852\" -n \"ns=3;i=3063\"");
+            });
         });
 
     private static void ConfigureNodeWriteCommands(IConfigurator<CommandSettings> node)
