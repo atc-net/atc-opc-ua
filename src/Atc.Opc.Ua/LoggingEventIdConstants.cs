@@ -42,6 +42,11 @@ internal static class LoggingEventIdConstants
     public const int SessionKeepAliveFailureCountReset = 10071;
     public const int SessionKeepAliveFailure = 10072;
 
+    public const int SessionReadEnumDataType = 10080;
+    public const int SessionReadEnumDataTypeSucceeded = 10081;
+    public const int SessionReadEnumDataTypeFailure = 10082;
+    public const int SessionReadEnumDataTypeNotEnum = 10083;
+
     // OpcUaScanner
     public const int ScannerClientNotConnected = 11000;
     public const int ScannerStart = 11001;

@@ -55,4 +55,12 @@ public interface IOpcUaClient : IDisposable
         string methodNodeId,
         List<MethodExecutionParameter> arguments,
         CancellationToken cancellationToken = default);
+
+    Task<(bool Succeeded, OpcUaEnumDataType? EnumDataType, string? ErrorMessage)> ReadEnumDataTypeAsync(
+        string dataTypeNodeId,
+        CancellationToken cancellationToken = default);
+
+    Task<(bool Succeeded, IList<OpcUaEnumDataType>? EnumDataTypes, string? ErrorMessage)> ReadEnumDataTypesAsync(
+        string[] dataTypeNodeIds,
+        CancellationToken cancellationToken = default);
 }
