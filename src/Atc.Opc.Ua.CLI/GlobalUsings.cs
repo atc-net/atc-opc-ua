@@ -1,6 +1,7 @@
 global using System.ComponentModel;
 global using System.Diagnostics;
 global using System.Diagnostics.CodeAnalysis;
+global using System.Globalization;
 global using System.Text;
 global using Atc.Console.Spectre;
 global using Atc.Console.Spectre.CommandSettings;
