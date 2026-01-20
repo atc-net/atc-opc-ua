@@ -11,6 +11,7 @@ OPC UA industrial library for executing commands, reads and writes on OPC UA ser
 - [Quick Start](#quick-start)
 - [OpcUaClient](#opcuaclient)
   - [Basic Usage](#basic-usage)
+  - [Reading Enum DataTypes](#reading-enum-datatypes)
   - [Configuring OPC UA Security Settings](#configuring-opc-ua-security-settings)
   - [Configuring OPC UA Client Options](#configuring-opc-ua-client-options)
   - [Keep-alive behavior and options](#keep-alive-behavior-and-options)
@@ -21,6 +22,7 @@ OPC UA industrial library for executing commands, reads and writes on OPC UA ser
   - [Usage](#usage)
     - [Option --help](#option---help)
     - [Scanning the Address Space](#scanning-the-address-space)
+    - [Reading Enum DataType Definitions](#reading-enum-datatype-definitions)
 - [Requirements](#requirements)
 - [How to contribute](#how-to-contribute)
 
@@ -122,6 +124,44 @@ public class MyService
     }
 }
 ```
+
+## Reading Enum DataTypes
+
+The client can read OPC UA enumeration DataType definitions, which is useful for displaying enum options in UIs or mapping numeric values to their symbolic names.
+
+OPC UA enumerations can be defined in two ways:
+- **EnumStrings**: Simple `LocalizedText[]` where the array index equals the enum value (e.g., `ServerState`)
+- **EnumValues**: Complex `EnumValueType[]` with explicit Value, Name, DisplayName, and Description (e.g., vendor-specific enums)
+
+The client automatically detects and handles both formats.
+
+```csharp
+// Read a single enum DataType
+var (succeeded, enumDataType, error) = await opcUaClient.ReadEnumDataTypeAsync(
+    "i=852", // ServerState enum
+    cancellationToken);
+
+if (succeeded && enumDataType != null)
+{
+    Console.WriteLine($"Enum: {enumDataType.Name} ({enumDataType.Members.Count} members)");
+
+    foreach (var member in enumDataType.Members.OrderBy(m => m.Value))
+    {
+        Console.WriteLine($"  {member.Value} = {member.Name}");
+    }
+}
+
+// Read multiple enum DataTypes
+var nodeIds = new[] { "i=852", "ns=3;i=3063" };
+var (succeeded, enumDataTypes, error) = await opcUaClient.ReadEnumDataTypesAsync(
+    nodeIds,
+    cancellationToken);
+```
+
+The `OpcUaEnumDataType` contains:
+- `NodeId`, `Name`, `DisplayName`, `Description` - DataType metadata
+- `HasEnumValues` - `true` if defined using EnumValues (complex), `false` for EnumStrings (simple)
+- `Members` - Collection of `OpcUaEnumMember` with `Value`, `Name`, `DisplayName`, and `Description`
 
 ## Configuring OPC UA Security Settings
 
@@ -350,6 +390,8 @@ EXAMPLES:
     atc-opc-ua.exe node read object -s opc.tcp://opcuaserver.com:48010 -n "ns=2;s=Demo.Dynamic.Scalar"
     atc-opc-ua.exe node read variable single -s opc.tcp://opcuaserver.com:48010 -n "ns=2;s=Demo.Dynamic.Scalar.Float"
     atc-opc-ua.exe node read variable multi -s opc.tcp://opcuaserver.com:48010 -n "ns=2;s=Demo.Dynamic.Scalar.Float" -n "ns=2;s=Demo.Dynamic.Scalar.Int32"
+    atc-opc-ua.exe node read datatype single -s opc.tcp://opcuaserver.com:48010 -n "i=852"
+    atc-opc-ua.exe node read datatype multi -s opc.tcp://opcuaserver.com:48010 -n "i=852" -n "ns=3;i=3063"
     atc-opc-ua.exe node scan -s opc.tcp://opcuaserver.com:48010 --starting-node-id "ns=2;s=Demo.Dynamic.Scalar" --object-depth 2 --variable-depth 1
 
 OPTIONS:
@@ -387,6 +429,25 @@ Example restricting to a single variable while excluding an object:
 ```powershell
 atc-opc-ua node scan -s opc.tcp://opcuaserver.com:48010 --starting-node-id "ns=2;s=Demo.Dynamic.Scalar" --include-variable-node-id "ns=2;s=Demo.Dynamic.Scalar.Float" --exclude-object-node-id "ns=2;s=Unwanted.Object"
 ```
+
+### Reading Enum DataType Definitions
+
+Read OPC UA enumeration DataType definitions to discover the possible values and their names:
+
+```powershell
+# Read a single enum DataType (e.g., ServerState)
+atc-opc-ua node read datatype single -s opc.tcp://opcuaserver.com:48010 -n "i=852"
+
+# Read multiple enum DataTypes
+atc-opc-ua node read datatype multi -s opc.tcp://opcuaserver.com:48010 -n "i=852" -n "ns=3;i=3063"
+```
+
+The output displays a table with the enum members including their Value, Name, DisplayName, and Description.
+
+This is useful for:
+- Discovering what values an enum variable can hold
+- Building UI dropdowns or selection lists
+- Mapping numeric values read from variables to human-readable names
 
 # Requirements
 
