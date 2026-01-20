@@ -12,6 +12,13 @@ public static class Program
         "ns=2;s=Simulation Examples.Functions.Ramp2",
     };
 
+    // Enum DataType NodeIds to read definitions for
+    private static readonly string[] EnumDataTypeNodeIds =
+    [
+        "ns=3;i=3063",    // SimaticOperatingState (custom enum using EnumValues)
+        "i=852",          // ServerState (standard OPC UA enum using EnumStrings)
+    ];
+
     private static ILogger<OpcUaClient>? logger;
 
     public static async Task Main(string[] args)
@@ -29,6 +36,9 @@ public static class Program
 
         using var client = new OpcUaClient(logger);
         await client.ConnectAsync(ServerUri, UserName!, Password!, cts.Token);
+
+        // Demo: Read enum DataType definitions once
+        await DemoReadEnumDataTypesAsync(client, cts.Token);
 
         using PeriodicTimer timer = new(TimeSpan.FromSeconds(1));
         while (await timer.WaitForNextTickAsync(cts.Token))
@@ -55,6 +65,38 @@ public static class Program
                 logger.LogInformation("Node: {NodeId}, DisplayName: {DisplayName}, Value: {Value}", nodeVariable.NodeId, nodeVariable.DisplayName, nodeVariable.SampleValue);
             }
         }
+    }
+
+    private static async Task DemoReadEnumDataTypesAsync(
+        OpcUaClient client,
+        CancellationToken cancellationToken)
+    {
+        logger!.LogInformation("=== Reading Enum DataType Definitions ===");
+
+        foreach (var nodeId in EnumDataTypeNodeIds)
+        {
+            var (succeeded, enumDataType, errorMessage) = await client.ReadEnumDataTypeAsync(nodeId, cancellationToken);
+            if (succeeded && enumDataType is not null)
+            {
+                logger!.LogInformation(
+                    "Enum: {Name} ({NodeId}) - {MemberCount} members, HasEnumValues: {HasEnumValues}",
+                    enumDataType.Name,
+                    enumDataType.NodeId,
+                    enumDataType.Members.Count,
+                    enumDataType.HasEnumValues);
+
+                foreach (var member in enumDataType.Members.OrderBy(m => m.Value))
+                {
+                    logger!.LogInformation("  {Value} = {Name}", member.Value, member.Name);
+                }
+            }
+            else
+            {
+                logger!.LogWarning("Failed to read enum DataType {NodeId}: {ErrorMessage}", nodeId, errorMessage);
+            }
+        }
+
+        logger!.LogInformation("=== End Enum DataType Definitions ===\n");
     }
 
     private static async ValueTask<bool> EnsureConnectedAsync(
