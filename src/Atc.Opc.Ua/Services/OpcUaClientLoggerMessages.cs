@@ -199,4 +199,28 @@ public partial class OpcUaClient
     private partial void LogSessionKeepAliveFailure(
         string serviceResult,
         int consecutiveKeepAliveFailures);
+
+    [LoggerMessage(
+        EventId = LoggingEventIdConstants.SessionReadEnumDataType,
+        Level = LogLevel.Information,
+        Message = "Reading enum DataType with nodeId '{NodeId}'")]
+    private partial void LogSessionReadEnumDataType(string nodeId);
+
+    [LoggerMessage(
+        EventId = LoggingEventIdConstants.SessionReadEnumDataTypeSucceeded,
+        Level = LogLevel.Trace,
+        Message = "Successfully read enum DataType with nodeId '{NodeId}' containing {MemberCount} members")]
+    private partial void LogSessionReadEnumDataTypeSucceeded(string nodeId, int memberCount);
+
+    [LoggerMessage(
+        EventId = LoggingEventIdConstants.SessionReadEnumDataTypeFailure,
+        Level = LogLevel.Error,
+        Message = "Reading enum DataType with nodeId '{NodeId}' failed: '{ErrorMessage}'")]
+    private partial void LogSessionReadEnumDataTypeFailure(string nodeId, string errorMessage);
+
+    [LoggerMessage(
+        EventId = LoggingEventIdConstants.SessionReadEnumDataTypeNotEnum,
+        Level = LogLevel.Warning,
+        Message = "DataType with nodeId '{NodeId}' is not an enumeration or has no enum definition")]
+    private partial void LogSessionReadEnumDataTypeNotEnum(string nodeId);
 }
