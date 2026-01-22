@@ -20,8 +20,20 @@ public class OpcUaEnumMember
     /// Gets or sets the numeric value of this enum member.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// For <c>EnumStrings</c> this is the zero-based index of the string.
     /// For <c>EnumValues</c> this is the explicit <c>Value</c> field.
+    /// </para>
+    /// <para>
+    /// OPC UA defines enum values as Int64 (<c>long</c>) to accommodate the full range
+    /// of possible values in the specification. This property preserves the original
+    /// OPC UA value without truncation.
+    /// </para>
+    /// <para>
+    /// Note: When converting to <see cref="DotNetEnumMember"/>, which uses <c>int</c>
+    /// for CLR enum compatibility, values outside the Int32 range cause the type to be
+    /// treated as a complex structure instead of an enum.
+    /// </para>
     /// </remarks>
     public long Value { get; set; }
 

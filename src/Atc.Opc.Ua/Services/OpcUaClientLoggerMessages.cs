@@ -137,10 +137,10 @@ public partial class OpcUaClient
     private partial void LogSessionWriteNodeVariableFailure(string errorMessage);
 
     [LoggerMessage(
-        EventId = LoggingEventIdConstants.SessionReadNodeVariableValueFailure,
-        Level = LogLevel.Error,
-        Message = "Retrieving value for variable with nodeId '{NodeId}' failed: '{ErrorMessage}'")]
-    private partial void LogSessionReadNodeVariableValueFailure(string nodeId, string errorMessage);
+        EventId = LoggingEventIdConstants.SessionReadNodeVariableValueEmpty,
+        Level = LogLevel.Warning,
+        Message = "Could not retrieve value for variable with nodeId '{NodeId}' and statusCode '{StatusCode}'")]
+    private partial void LogSessionReadNodeVariableValueEmpty(string nodeId, string statusCode);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionNodeHasWrongClass,

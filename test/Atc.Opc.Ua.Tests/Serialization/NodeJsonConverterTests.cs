@@ -26,7 +26,7 @@ public sealed class NodeJsonConverterTests
             DisplayName = "Objects",
         };
         var childObj = new NodeObject { ParentNodeId = root.NodeId, NodeId = "ns=2;s=Child", NodeIdentifier = "Child", DisplayName = "ChildObj" };
-        var childVar = new NodeVariable { ParentNodeId = childObj.NodeId, NodeId = "ns=2;s=Child.Var", NodeIdentifier = "Child.Var", DisplayName = "ChildVar", DataTypeDotnet = "string", SampleValue = "abc", DataTypeOpcUa = new OpUaDataType { Name = "String", IsArray = false } };
+        var childVar = new NodeVariable { ParentNodeId = childObj.NodeId, NodeId = "ns=2;s=Child.Var", NodeIdentifier = "Child.Var", DisplayName = "ChildVar", DataTypeDotnet = new DotNetTypeDescriptor { Kind = DotNetTypeKind.Primitive, Name = "String", ClrTypeName = "string" }, SampleValue = "abc", DataTypeOpcUa = new OpUaDataType { Name = "String", IsArray = false } };
         childObj.NodeVariables.Add(childVar);
         root.NodeObjects.Add(childObj);
 
@@ -48,7 +48,7 @@ public sealed class NodeJsonConverterTests
         // Arrange
         var root = new NodeObject { NodeId = "i=1", NodeIdentifier = "1", DisplayName = "Root" };
         var objA = new NodeObject { ParentNodeId = root.NodeId, NodeId = "i=2", NodeIdentifier = "2", DisplayName = "ObjA" };
-        var varA1 = new NodeVariable { ParentNodeId = objA.NodeId, NodeId = "i=3", NodeIdentifier = "3", DisplayName = "VarA1", DataTypeDotnet = "int", SampleValue = "42", DataTypeOpcUa = new OpUaDataType { Name = "Int32", IsArray = false } };
+        var varA1 = new NodeVariable { ParentNodeId = objA.NodeId, NodeId = "i=3", NodeIdentifier = "3", DisplayName = "VarA1", DataTypeDotnet = new DotNetTypeDescriptor { Kind = DotNetTypeKind.Primitive, Name = "Int32", ClrTypeName = "int" }, SampleValue = "42", DataTypeOpcUa = new OpUaDataType { Name = "Int32", IsArray = false } };
         objA.NodeVariables.Add(varA1);
         root.NodeObjects.Add(objA);
         var scan = new NodeScanResult(Succeeded: true, root, ErrorMessage: null);
@@ -73,9 +73,9 @@ public sealed class NodeJsonConverterTests
     public void RoundTrip_VariableRoot_WithNestedVariables_ShouldPreserveChain()
     {
         // Arrange
-        var rootVar = new NodeVariable { NodeId = "v=1", NodeIdentifier = "1", DisplayName = "RootVar", DataTypeDotnet = "Variant" };
-        var child1 = new NodeVariable { ParentNodeId = rootVar.NodeId, NodeId = "v=1.1", NodeIdentifier = "1.1", DisplayName = "Child1", DataTypeDotnet = "double", SampleValue = "1.23", DataTypeOpcUa = new OpUaDataType { Name = "Double", IsArray = false } };
-        var child2 = new NodeVariable { ParentNodeId = child1.NodeId, NodeId = "v=1.1.1", NodeIdentifier = "1.1.1", DisplayName = "Child2", DataTypeDotnet = "string", SampleValue = "hello" };
+        var rootVar = new NodeVariable { NodeId = "v=1", NodeIdentifier = "1", DisplayName = "RootVar", DataTypeDotnet = new DotNetTypeDescriptor { Kind = DotNetTypeKind.Unknown, Name = "Variant", ClrTypeName = "object" } };
+        var child1 = new NodeVariable { ParentNodeId = rootVar.NodeId, NodeId = "v=1.1", NodeIdentifier = "1.1", DisplayName = "Child1", DataTypeDotnet = new DotNetTypeDescriptor { Kind = DotNetTypeKind.Primitive, Name = "Double", ClrTypeName = "double" }, SampleValue = "1.23", DataTypeOpcUa = new OpUaDataType { Name = "Double", IsArray = false } };
+        var child2 = new NodeVariable { ParentNodeId = child1.NodeId, NodeId = "v=1.1.1", NodeIdentifier = "1.1.1", DisplayName = "Child2", DataTypeDotnet = new DotNetTypeDescriptor { Kind = DotNetTypeKind.Primitive, Name = "String", ClrTypeName = "string" }, SampleValue = "hello" };
         child1.NodeVariables.Add(child2);
         rootVar.NodeVariables.Add(child1);
         var scan = new NodeScanResult(Succeeded: true, rootVar, ErrorMessage: null);
@@ -114,7 +114,7 @@ public sealed class NodeJsonConverterTests
     public void Deserialize_VariableRoot_DatatypeNull_ShouldLeaveOpcUaNull()
     {
         // Arrange
-        const string json = "{\"Succeeded\":true,\"Root\":{\"$type\":\"variable\",\"ParentNodeId\":\"i=0\",\"NodeId\":\"i=9\",\"NodeIdentifier\":\"9\",\"NodeClass\":\"Variable\",\"DisplayName\":\"Var\",\"DataTypeDotnet\":\"object\",\"SampleValue\":\"\",\"NodeVariables\":[]},\"ErrorMessage\":null}";
+        const string json = "{\"Succeeded\":true,\"Root\":{\"$type\":\"variable\",\"ParentNodeId\":\"i=0\",\"NodeId\":\"i=9\",\"NodeIdentifier\":\"9\",\"NodeClass\":\"Variable\",\"DisplayName\":\"Var\",\"DataTypeDotnet\":{\"Kind\":\"Unknown\",\"Name\":\"object\",\"ClrType\":\"object\"},\"SampleValue\":\"\",\"NodeVariables\":[]},\"ErrorMessage\":null}";
         var options = CreateOptions();
 
         // Act

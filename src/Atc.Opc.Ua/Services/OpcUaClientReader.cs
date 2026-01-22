@@ -355,22 +355,27 @@ public partial class OpcUaClient
                 LogSessionParentNodeNotFound(nodeId);
             }
 
+            var variableNode = (VariableNode)readNode;
+
             DataValue? sampleValue = null;
             if (includeSampleValue)
             {
-                sampleValue = await TryGetDataValueForVariableAsync((VariableNode)readNode, cancellationToken: cancellationToken);
+                sampleValue = await TryGetDataValueForVariableAsync(variableNode, cancellationToken: cancellationToken);
             }
+
+            // Resolve rich DataType information
+            var resolvedTypeInfo = await dataTypeInfoResolver.ResolveAsync(variableNode, Session!, cancellationToken);
 
             NodeVariable? nodeVariable;
 
             if (browseParentResults.Count == 1)
             {
                 var parentObject = browseParentResults[0];
-                nodeVariable = readNode.MapToNodeVariableWithValue(parentObject.NodeId.ToString(), sampleValue);
+                nodeVariable = readNode.MapToNodeVariableWithValue(parentObject.NodeId.ToString(), sampleValue, resolvedTypeInfo);
             }
             else
             {
-                nodeVariable = readNode.MapToNodeVariableWithValue(parentNodeId: null, sampleValue);
+                nodeVariable = readNode.MapToNodeVariableWithValue(parentNodeId: null, sampleValue, resolvedTypeInfo);
             }
 
             LogSessionReadNodeVariableSucceeded(nodeId);
@@ -642,14 +647,18 @@ public partial class OpcUaClient
         LogSessionReadNodeVariable(childNodeId);
 
         var childNode = await Session!.ReadNodeAsync(childNodeId, cancellationToken);
+        var variableNode = (VariableNode)childNode;
 
         DataValue? sampleValue = null;
         if (includeSampleValues)
         {
-            sampleValue = await TryGetDataValueForVariableAsync((VariableNode)childNode, cancellationToken: cancellationToken);
+            sampleValue = await TryGetDataValueForVariableAsync(variableNode, cancellationToken: cancellationToken);
         }
 
-        var nodeVariable = childNode.MapToNodeVariableWithValue(parentNode.NodeId, sampleValue);
+        // Resolve rich DataType information
+        var resolvedTypeInfo = await dataTypeInfoResolver.ResolveAsync(variableNode, Session!, cancellationToken);
+
+        var nodeVariable = childNode.MapToNodeVariableWithValue(parentNode.NodeId, sampleValue, resolvedTypeInfo);
         if (nodeVariable is null)
         {
             return;
@@ -777,7 +786,7 @@ public partial class OpcUaClient
                     return await TryGetDataValueForVariableAsync(node, loadComplexTypeSystem: true, cancellationToken);
                 }
 
-                LogSessionReadNodeVariableValueFailure(node.NodeId.ToString(), statusCode.ToString());
+                LogSessionReadNodeVariableValueEmpty(node.NodeId.ToString(), statusCode.ToString());
                 return sampleValue;
             }
 
