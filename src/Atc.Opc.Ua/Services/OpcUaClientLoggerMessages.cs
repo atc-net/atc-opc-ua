@@ -223,4 +223,28 @@ public partial class OpcUaClient
         Level = LogLevel.Warning,
         Message = "DataType with nodeId '{NodeId}' is not an enumeration or has no enum definition")]
     private partial void LogSessionReadEnumDataTypeNotEnum(string nodeId);
+
+    [LoggerMessage(
+        EventId = LoggingEventIdConstants.SessionReadDataTypeDefinitionFailed,
+        Level = LogLevel.Trace,
+        Message = "Reading DataTypeDefinition attribute for nodeId '{NodeId}' failed (not supported or not available)")]
+    private partial void LogSessionReadDataTypeDefinitionFailed(Exception ex, string nodeId);
+
+    [LoggerMessage(
+        EventId = LoggingEventIdConstants.SessionReadEnumValuesFailed,
+        Level = LogLevel.Trace,
+        Message = "Reading EnumValues property for nodeId '{NodeId}' failed")]
+    private partial void LogSessionReadEnumValuesFailed(Exception ex, string nodeId);
+
+    [LoggerMessage(
+        EventId = LoggingEventIdConstants.SessionReadEnumStringsFailed,
+        Level = LogLevel.Trace,
+        Message = "Reading EnumStrings property for nodeId '{NodeId}' failed")]
+    private partial void LogSessionReadEnumStringsFailed(Exception ex, string nodeId);
+
+    [LoggerMessage(
+        EventId = LoggingEventIdConstants.SessionBrowsePropertyFailed,
+        Level = LogLevel.Trace,
+        Message = "Browsing for property '{PropertyName}' on nodeId '{NodeId}' failed")]
+    private partial void LogSessionBrowsePropertyFailed(Exception ex, string nodeId, string propertyName);
 }

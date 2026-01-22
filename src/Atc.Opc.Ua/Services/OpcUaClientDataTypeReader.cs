@@ -206,9 +206,9 @@ public partial class OpcUaClient
                 return enumDataType.Members.Count > 0;
             }
         }
-        catch
+        catch (Exception ex)
         {
-            // DataTypeDefinition not supported or not available
+            LogSessionReadDataTypeDefinitionFailed(ex, dataTypeNodeId.ToString());
         }
 
         return false;
@@ -280,9 +280,9 @@ public partial class OpcUaClient
                 return enumDataType.Members.Count > 0;
             }
         }
-        catch
+        catch (Exception ex)
         {
-            // EnumValues property not available or read failed
+            LogSessionReadEnumValuesFailed(ex, dataTypeNodeId.ToString());
         }
 
         return false;
@@ -352,9 +352,9 @@ public partial class OpcUaClient
                 return enumDataType.Members.Count > 0;
             }
         }
-        catch
+        catch (Exception ex)
         {
-            // EnumStrings property not available or read failed
+            LogSessionReadEnumStringsFailed(ex, dataTypeNodeId.ToString());
         }
 
         return false;
@@ -392,9 +392,9 @@ public partial class OpcUaClient
                 }
             }
         }
-        catch
+        catch (Exception ex)
         {
-            // Browse failed
+            LogSessionBrowsePropertyFailed(ex, parentNodeId.ToString(), propertyName);
         }
 
         return null;
