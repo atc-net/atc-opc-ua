@@ -94,7 +94,7 @@ internal sealed class NodeReadDataTypeMultiCommand : AsyncCommand<ReadDataTypesC
         table.AddColumn("DisplayName");
         table.AddColumn("Description");
 
-        foreach (var member in enumDataType.Members.OrderBy(m => m.Value))
+        foreach (var member in enumDataType.Members.OrderBy(x => x.Value))
         {
             table.AddRow(
                 member.Value.ToString(CultureInfo.InvariantCulture),

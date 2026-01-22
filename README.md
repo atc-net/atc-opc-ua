@@ -145,7 +145,7 @@ if (succeeded && enumDataType != null)
 {
     Console.WriteLine($"Enum: {enumDataType.Name} ({enumDataType.Members.Count} members)");
 
-    foreach (var member in enumDataType.Members.OrderBy(m => m.Value))
+    foreach (var member in enumDataType.Members.OrderBy(x => x.Value))
     {
         Console.WriteLine($"  {member.Value} = {member.Name}");
     }

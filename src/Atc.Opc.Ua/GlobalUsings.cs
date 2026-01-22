@@ -11,6 +11,7 @@ global using Atc.Opc.Ua.Options;
 global using Atc.Opc.Ua.Protocol.Mappers;
 global using Atc.Opc.Ua.Protocol.Runtime;
 global using Atc.Opc.Ua.Protocol.Runtime.Extensions;
+global using Atc.Opc.Ua.Resolvers;
 global using Atc.Opc.Ua.Serialization.JsonConverters.Internal;
 global using Atc.Opc.Ua.Services;
 global using Microsoft.Extensions.Logging;

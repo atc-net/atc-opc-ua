@@ -5,7 +5,6 @@ namespace Atc.Opc.Ua.Services;
 /// Provides functionality for reading OPC UA DataType definitions.
 /// </summary>
 [SuppressMessage("Design", "MA0048:File name must match type name", Justification = "OK - By Design")]
-[SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "OK - By Design")]
 public partial class OpcUaClient
 {
     /// <summary>

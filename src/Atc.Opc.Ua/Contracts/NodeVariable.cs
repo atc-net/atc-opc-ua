@@ -34,12 +34,10 @@ public class NodeVariable : NodeBase
     public OpUaDataType? DataTypeOpcUa { get; set; }
 
     /// <summary>
-    /// Gets or sets the fully‑qualified .NET type name that corresponds to
-    /// <see cref="DataTypeOpcUa"/> (e.g. <c>"System.Int32"</c>).
-    /// The string is never <see langword="null"/>; defaults to
-    /// <see cref="string.Empty"/>.
+    /// Gets or sets the .NET type descriptor that corresponds to
+    /// <see cref="DataTypeOpcUa"/>.
     /// </summary>
-    public string DataTypeDotnet { get; set; } = string.Empty;
+    public DotNetTypeDescriptor? DataTypeDotnet { get; set; }
 
     /// <summary>
     /// Gets or sets a representative sample value encoded as a string.
@@ -48,14 +46,14 @@ public class NodeVariable : NodeBase
     public string SampleValue { get; set; } = string.Empty;
 
     /// <summary>
-    /// Returns a concise diagnostic string that focuses on the variable‑specific
+    /// Returns a concise diagnostic string that focuses on the variable-specific
     /// details and omits the identifying information already provided by
     /// <see cref="NodeBase"/>.
     /// </summary>
     /// <returns>A string of a simple version of the <see langword="ToString()" /></returns>
     public string ToStringSimple() =>
         $"{nameof(DisplayName)}: {DisplayName}, " +
-        $"{nameof(DataTypeDotnet)}: {DataTypeDotnet}, " +
+        $"{nameof(DataTypeDotnet)}: {DataTypeDotnet?.Name ?? "N/A"}, " +
         $"{nameof(SampleValue)}: {SampleValue}";
 
     /// <inheritdoc/>

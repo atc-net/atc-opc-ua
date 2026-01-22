@@ -6,13 +6,28 @@ namespace Atc.Opc.Ua.Services;
 /// <summary>
 /// Provides functionality for connecting to, and interacting with, OPC UA servers.
 /// </summary>
-[SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "OK - By Design")]
+/// <remarks>
+/// <para>
+/// This class intentionally catches general exceptions in several places rather than
+/// catching specific exception types. OPC UA server communication can fail due to a wide
+/// variety of conditions (network issues, server errors, certificate problems, timeouts,
+/// protocol violations, etc.) that manifest as different exception types across the OPC UA
+/// stack. Catching <see cref="Exception"/> ensures robust error handling without exposing
+/// low-level communication failures to callers, who receive actionable error messages via
+/// the result tuple pattern instead.
+/// </para>
+/// <para>
+/// The Dispose pattern uses broad exception handling as a best-effort cleanup strategy,
+/// ensuring that disposal completes even if individual cleanup steps fail.
+/// </para>
+/// </remarks>
 public partial class OpcUaClient : IOpcUaClient
 {
     private readonly ApplicationConfiguration configuration;
     private readonly OpcUaSecurityOptions securityOptions;
     private readonly OpcUaClientOptions clientOptions;
     private readonly OpcUaClientKeepAliveOptions keepAliveOptions;
+    private readonly DataTypeInfoResolver dataTypeInfoResolver = new();
 
     private SessionReconnectHandler? reconnectHandler;
     private int consecutiveKeepAliveFailures;
@@ -96,6 +111,8 @@ public partial class OpcUaClient : IOpcUaClient
                 await Session.CloseAsync(cancellationToken);
                 Session.Dispose();
                 Session = null;
+
+                dataTypeInfoResolver.ClearCache();
 
                 LogSessionDisconnected(sessionName);
                 return (true, null);
