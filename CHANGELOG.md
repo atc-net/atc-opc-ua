@@ -1,5 +1,24 @@
 # Changelog
 
+## [3.0.0](https://github.com/atc-net/atc-opc-ua/compare/v2.0.1...v3.0.0) (2026-01-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* add rich DataType representation with enum support
+
+### Features
+
+* add enum DataType reading support ([4d8d34d](https://github.com/atc-net/atc-opc-ua/commit/4d8d34d8676968918eb518ffb76f8c020026ef0c))
+* add rich DataType representation with enum support ([0807527](https://github.com/atc-net/atc-opc-ua/commit/0807527d87e39a2158c8638edb594a876d05b072))
+* **cli:** add datatype read commands ([7b24c64](https://github.com/atc-net/atc-opc-ua/commit/7b24c647c33518ecf656e77058b576a1e527f948))
+* **sample:** add enum DataType reading demo ([4027f5d](https://github.com/atc-net/atc-opc-ua/commit/4027f5da8609443364433568653a3ce6c7bcc389))
+
+
+### Bug Fixes
+
+* **logging:** add trace logging for DataType resolution failures ([880e3d2](https://github.com/atc-net/atc-opc-ua/commit/880e3d2e7da33b79ff9b1bfdba0265e79f372849))
+
 ## [2.0.1](https://github.com/atc-net/atc-opc-ua/compare/v2.0.0...v2.0.1) (2025-11-04)
 
 
