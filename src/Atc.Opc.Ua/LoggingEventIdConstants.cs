@@ -46,6 +46,10 @@ internal static class LoggingEventIdConstants
     public const int SessionReadEnumDataTypeSucceeded = 10081;
     public const int SessionReadEnumDataTypeFailure = 10082;
     public const int SessionReadEnumDataTypeNotEnum = 10083;
+    public const int SessionReadDataTypeDefinitionFailed = 10084;
+    public const int SessionReadEnumValuesFailed = 10085;
+    public const int SessionReadEnumStringsFailed = 10086;
+    public const int SessionBrowsePropertyFailed = 10087;
 
     // OpcUaScanner
     public const int ScannerClientNotConnected = 11000;
