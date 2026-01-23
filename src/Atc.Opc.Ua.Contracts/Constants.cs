@@ -1,4 +1,4 @@
-namespace Atc.Opc.Ua;
+namespace Atc.Opc.Ua.Contracts;
 
 public static class Constants
 {
