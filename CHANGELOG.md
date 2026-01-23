@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.1](https://github.com/atc-net/atc-opc-ua/compare/v3.1.0...v3.1.1) (2026-01-23)
+
+
+### Bug Fixes
+
+* **contracts:** disable snupkg generation to fix CI pack error ([02f363e](https://github.com/atc-net/atc-opc-ua/commit/02f363e5b7b6aebc8477296e768d37cb8ff8e934))
+
 ## [3.1.0](https://github.com/atc-net/atc-opc-ua/compare/v3.0.0...v3.1.0) (2026-01-23)
 
 
