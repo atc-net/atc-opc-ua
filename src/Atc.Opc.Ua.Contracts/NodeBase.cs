@@ -1,7 +1,7 @@
 namespace Atc.Opc.Ua.Contracts;
 
 /// <summary>
-/// Base type that captures the common metadata shared by every OPC UA node
+/// Base type that captures the common metadata shared by every OPC UA node
 /// in an address space.
 /// </summary>
 /// <remarks>
@@ -23,7 +23,7 @@ public abstract class NodeBase
 
     /// <summary>
     /// Gets or sets the fully‑qualified node‑id (e.g. <c>"ns=2;i=1234"</c>).
-    /// This value is unique within the server’s namespace.
+    /// This value is unique within the server's namespace.
     /// </summary>
     public string NodeId { get; set; } = string.Empty;
 
@@ -37,8 +37,8 @@ public abstract class NodeBase
     public string NodeIdentifier { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets the OPC UA <c>NodeClass</c> of this node (Variable, Object, Method, …).
-    /// The value is supplied by the derived class’s constructor and is therefore
+    /// Gets the OPC UA <c>NodeClass</c> of this node (Variable, Object, Method, …).
+    /// The value is supplied by the derived class's constructor and is therefore
     /// immutable after initialisation.
     /// </summary>
     public NodeClassType NodeClass { get; init; }

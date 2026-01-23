@@ -1,17 +1,17 @@
 namespace Atc.Opc.Ua.Contracts;
 
 /// <summary>
-/// Concrete node that represents an OPC UA <see langword="Variable"/> in the
+/// Concrete node that represents an OPC UA <see langword="Variable"/> in the
 /// address space.
 /// </summary>
 /// <remarks>
 /// <para>
 /// A <see cref="NodeVariable"/> holds a value (or set of values) and exposes
-/// its datatype both in OPC UA terms (<see cref="DataTypeOpcUa"/>) and as the
+/// its datatype both in OPC UA terms (<see cref="DataTypeOpcUa"/>) and as the
 /// fully‑qualified .NET type name (<see cref="DataTypeDotnet"/>).
 /// </para>
 /// <para>
-/// The constructor fixes <see cref="NodeClass"/> to
+/// The constructor fixes <see cref="NodeBase.NodeClass"/> to
 /// <see cref="NodeClassType.Variable"/> so the classification cannot be
 /// changed after initialisation.
 /// </para>
@@ -20,7 +20,7 @@ public class NodeVariable : NodeBase
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="NodeVariable"/> class and sets its
-    /// <see cref="NodeClass"/> to <see cref="NodeClassType.Variable"/>.
+    /// <see cref="NodeBase.NodeClass"/> to <see cref="NodeClassType.Variable"/>.
     /// </summary>
     public NodeVariable()
     {
@@ -28,7 +28,7 @@ public class NodeVariable : NodeBase
     }
 
     /// <summary>
-    /// Gets or sets the datatype of the variable expressed in OPC UA terms,
+    /// Gets or sets the datatype of the variable expressed in OPC UA terms,
     /// or <see langword="null"/> if the datatype is unknown.
     /// </summary>
     public OpUaDataType? DataTypeOpcUa { get; set; }

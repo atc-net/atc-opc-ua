@@ -1,4 +1,4 @@
-namespace Atc.Opc.Ua.Tests.Contracts;
+namespace Atc.Opc.Ua.Contracts.Tests;
 
 public sealed class OpcUaEnumDataTypeTests
 {

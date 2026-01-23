@@ -7,9 +7,11 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Atc.Opc.Ua.CLI/Atc.Opc.Ua.CLI.csproj" />
+    <Project Path="src/Atc.Opc.Ua.Contracts/Atc.Opc.Ua.Contracts.csproj" Id="7fead7e0-d218-4ed0-a72b-827f90db68cf" />
     <Project Path="src/Atc.Opc.Ua/Atc.Opc.Ua.csproj" />
   </Folder>
   <Folder Name="/test/">
+    <Project Path="test/Atc.Opc.Ua.Contracts.Tests/Atc.Opc.Ua.Contracts.Tests.csproj" />
     <Project Path="test/Atc.Opc.Ua.Tests/Atc.Opc.Ua.Tests.csproj" />
   </Folder>
 </Solution>
