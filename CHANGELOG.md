@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/atc-net/atc-opc-ua/compare/v3.0.0...v3.1.0) (2026-01-23)
+
+
+### Features
+
+* extract contracts to separate Atc.Opc.Ua.Contracts library ([1531787](https://github.com/atc-net/atc-opc-ua/commit/1531787eb2423c5d145c1798a83927e633e0dd71))
+
 ## [3.0.0](https://github.com/atc-net/atc-opc-ua/compare/v2.0.1...v3.0.0) (2026-01-22)
 
 
