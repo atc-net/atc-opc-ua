@@ -6,6 +6,8 @@
     <PackageTags>opc-ua contracts</PackageTags>
     <Description>Contract types and data transfer objects for Atc.Opc.Ua OPC UA client library.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <!-- Disable snupkg - no dependencies and uses embedded debug type -->
+    <IncludeSymbols>false</IncludeSymbols>
   </PropertyGroup>
 
   <ItemGroup>
