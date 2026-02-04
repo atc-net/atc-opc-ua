@@ -35,6 +35,11 @@ public class OpUaDataType
     public string IdentifierType { get; set; } = string.Empty;
 
     /// <summary>
+    /// Gets or sets the identifier value (e.g., "852", "CustomTypeName", or hex for opaque).
+    /// </summary>
+    public string Identifier { get; set; } = string.Empty;
+
+    /// <summary>
     /// Gets or sets the kind of data type (Primitive, Enum, Structure, Unknown).
     /// </summary>
     public OpcUaTypeKind Kind { get; set; }
@@ -47,5 +52,5 @@ public class OpUaDataType
 
     /// <inheritdoc/>
     public override string ToString() =>
-        $"{nameof(NodeId)}: {NodeId}, {nameof(Name)}: {Name}, {nameof(Kind)}: {Kind}, {nameof(IsArray)}: {IsArray}";
+        $"{nameof(NodeId)}: {NodeId}, {nameof(Name)}: {Name}, {nameof(IdentifierType)}: {IdentifierType}, {nameof(Identifier)}: {Identifier}, {nameof(Kind)}: {Kind}, {nameof(IsArray)}: {IsArray}";
 }

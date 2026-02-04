@@ -15,6 +15,7 @@ public static class VariableNodeExtensions
             Name = isBuiltIn ? builtInType.ToString() : variableNode.GetNonBuiltInTypeName(),
             DisplayName = isBuiltIn ? builtInType.ToString() : variableNode.GetNonBuiltInTypeName(),
             IdentifierType = variableNode.DataType.IdType.GetIdentifierTypeName(),
+            Identifier = variableNode.DataType.GetIdentifierAsString(),
             Kind = isBuiltIn ? OpcUaTypeKind.Primitive : OpcUaTypeKind.Unknown,
             IsArray = variableNode.ArrayDimensions.Count > 0,
         };
@@ -62,28 +63,7 @@ public static class VariableNodeExtensions
 
     private static string GetNonBuiltInTypeName(this VariableNode variableNode)
     {
-        try
-        {
-            return variableNode.DataType.IdType switch
-            {
-                IdType.Numeric or IdType.String or IdType.Guid =>
-                    variableNode.DataType.Identifier?.ToString() is { } str
-                        ? (str.Length > 1 && str[0] == '"' && str[^1] == '"'
-                            ? str[1..^1]
-                            : str)
-                        : "N/A",
-
-                IdType.Opaque =>
-                    variableNode.DataType.Identifier is byte[] bytes
-                        ? BitConverter.ToString(bytes)
-                        : "N/A",
-
-                _ => throw new SwitchCaseDefaultException(variableNode.DataType.IdType),
-            };
-        }
-        catch
-        {
-            return "N/A";
-        }
+        var identifier = variableNode.DataType.GetIdentifierAsString();
+        return string.IsNullOrEmpty(identifier) ? "N/A" : identifier;
     }
 }

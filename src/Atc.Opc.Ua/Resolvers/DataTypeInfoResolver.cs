@@ -84,6 +84,7 @@ public sealed class DataTypeInfoResolver
             Name = baseInfo.OpcUaDataType.Name,
             DisplayName = baseInfo.OpcUaDataType.DisplayName,
             IdentifierType = baseInfo.OpcUaDataType.IdentifierType,
+            Identifier = baseInfo.OpcUaDataType.Identifier,
             Kind = baseInfo.OpcUaDataType.Kind,
             IsArray = true,
         };
@@ -128,6 +129,7 @@ public sealed class DataTypeInfoResolver
                 Name = readNode.BrowseName?.Name ?? nodeIdString,
                 DisplayName = readNode.DisplayName?.Text ?? readNode.BrowseName?.Name ?? nodeIdString,
                 IdentifierType = dataTypeNodeId.IdType.GetIdentifierTypeName(),
+                Identifier = dataTypeNodeId.GetIdentifierAsString(),
                 Kind = OpcUaTypeKind.Unknown,
                 IsArray = false,
             };
@@ -205,6 +207,7 @@ public sealed class DataTypeInfoResolver
             Name = typeName,
             DisplayName = typeName,
             IdentifierType = nodeId.IdType.GetIdentifierTypeName(),
+            Identifier = nodeId.GetIdentifierAsString(),
             Kind = OpcUaTypeKind.Primitive,
             IsArray = false,
         };
@@ -227,6 +230,7 @@ public sealed class DataTypeInfoResolver
             Name = nodeIdString,
             DisplayName = nodeIdString,
             IdentifierType = "Unknown",
+            Identifier = string.Empty,
             Kind = OpcUaTypeKind.Unknown,
             IsArray = false,
         };
