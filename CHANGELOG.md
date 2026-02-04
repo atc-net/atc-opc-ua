@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.0](https://github.com/atc-net/atc-opc-ua/compare/v3.1.1...v3.2.0) (2026-02-04)
+
+
+### Features
+
+* add Identifier property to OpUaDataType ([18494e6](https://github.com/atc-net/atc-opc-ua/commit/18494e6cbf469a74dae4419b9ea789f572db4638))
+
 ## [3.1.1](https://github.com/atc-net/atc-opc-ua/compare/v3.1.0...v3.1.1) (2026-01-23)
 
 
