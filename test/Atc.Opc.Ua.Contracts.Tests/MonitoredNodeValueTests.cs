@@ -3,6 +3,16 @@ namespace Atc.Opc.Ua.Contracts.Tests;
 public sealed class MonitoredNodeValueTests
 {
     [Fact]
+    public void ShouldDeriveFromEventArgs()
+    {
+        // Arrange & Act
+        var value = new MonitoredNodeValue();
+
+        // Assert
+        value.Should().BeAssignableTo<EventArgs>();
+    }
+
+    [Fact]
     public void DefaultValues_ShouldBeInitialized()
     {
         // Arrange & Act

@@ -248,13 +248,16 @@ Atc.Opc.Ua.CLI (TUI layer - thin adapter)
 
 ### Phase 0: Package Updates & Infrastructure
 
-- [ ] **0.1** Upgrade `Atc.Console.Spectre` from 2.0.562 to 3.0.16+ in `Atc.Opc.Ua.CLI.csproj`
-- [ ] **0.2** Upgrade `Atc` package to matching version in both CLI and core library csproj files
-- [ ] **0.3** Add `Terminal.Gui` 2.0.0 package reference to `Atc.Opc.Ua.CLI.csproj`
-- [ ] **0.4** Update `Microsoft.Extensions.*` packages to latest 9.x in CLI csproj
-- [ ] **0.5** Verify the project builds and all existing tests pass after upgrades
-- [ ] **0.6** Update `Program.cs` to use `CommandAppFactory.CreateWithRootCommand<InteractiveCommand>` pattern (replacing `CommandAppFactory.Create`)
-- [ ] **0.7** Ensure existing CLI commands still work (non-breaking: if args provided, sub-commands run; no args = interactive)
+- [x] **0.1** Upgrade `Atc.Console.Spectre` from 2.0.562 to 3.0.18 in `Atc.Opc.Ua.CLI.csproj`
+- [x] **0.2** Upgrade `Atc` package to 3.0.18 in both CLI and core library csproj files
+- [x] **0.3** Add `Terminal.Gui` 2.0.0-develop.5027 package reference to `Atc.Opc.Ua.CLI.csproj`
+- [x] **0.4** Update `Microsoft.Extensions.*` packages to 10.0.1 in all csproj files
+- [x] **0.4b** Upgrade TargetFramework from net9.0 to net10.0 across all projects (required by Terminal.Gui 2.x and Atc 3.x)
+- [x] **0.4c** Update CI pipelines (build.yml, release-please.yml) to use dotnet 10.0.x
+- [x] **0.5** Verify the project builds and all 56 existing tests pass after upgrades
+- [x] **0.6** Update `Program.cs` to use `CommandAppFactory.CreateWithRootCommand<InteractiveCommand>` pattern (replacing `CommandAppFactory.Create`)
+- [x] **0.6b** Add `CancellationToken` parameter to all command `ExecuteAsync` overrides (Spectre.Console.Cli 3.x breaking change)
+- [x] **0.7** Ensure existing CLI commands still work (non-breaking: if args provided, sub-commands run; no args = interactive)
 
 ### Phase 1: Core Library - Subscription & Browse Support
 
@@ -262,7 +265,7 @@ Add subscription/monitoring and lazy browsing capabilities to `Atc.Opc.Ua` and `
 
 #### 1A: New Contracts (`Atc.Opc.Ua.Contracts`)
 
-- [ ] **1A.1** Create `MonitoredNodeValue` model
+- [x] **1A.1** Create `MonitoredNodeValue` model
   ```csharp
   public class MonitoredNodeValue
   {
@@ -276,7 +279,7 @@ Add subscription/monitoring and lazy browsing capabilities to `Atc.Opc.Ua` and `
       public bool IsGood => StatusCode == 0;
   }
   ```
-- [ ] **1A.2** Create `SubscriptionOptions` model
+- [x] **1A.2** Create `SubscriptionOptions` model
   ```csharp
   public class SubscriptionOptions
   {
@@ -286,7 +289,7 @@ Add subscription/monitoring and lazy browsing capabilities to `Atc.Opc.Ua` and `
       public bool DiscardOldest { get; set; } = true;
   }
   ```
-- [ ] **1A.3** Create `NodeBrowseResult` model
+- [x] **1A.3** Create `NodeBrowseResult` model
   ```csharp
   public class NodeBrowseResult
   {
@@ -298,8 +301,8 @@ Add subscription/monitoring and lazy browsing capabilities to `Atc.Opc.Ua` and `
       public bool HasChildren { get; set; }
   }
   ```
-- [ ] **1A.4** Create `NodeAttributeSet` model (full attribute read result)
-- [ ] **1A.5** Add unit tests for new contracts
+- [x] **1A.4** Create `NodeAttributeSet` model (full attribute read result)
+- [x] **1A.5** Add unit tests for new contracts (18 tests, all passing)
 
 #### 1B: Extend IOpcUaClient with Subscription Support (`Atc.Opc.Ua`)
 

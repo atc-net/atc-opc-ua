@@ -2,6 +2,64 @@ namespace Atc.Opc.Ua.Services;
 
 public interface IOpcUaClient : IDisposable
 {
+    /// <summary>
+    /// Gets the current OPC UA session, or <see langword="null"/> if not connected.
+    /// </summary>
+    ISession? Session { get; }
+
+    /// <summary>
+    /// Raised when a monitored item delivers a new value from the server.
+    /// </summary>
+    event EventHandler<MonitoredNodeValue>? NodeValueChanged;
+
+    /// <summary>
+    /// Creates a subscription on the current session.
+    /// </summary>
+    /// <param name="options">Optional subscription configuration. Uses defaults when <see langword="null"/>.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <returns>A tuple indicating success and an optional error message.</returns>
+    Task<(bool Succeeded, string? ErrorMessage)> CreateSubscriptionAsync(
+        SubscriptionOptions? options = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Removes the active subscription and all monitored items.
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <returns>A tuple indicating success and an optional error message.</returns>
+    Task<(bool Succeeded, string? ErrorMessage)> RemoveSubscriptionAsync(
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Adds a monitored item for the specified node to the active subscription.
+    /// </summary>
+    /// <param name="nodeId">The node identifier to subscribe to.</param>
+    /// <param name="displayName">Optional display name for the monitored item.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <returns>A tuple indicating success, the monitored item handle, and an optional error message.</returns>
+    Task<(bool Succeeded, uint MonitoredItemHandle, string? ErrorMessage)> SubscribeToNodeAsync(
+        string nodeId,
+        string? displayName = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Removes a monitored item by its handle.
+    /// </summary>
+    /// <param name="monitoredItemHandle">The handle of the monitored item to remove.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <returns>A tuple indicating success and an optional error message.</returns>
+    Task<(bool Succeeded, string? ErrorMessage)> UnsubscribeFromNodeAsync(
+        uint monitoredItemHandle,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Removes all monitored items from the active subscription.
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <returns>A tuple indicating success and an optional error message.</returns>
+    Task<(bool Succeeded, string? ErrorMessage)> UnsubscribeAllAsync(
+        CancellationToken cancellationToken = default);
+
     Task<(bool Succeeded, string? ErrorMessage)> ConnectAsync(
         Uri serverUri,
         CancellationToken cancellationToken = default);

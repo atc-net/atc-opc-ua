@@ -108,6 +108,8 @@ public partial class OpcUaClient : IOpcUaClient
                 reconnectHandler = null;
                 consecutiveKeepAliveFailures = 0;
 
+                CleanupSubscription();
+
                 await Session.CloseAsync(cancellationToken);
                 Session.Dispose();
                 Session = null;
@@ -451,6 +453,8 @@ public partial class OpcUaClient : IOpcUaClient
             {
                 // Ignore: best-effort detach
             }
+
+            CleanupSubscription();
 
             try
             {

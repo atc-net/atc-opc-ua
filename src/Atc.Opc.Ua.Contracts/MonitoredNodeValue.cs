@@ -8,7 +8,9 @@ namespace Atc.Opc.Ua.Contracts;
 /// on <c>IOpcUaClient</c> whenever a subscription delivers a new data-change
 /// notification from the server.
 /// </remarks>
-public class MonitoredNodeValue
+[SuppressMessage("Naming", "CA1710:Identifiers should have correct suffix", Justification = "MonitoredNodeValue is a better API name than MonitoredNodeValueEventArgs.")]
+[SuppressMessage("Major Code Smell", "S3376:Make this class name end with 'EventArgs'.", Justification = "MonitoredNodeValue is a better API name than MonitoredNodeValueEventArgs.")]
+public class MonitoredNodeValue : EventArgs
 {
     /// <summary>
     /// Gets or sets the handle that uniquely identifies the monitored item
