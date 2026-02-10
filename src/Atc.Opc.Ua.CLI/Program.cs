@@ -20,6 +20,7 @@ public static class Program
         serviceCollection.AddTransient<IOpcUaClient, OpcUaClient>();
         serviceCollection.AddTransient<IOpcUaScanner, OpcUaScanner>();
         serviceCollection.AddTransient<IOpcUaNodeBrowser, OpcUaNodeBrowser>();
+        serviceCollection.AddTransient<IOpcUaInteractiveRunner, TerminalGuiRunner>();
 
         var app = CommandAppFactory.CreateWithRootCommand<InteractiveCommand>(serviceCollection);
         app.ConfigureCommands();
