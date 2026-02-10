@@ -5,7 +5,8 @@ public static class CommandAppExtensions
     [SuppressMessage("Minor Code Smell", "S1075:URIs should not be hardcoded", Justification = "OK.")]
     private const string SampleOpcUaServerUrl = "opc.tcp://opcuaserver.com:48010";
 
-    public static void ConfigureCommands(this CommandApp app)
+    public static void ConfigureCommands(
+        this CommandApp<InteractiveCommand> app)
     {
         ArgumentNullException.ThrowIfNull(app);
 

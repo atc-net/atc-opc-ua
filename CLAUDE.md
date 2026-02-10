@@ -22,7 +22,7 @@ dotnet clean -c Release && dotnet nuget locals all --clear
 This is an OPC UA client library for .NET 10 that provides:
 - **Atc.Opc.Ua** (`src/Atc.Opc.Ua/`) - Core library with OPC UA client, scanner, and node browser
 - **Atc.Opc.Ua.Contracts** (`src/Atc.Opc.Ua.Contracts/`) - Shared contracts (node models, subscription options, etc.)
-- **Atc.Opc.Ua.CLI** (`src/Atc.Opc.Ua.CLI/`) - Command-line tool (`atc-opc-ua`)
+- **Atc.Opc.Ua.CLI** (`src/Atc.Opc.Ua.CLI/`) - Command-line tool (`atc-opc-ua`) with interactive TUI mode (WIP)
 - **Atc.Opc.Ua.Tests** (`test/Atc.Opc.Ua.Tests/`) - Unit tests using xUnit and AwesomeAssertions
 - **Atc.Opc.Ua.Contracts.Tests** (`test/Atc.Opc.Ua.Contracts.Tests/`) - Contract unit tests
 - **Atc.Opc.Ua.CLI.Tests** (`test/Atc.Opc.Ua.CLI.Tests/`) - CLI unit tests (the update check)

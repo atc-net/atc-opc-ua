@@ -20,8 +20,9 @@ public static class Program
         serviceCollection.AddTransient<IOpcUaClient, OpcUaClient>();
         serviceCollection.AddTransient<IOpcUaScanner, OpcUaScanner>();
         serviceCollection.AddTransient<IOpcUaNodeBrowser, OpcUaNodeBrowser>();
+        serviceCollection.AddTransient<IOpcUaInteractiveRunner, TerminalGuiRunner>();
 
-        var app = CommandAppFactory.Create(serviceCollection);
+        var app = CommandAppFactory.CreateWithRootCommand<InteractiveCommand>(serviceCollection);
         app.ConfigureCommands();
 
         if (args.Contains("--no-update-check", StringComparer.OrdinalIgnoreCase))
@@ -30,19 +31,15 @@ public static class Program
             args = [.. args.Where(a => !string.Equals(a, "--no-update-check", StringComparison.OrdinalIgnoreCase))];
         }
 
-        args = SetHelpArgumentIfNeeded(args);
+        if (IsNonInteractiveTerminal(args))
+        {
+            args = [CommandConstants.ArgumentShortHelp];
+        }
 
         return app.RunAsync(args);
     }
 
-    private static string[] SetHelpArgumentIfNeeded(string[] args)
-    {
-        if (args.Length == 0)
-        {
-            return [CommandConstants.ArgumentShortHelp];
-        }
-
-        // TODO: Add multiple command help commands
-        return args;
-    }
+    private static bool IsNonInteractiveTerminal(string[] args)
+        => args.Length == 0 &&
+           (System.Console.IsInputRedirected || System.Console.IsOutputRedirected);
 }
