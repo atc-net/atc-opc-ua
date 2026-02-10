@@ -366,7 +366,7 @@ Add subscription/monitoring and lazy browsing capabilities to `Atc.Opc.Ua` and `
 
 New sample app to validate and demonstrate the subscription/monitoring core library features. Follows the pattern from the existing `Atc.Opc.Ua.Sample` (minimal console app, direct instantiation, console logging, hardcoded constants).
 
-- [ ] **1D.1** Create `sample/Atc.Opc.Ua.Subscription.Sample/Atc.Opc.Ua.Subscription.Sample.csproj`
+- [x] **1D.1** Create `sample/Atc.Opc.Ua.Subscription.Sample/Atc.Opc.Ua.Subscription.Sample.csproj`
   ```xml
   <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
@@ -383,8 +383,8 @@ New sample app to validate and demonstrate the subscription/monitoring core libr
     </ItemGroup>
   </Project>
   ```
-- [ ] **1D.2** Create `GlobalUsings.cs` (same pattern as existing sample)
-- [ ] **1D.3** Create `Program.cs` demonstrating:
+- [x] **1D.2** Create `GlobalUsings.cs` (same pattern as existing sample)
+- [x] **1D.3** Create `Program.cs` demonstrating:
   1. **DI + logging setup** (same pattern: `ServiceCollection` + console logger at Trace level)
   2. **Connect** to OPC UA server via `OpcUaClient`
   3. **Create subscription** via `client.CreateSubscriptionAsync(options)`

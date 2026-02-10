@@ -2,7 +2,7 @@
 
 # Atc.Opc.Ua
 
-OPC UA industrial library for executing commands, reads and writes on OPC UA servers
+🏭 OPC UA industrial library for executing commands, reads, writes, subscriptions, and real-time monitoring on OPC UA servers.
 
 # Table of Contents
 
@@ -11,6 +11,8 @@ OPC UA industrial library for executing commands, reads and writes on OPC UA ser
 - [Quick Start](#quick-start)
 - [OpcUaClient](#opcuaclient)
   - [Basic Usage](#basic-usage)
+  - [🔔 Subscriptions & Real-Time Monitoring](#-subscriptions--real-time-monitoring)
+  - [🌳 Address Space Browsing](#-address-space-browsing)
   - [Reading Enum DataTypes](#reading-enum-datatypes)
   - [Configuring OPC UA Security Settings](#configuring-opc-ua-security-settings)
   - [Configuring OPC UA Client Options](#configuring-opc-ua-client-options)
@@ -123,6 +125,72 @@ public class MyService
         await opcUaClient.DisconnectAsync(cancellationToken);
     }
 }
+```
+
+## 🔔 Subscriptions & Real-Time Monitoring
+
+Monitor OPC UA node values in real-time using subscriptions. The client manages the OPC UA subscription lifecycle, monitored items, and delivers value change notifications via an event.
+
+```csharp
+using var client = new OpcUaClient(logger);
+await client.ConnectAsync(serverUri, cancellationToken);
+
+// Subscribe to value changes
+client.NodeValueChanged += (sender, e) =>
+{
+    Console.WriteLine($"📊 {e.DisplayName} = {e.Value} [{(e.IsGood ? "✅ Good" : "❌ Bad")}]");
+};
+
+// Create a subscription with custom options
+await client.CreateSubscriptionAsync(new SubscriptionOptions
+{
+    PublishingIntervalMs = 250,
+    SamplingIntervalMs = 250,
+    QueueSize = 10,
+});
+
+// Subscribe to specific nodes
+var (_, handle1, _) = await client.SubscribeToNodeAsync("ns=2;s=Temperature");
+var (_, handle2, _) = await client.SubscribeToNodeAsync("ns=2;s=Pressure");
+
+// ... values stream in via the NodeValueChanged event ...
+
+// Unsubscribe individual nodes or all at once
+await client.UnsubscribeFromNodeAsync(handle1);
+await client.UnsubscribeAllAsync();
+
+// Clean up
+await client.RemoveSubscriptionAsync();
+await client.DisconnectAsync(cancellationToken);
+```
+
+The `MonitoredNodeValue` event payload includes:
+- `NodeId`, `DisplayName` — node identification
+- `Value` — current value as string
+- `ServerTimestamp`, `SourceTimestamp` — timing info
+- `StatusCode`, `IsGood` — quality indicator
+
+## 🌳 Address Space Browsing
+
+Browse the OPC UA address space lazily, one level at a time — ideal for building tree views:
+
+```csharp
+var browser = new OpcUaNodeBrowser(browserLogger);
+
+// Browse children of the Objects folder
+var (succeeded, children, error) = await browser.BrowseChildrenAsync(
+    client, "i=85", cancellationToken);
+
+foreach (var child in children!)
+{
+    Console.WriteLine($"  {child.DisplayName} ({child.NodeClass}) HasChildren={child.HasChildren}");
+}
+
+// Read detailed attributes of a specific node
+var (_, attributes, _) = await browser.ReadNodeAttributesAsync(
+    client, "ns=2;s=Temperature", cancellationToken);
+
+Console.WriteLine($"  Value: {attributes!.Value}, Writable: {attributes.IsWritable}");
 ```
 
 ## Reading Enum DataTypes
@@ -451,7 +519,7 @@ This is useful for:
 
 # Requirements
 
-- **.NET 9 SDK** or later
+- **.NET 10 SDK** or later
 - **OPCFoundation.NetStandard.Opc.Ua** 1.5.377.21
 
 # How to contribute

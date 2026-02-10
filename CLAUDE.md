@@ -19,27 +19,37 @@ dotnet clean -c Release && dotnet nuget locals all --clear
 
 ## Project Structure
 
-This is an OPC UA client library for .NET 9 that provides:
-- **Atc.Opc.Ua** (`src/Atc.Opc.Ua/`) - Core library with OPC UA client and scanner
-- **Atc.Opc.Ua.CLI** (`src/Atc.Opc.Ua.CLI/`) - Command-line tool (`atc-opc-ua`)
+This is an OPC UA client library for .NET 10 that provides:
+- **Atc.Opc.Ua** (`src/Atc.Opc.Ua/`) - Core library with OPC UA client, scanner, and node browser
+- **Atc.Opc.Ua.Contracts** (`src/Atc.Opc.Ua.Contracts/`) - Shared contracts (node models, subscription options, etc.)
+- **Atc.Opc.Ua.CLI** (`src/Atc.Opc.Ua.CLI/`) - Command-line tool (`atc-opc-ua`) with interactive TUI mode (WIP)
 - **Atc.Opc.Ua.Tests** (`test/Atc.Opc.Ua.Tests/`) - Unit tests using xUnit and FluentAssertions
-- **Atc.Opc.Ua.Sample** (`sample/`) - Sample application
+- **Atc.Opc.Ua.Contracts.Tests** (`test/Atc.Opc.Ua.Contracts.Tests/`) - Contract unit tests
+- **Atc.Opc.Ua.Sample** (`sample/Atc.Opc.Ua.Sample/`) - Basic sample application
+- **Atc.Opc.Ua.Subscription.Sample** (`sample/Atc.Opc.Ua.Subscription.Sample/`) - Subscription/monitoring sample
 
 ## Architecture
 
 ### Core Services
-- `IOpcUaClient` / `OpcUaClient` - Main client for connecting to OPC UA servers, reading/writing nodes, and executing methods. Split across partial classes:
-  - `OpcUaClient.cs` - Connection management, keep-alive handling
+- `IOpcUaClient` / `OpcUaClient` - Main client for connecting to OPC UA servers, reading/writing nodes, subscriptions, and executing methods. Split across partial classes:
+  - `OpcUaClient.cs` - Connection management, keep-alive handling, dispose
   - `OpcUaClientReader.cs` - Read operations
   - `OpcUaClientWriter.cs` - Write operations
   - `OpcUaClientCommandExecution.cs` - Method execution
+  - `OpcUaClientSubscription.cs` - Subscription lifecycle, monitored items, value change notifications
+  - `OpcUaClientDataTypeReader.cs` - Enum DataType reading
 - `IOpcUaScanner` / `OpcUaScanner` - Scans OPC UA server address space with configurable depth and filtering
+- `IOpcUaNodeBrowser` / `OpcUaNodeBrowser` - Lazy single-level address space browsing and attribute reading
 
 ### Key Contracts (`Contracts/`)
 - `NodeBase` - Base class for nodes
 - `NodeObject` - Represents OPC UA object nodes (contains child objects and variables)
 - `NodeVariable` - Represents OPC UA variable nodes (contains value and data type info)
 - `NodeScanResult` - Result of scanner operations
+- `MonitoredNodeValue` - Subscription value change notification (extends `EventArgs`)
+- `SubscriptionOptions` - Subscription configuration (publishing/sampling intervals, queue)
+- `NodeBrowseResult` - Lazy browse result for tree views
+- `NodeAttributeSet` - Full node attribute set for detail panels
 
 ### Options Configuration
 - `OpcUaSecurityOptions` - Certificate and security settings
