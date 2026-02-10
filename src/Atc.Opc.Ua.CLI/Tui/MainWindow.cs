@@ -17,6 +17,8 @@ public sealed class MainWindow : Window
     private readonly MonitoredVariablesView monitoredVariablesView;
     private readonly NodeDetailsView nodeDetailsView;
     private readonly LogView logView;
+    private readonly Label statusLabel;
+    private string? connectedServerUrl;
 
     public MainWindow(
         IApplication app,
@@ -65,13 +67,14 @@ public sealed class MainWindow : Window
             Height = Dim.Fill(1),
         };
 
-        var statusLabel = new Label
+        statusLabel = new Label
         {
-            Text = " [c] Connect  [d] Disconnect  [w] Write  [r] Refresh  [Tab] Switch  [?] Help  [q] Quit",
             X = 0,
             Y = Pos.AnchorEnd(1),
             Width = Dim.Fill(),
         };
+
+        UpdateStatusLabel();
 
         Add(addressSpaceView, monitoredVariablesView, nodeDetailsView, logView, statusLabel);
 
@@ -83,6 +86,8 @@ public sealed class MainWindow : Window
     {
         addressSpaceView.NodeSelected += OnNodeSelected;
         addressSpaceView.SubscribeRequested += node => _ = RunGuardedAsync(() => SubscribeToNodeAsync(node));
+        monitoredVariablesView.UnsubscribeRequested += handle => _ = RunGuardedAsync(() => UnsubscribeFromNodeAsync(handle));
+        tuiService.NodeValueChanged += OnNodeValueChanged;
     }
 
     private void InitializeKeyBindings()
@@ -203,6 +208,35 @@ public sealed class MainWindow : Window
         });
     }
 
+    private void OnNodeValueChanged(object? sender, MonitoredNodeValue e)
+    {
+        monitoredVariablesView.UpdateVariable(e.MonitoredItemHandle, e);
+    }
+
+    private async Task UnsubscribeFromNodeAsync(uint handle)
+    {
+        if (!tuiService.IsConnected)
+        {
+            return;
+        }
+
+        var (succeeded, errorMessage) = await tuiService
+            .UnsubscribeFromNodeAsync(handle, CancellationToken.None);
+
+        app.Invoke(() =>
+        {
+            if (succeeded)
+            {
+                monitoredVariablesView.RemoveVariable(handle);
+                logView.AddInfo("Unsubscribed from variable.");
+            }
+            else
+            {
+                logView.AddError($"Unsubscribe failed: {errorMessage}");
+            }
+        });
+    }
+
     private async Task DisconnectAsync()
     {
         if (!tuiService.IsConnected)
@@ -217,9 +251,11 @@ public sealed class MainWindow : Window
         {
             if (succeeded)
             {
+                connectedServerUrl = null;
                 addressSpaceView.Clear();
                 monitoredVariablesView.Clear();
                 nodeDetailsView.Clear();
+                UpdateStatusLabel();
                 logView.AddInfo("Disconnected.");
             }
             else
@@ -251,6 +287,8 @@ public sealed class MainWindow : Window
 
         if (succeeded)
         {
+            connectedServerUrl = dialog.ServerUrl;
+            UpdateStatusLabel();
             logView.AddInfo($"Connected to {dialog.ServerUrl}");
             await addressSpaceView.LoadRootAsync(CancellationToken.None);
         }
@@ -312,6 +350,15 @@ public sealed class MainWindow : Window
         logView.AddInfo("Refreshing address space...");
         await addressSpaceView.LoadRootAsync(CancellationToken.None);
         logView.AddInfo("Address space refreshed.");
+    }
+
+    private void UpdateStatusLabel()
+    {
+        var state = connectedServerUrl is not null
+            ? $"Connected: {connectedServerUrl}"
+            : "Disconnected";
+
+        statusLabel.Text = $" {state}  |  [c] Connect  [d] Disconnect  [w] Write  [r] Refresh  [Tab] Switch  [?] Help  [q] Quit";
     }
 
     private void ConfirmQuit()
@@ -382,7 +429,11 @@ public sealed class MainWindow : Window
             IsDefault = true,
         };
 
-        okButton.Accepting += (_, _) => app.RequestStop();
+        okButton.Accepting += (_, e) =>
+        {
+            app.RequestStop();
+            e.Handled = true;
+        };
 
         dialog.Add(label, okButton);
         app.Run(dialog);

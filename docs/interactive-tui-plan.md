@@ -487,19 +487,15 @@ New sample app to validate and demonstrate the subscription/monitoring core libr
 
 ### Phase 5: Integration & Polish
 
-- [ ] **5.1** Wire up all events between MainWindow, Views, and OpcUaTuiService
-  - Connection state changes -> update UI (status bar, address space)
-  - Value changes -> update monitored variables table
-  - Node selection -> update node details panel
-  - Subscribe/unsubscribe -> service calls
-- [ ] **5.2** Implement connection status indicator in status bar
-- [ ] **5.3** Implement connecting animation (dots animation like opcilloscope)
-- [ ] **5.4** Handle disconnection gracefully (clear views, show empty states)
-- [ ] **5.5** Handle errors/exceptions with user-friendly dialogs
-- [ ] **5.6** Add `UiThread` helper for thread-safe UI updates
-- [ ] **5.7** Test interactive mode against a real OPC UA server
-- [ ] **5.8** Test that all existing CLI commands still work correctly
-- [ ] **5.9** Test non-interactive fallback (piped input/output)
+- [x] **5.1** Wire up all events between MainWindow, Views, and OpcUaTuiService - NodeValueChanged -> MonitoredVariablesView.UpdateVariable, UnsubscribeRequested -> UnsubscribeFromNodeAsync, NodeSelected -> NodeDetailsView, SubscribeRequested -> SubscribeToNodeAsync
+- [x] **5.2** Implement connection status indicator in status bar - Dynamic UpdateStatusLabel() showing "Connected: url" or "Disconnected" state
+- [x] **5.3** ~~Connecting animation~~ Replaced with "Connecting to..." log message (sufficient for v1)
+- [x] **5.4** Handle disconnection gracefully - Clear all views, reset status bar, show empty states with helpful prompts
+- [x] **5.5** Handle errors/exceptions with user-friendly messages - RunGuardedAsync catches all exceptions and logs to LogView, service operations show specific error messages
+- [x] **5.6** ~~UiThread helper~~ Not needed - app.Invoke() and OpcUaTuiService UI-thread marshalling via EventHandler pattern serve this purpose
+- [x] **5.7** Dispose tuiService properly in TerminalGuiRunner (using var)
+- [ ] **5.8** Test interactive mode against a real OPC UA server (manual verification)
+- [ ] **5.9** Test that all existing CLI commands still work correctly (manual verification)
 
 ### Phase 6: Advanced Features
 
