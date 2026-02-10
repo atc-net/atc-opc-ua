@@ -438,25 +438,14 @@ New sample app to validate and demonstrate the subscription/monitoring core libr
 
 ### Phase 2: TUI Infrastructure
 
-- [ ] **2.1** Create `Tui/` folder under `Atc.Opc.Ua.CLI`
-- [ ] **2.2** Create `IOpcUaInteractiveRunner` interface (mirrors atc-dsc's `IInteractiveRunner`)
-  ```csharp
-  public interface IOpcUaInteractiveRunner
-  {
-      Task<int> RunAsync(CancellationToken cancellationToken = default);
-  }
-  ```
-- [ ] **2.3** Create `TerminalGuiRunner` implementing `IOpcUaInteractiveRunner`
-  - Use `Application.Create().Init()` pattern (newer Terminal.Gui v2 API)
-  - Create and run `MainWindow`
-  - Wire up `CancellationToken` for graceful shutdown
-- [ ] **2.4** Create `InteractiveCommand : AsyncCommand` (root/default command)
-  - Inject `IOpcUaInteractiveRunner`
-  - Display header, then delegate to `runner.RunAsync()`
-- [ ] **2.5** Register `IOpcUaInteractiveRunner` / `TerminalGuiRunner` in DI (Program.cs)
-- [ ] **2.6** Update `CommandAppExtensions.ConfigureCommands` to work with `CommandApp<InteractiveCommand>`
-- [ ] **2.7** Add non-interactive fallback when `Console.IsInputRedirected || Console.IsOutputRedirected`
-- [ ] **2.8** Create thin `Tui/Services/OpcUaTuiService` adapter
+- [x] **2.1** Create `Tui/` folder under `Atc.Opc.Ua.CLI`
+- [x] **2.2** Create `IOpcUaInteractiveRunner` interface (mirrors atc-dsc's `IInteractiveRunner`)
+- [x] **2.3** Create `TerminalGuiRunner` implementing `IOpcUaInteractiveRunner`
+- [x] **2.4** Create `InteractiveCommand : AsyncCommand` (root/default command)
+- [x] **2.5** Register `IOpcUaInteractiveRunner` / `TerminalGuiRunner` in DI (Program.cs)
+- [x] **2.6** Update `CommandAppExtensions.ConfigureCommands` to work with `CommandApp<InteractiveCommand>`
+- [x] **2.7** Add non-interactive fallback when `Console.IsInputRedirected || Console.IsOutputRedirected`
+- [x] **2.8** Create thin `Tui/Services/OpcUaTuiService` adapter
   - Wraps `IOpcUaClient` + `IOpcUaNodeBrowser` for the TUI
   - Manages TUI-specific view models (BrowsedNode tree, MonitoredVariable display)
   - Marshals `NodeValueChanged` events to UI thread
@@ -464,29 +453,30 @@ New sample app to validate and demonstrate the subscription/monitoring core libr
 
 ### Phase 3: Main Window & Layout
 
-- [ ] **3.1** Create `Tui/MainWindow.cs` extending `Window`
-  - Four-panel layout: AddressSpace (left), MonitoredVariables (right), NodeDetails (bottom), Log (bottom)
-  - MenuBar with File, Connection, View, Help menus
-  - StatusBar with context-aware keyboard shortcuts
-- [ ] **3.2** Create `Tui/Views/AddressSpaceView.cs` extending `FrameView`
-  - Terminal.Gui `TreeView<BrowsedNode>` with `DelegateTreeBuilder`
-  - Lazy-load children on expand (async)
-  - Events: `NodeSelected`, `NodeSubscribeRequested`
-  - Enter/Space to subscribe variable nodes
+- [x] **3.1** Create `Tui/MainWindow.cs` extending `Window`
+  - Four-panel layout: AddressSpace (left 35%), MonitoredVariables (right 65%), NodeDetails (bottom 5 rows), Log (fill)
+  - Status label with context-aware keyboard shortcuts
+  - Key bindings: c/d/Tab/?/q/Delete via namespace-prefixed Terminal.Gui.Input.Key
+  - ConfirmQuit and Help dialogs (following atc-dsc pattern)
+  - RunGuardedAsync for safe fire-and-forget async
+- [x] **3.2** Create `Tui/Views/AddressSpaceView.cs` extending `FrameView`
+  - TreeView<BrowsedNode> with DelegateTreeBuilder for lazy loading
+  - Events: NodeSelected, SubscribeRequested
   - Empty state label when disconnected
-- [ ] **3.3** Create `Tui/Views/MonitoredVariablesView.cs` extending `FrameView`
-  - Terminal.Gui `TableView` backed by `DataTable`
+- [x] **3.3** Create `Tui/Views/MonitoredVariablesView.cs` extending `FrameView`
+  - TableView backed by DataTable with DataTableSource
   - Columns: Name, NodeId, Value, Status, Timestamp
-  - Batched updates (50ms timer) for performance with high-frequency data
-  - Delete/Backspace to unsubscribe
-  - Events: `UnsubscribeRequested`, `SelectedVariableChanged`
-- [ ] **3.4** Create `Tui/Views/NodeDetailsView.cs` extending `FrameView`
-  - Shows attributes of currently selected node (from tree or table)
-  - Displays: NodeId, NodeClass, DataType, Value, AccessLevel, Description
-- [ ] **3.5** Create `Tui/Views/LogView.cs` extending `FrameView`
-  - Scrollable text view for log messages
-  - Auto-scroll to latest message
-  - Supports Info/Warning/Error levels with text prefixes
+  - Batched updates (50ms timer via ConcurrentDictionary + Application.AddTimeout)
+  - Delete/Backspace to unsubscribe via HandleDeleteKey
+- [x] **3.4** Create `Tui/Views/NodeDetailsView.cs` extending `FrameView`
+  - Async attribute reading with formatted display (NodeId, Class, DataType, Value, Access, Status)
+- [x] **3.5** Create `Tui/Views/LogView.cs` extending `FrameView`
+  - ListView-backed scrollable log with ObservableCollection
+  - Auto-scroll to latest, max 500 entries
+  - AddInfo/AddWarning/AddError helpers
+- [x] **3.6** Create `Tui/Models/BrowsedNode.cs`
+  - TUI-specific model with lazy-loading state (ChildrenLoaded, Children, Parent)
+  - Factory method FromBrowseResult for mapping from core contracts
 
 ### Phase 4: Dialogs & Interactions
 
