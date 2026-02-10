@@ -21,6 +21,7 @@ public static class Program
 
         serviceCollection.AddTransient<IOpcUaClient, OpcUaClient>();
         serviceCollection.AddTransient<IOpcUaScanner, OpcUaScanner>();
+        serviceCollection.AddTransient<IOpcUaNodeBrowser, OpcUaNodeBrowser>();
 
         var app = CommandAppFactory.Create(serviceCollection);
         app.ConfigureCommands();
