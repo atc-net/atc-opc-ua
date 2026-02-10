@@ -69,6 +69,14 @@ internal static class LoggingEventIdConstants
     public const int SubscriptionNotificationError = 10104;
     public const int SubscriptionNoActiveSubscription = 10105;
 
+    // OpcUaNodeBrowser
+    public const int BrowseChildren = 10110;
+    public const int BrowseChildrenSucceeded = 10111;
+    public const int BrowseChildrenFailure = 10112;
+    public const int ReadAttributes = 10113;
+    public const int ReadAttributesSucceeded = 10114;
+    public const int ReadAttributesFailure = 10115;
+
     // OpcUaScanner
     public const int ScannerClientNotConnected = 11000;
     public const int ScannerStart = 11001;
