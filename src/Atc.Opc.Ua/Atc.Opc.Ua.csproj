@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <PackageId>Atc.Opc.Ua</PackageId>
     <PackageTags>opc-ua</PackageTags>
     <Description>Atc.Opc.Ua is a collection of classes and clients for interacting with OPCUA.</Description>
@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Atc" Version="2.0.562" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.10" />
+    <PackageReference Include="Atc" Version="3.0.18" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.1" />
     <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua" Version="[1.5.377.21]" />
     <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client.ComplexTypes" Version="[1.5.377.21]" />
   </ItemGroup>

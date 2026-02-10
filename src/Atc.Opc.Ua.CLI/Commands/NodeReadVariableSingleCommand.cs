@@ -15,7 +15,8 @@ internal sealed class NodeReadVariableSingleCommand : AsyncCommand<SingleNodeCom
 
     public override Task<int> ExecuteAsync(
         CommandContext context,
-        SingleNodeCommandSettings settings)
+        SingleNodeCommandSettings settings,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(settings);
 

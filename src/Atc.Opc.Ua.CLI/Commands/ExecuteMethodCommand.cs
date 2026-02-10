@@ -15,7 +15,8 @@ internal sealed class ExecuteMethodCommand : AsyncCommand<ExecuteMethodCommandSe
 
     public override Task<int> ExecuteAsync(
         CommandContext context,
-        ExecuteMethodCommandSettings settings)
+        ExecuteMethodCommandSettings settings,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(settings);
 

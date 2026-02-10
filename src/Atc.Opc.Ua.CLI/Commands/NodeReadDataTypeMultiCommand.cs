@@ -15,7 +15,8 @@ internal sealed class NodeReadDataTypeMultiCommand : AsyncCommand<ReadDataTypesC
 
     public override Task<int> ExecuteAsync(
         CommandContext context,
-        ReadDataTypesCommandSettings settings)
+        ReadDataTypesCommandSettings settings,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(settings);
 

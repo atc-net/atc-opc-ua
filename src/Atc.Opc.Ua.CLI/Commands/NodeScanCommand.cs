@@ -18,7 +18,8 @@ internal sealed class NodeScanCommand : AsyncCommand<ScanNodeCommandSettings>
 
     public override Task<int> ExecuteAsync(
         CommandContext context,
-        ScanNodeCommandSettings settings)
+        ScanNodeCommandSettings settings,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(settings);
         return ExecuteInternalAsync(settings);

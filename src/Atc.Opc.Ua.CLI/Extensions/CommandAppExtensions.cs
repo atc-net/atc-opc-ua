@@ -6,7 +6,7 @@ public static class CommandAppExtensions
     private const string SampleOpcUaServerUrl = "opc.tcp://opcuaserver.com:48010";
 
     public static void ConfigureCommands(
-        this CommandApp app)
+        this CommandApp<InteractiveCommand> app)
     {
         ArgumentNullException.ThrowIfNull(app);
 

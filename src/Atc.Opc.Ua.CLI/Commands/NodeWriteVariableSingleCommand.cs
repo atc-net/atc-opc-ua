@@ -15,7 +15,8 @@ internal sealed class NodeWriteVariableSingleCommand : AsyncCommand<WriteNodeCom
 
     public override Task<int> ExecuteAsync(
         CommandContext context,
-        WriteNodeCommandSettings settings)
+        WriteNodeCommandSettings settings,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(settings);
 

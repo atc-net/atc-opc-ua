@@ -15,7 +15,8 @@ internal sealed class NodeReadObjectCommand : AsyncCommand<ReadObjectNodeCommand
 
     public override Task<int> ExecuteAsync(
         CommandContext context,
-        ReadObjectNodeCommandSettings settings)
+        ReadObjectNodeCommandSettings settings,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(settings);
 

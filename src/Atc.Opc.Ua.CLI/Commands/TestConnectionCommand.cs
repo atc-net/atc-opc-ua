@@ -15,7 +15,8 @@ internal sealed class TestConnectionCommand : AsyncCommand<OpcUaBaseCommandSetti
 
     public override Task<int> ExecuteAsync(
         CommandContext context,
-        OpcUaBaseCommandSettings settings)
+        OpcUaBaseCommandSettings settings,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(settings);
 

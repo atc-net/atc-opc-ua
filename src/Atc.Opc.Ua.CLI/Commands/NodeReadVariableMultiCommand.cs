@@ -15,7 +15,8 @@ internal sealed class NodeReadVariableMultiCommand : AsyncCommand<MultiNodeComma
 
     public override Task<int> ExecuteAsync(
         CommandContext context,
-        MultiNodeCommandSettings settings)
+        MultiNodeCommandSettings settings,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(settings);
 

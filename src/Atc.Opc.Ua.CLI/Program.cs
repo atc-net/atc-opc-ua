@@ -6,8 +6,6 @@ public static class Program
     {
         ArgumentNullException.ThrowIfNull(args);
 
-        args = SetHelpArgumentIfNeeded(args);
-
         var configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
             .Build();
@@ -22,20 +20,18 @@ public static class Program
         serviceCollection.AddTransient<IOpcUaClient, OpcUaClient>();
         serviceCollection.AddTransient<IOpcUaScanner, OpcUaScanner>();
 
-        var app = CommandAppFactory.Create(serviceCollection);
+        var app = CommandAppFactory.CreateWithRootCommand<InteractiveCommand>(serviceCollection);
         app.ConfigureCommands();
+
+        if (IsNonInteractiveTerminal(args))
+        {
+            args = [CommandConstants.ArgumentShortHelp];
+        }
+
         return app.RunAsync(args);
     }
 
-    private static string[] SetHelpArgumentIfNeeded(
-        string[] args)
-    {
-        if (args.Length == 0)
-        {
-            return [CommandConstants.ArgumentShortHelp];
-        }
-
-        // TODO: Add multiple command help commands
-        return args;
-    }
+    private static bool IsNonInteractiveTerminal(string[] args)
+        => args.Length == 0 &&
+           (System.Console.IsInputRedirected || System.Console.IsOutputRedirected);
 }
