@@ -306,8 +306,8 @@ Add subscription/monitoring and lazy browsing capabilities to `Atc.Opc.Ua` and `
 
 #### 1B: Extend IOpcUaClient with Subscription Support (`Atc.Opc.Ua`)
 
-- [ ] **1B.1** Add `ISession? Session { get; }` property to `IOpcUaClient` interface (promotes existing concrete-class property to the interface for clean access)
-- [ ] **1B.2** Add subscription methods to `IOpcUaClient` interface
+- [x] **1B.1** Add `ISession? Session { get; }` property to `IOpcUaClient` interface (promotes existing concrete-class property to the interface for clean access)
+- [x] **1B.2** Add subscription methods to `IOpcUaClient` interface
   ```csharp
   // Session access (promoted to interface)
   ISession? Session { get; }
@@ -332,18 +332,18 @@ Add subscription/monitoring and lazy browsing capabilities to `Atc.Opc.Ua` and `
   // Subscription event
   event EventHandler<MonitoredNodeValue>? NodeValueChanged;
   ```
-- [ ] **1B.3** Implement subscription support in `OpcUaClient` (new partial class `OpcUaClientSubscription.cs`)
+- [x] **1B.3** Implement subscription support in `OpcUaClient` (new partial class `OpcUaClientSubscription.cs`)
   - Create OPC UA `Subscription` on the existing `Session`
   - Manage `MonitoredItem` instances with O(1) lookup (dictionary by handle)
   - Process `MonitoredItemNotification` callbacks and raise `NodeValueChanged`
   - Handle subscription cleanup on disconnect/dispose
   - Handle subscription restoration on reconnect (reattach or recreate)
-- [ ] **1B.4** Add unit tests for subscription functionality
-- [ ] **1B.5** Test subscription against real OPC UA server (integration test)
+- [x] **1B.4** Add unit tests for subscription functionality
+- [ ] **1B.5** Test subscription against real OPC UA server (integration test, deferred to Phase 1D sample app)
 
 #### 1C: New Node Browser Service (`Atc.Opc.Ua`)
 
-- [ ] **1C.1** Create `IOpcUaNodeBrowser` interface
+- [x] **1C.1** Create `IOpcUaNodeBrowser` interface
   ```csharp
   public interface IOpcUaNodeBrowser
   {
@@ -354,13 +354,13 @@ Add subscription/monitoring and lazy browsing capabilities to `Atc.Opc.Ua` and `
           IOpcUaClient client, string nodeId, CancellationToken cancellationToken = default);
   }
   ```
-- [ ] **1C.2** Implement `OpcUaNodeBrowser` service
+- [x] **1C.2** Implement `OpcUaNodeBrowser` service
   - Lazy node-by-node browsing via `Session.Browse()` with `HierarchicalReferences`
   - Optimistic `HasChildren` for Objects/Variables (same pattern as opcilloscope)
   - Parallel data type name resolution
   - Full attribute reading (class-specific attributes)
-- [ ] **1C.3** Register `IOpcUaNodeBrowser` / `OpcUaNodeBrowser` in DI
-- [ ] **1C.4** Add unit tests for node browser
+- [x] **1C.3** Register `IOpcUaNodeBrowser` / `OpcUaNodeBrowser` in DI
+- [ ] **1C.4** Add unit tests for node browser (deferred - requires ISession mocking)
 
 ### Phase 1D: Subscription Sample App
 
