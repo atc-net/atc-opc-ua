@@ -428,12 +428,8 @@ New sample app to validate and demonstrate the subscription/monitoring core libr
   await client.UnsubscribeAllAsync();
   await client.RemoveSubscriptionAsync();
   ```
-- [ ] **1D.4** Also demonstrate `IOpcUaNodeBrowser` usage:
-  1. **Browse root children** via `browser.BrowseChildrenAsync(client, "i=85")`
-  2. **Browse deeper** - pick first child, browse its children
-  3. **Read full attributes** via `browser.ReadNodeAttributesAsync(client, nodeId)`
-  4. Log the browse tree to console
-- [ ] **1D.5** Add the new project to the solution file (`dotnet sln add`)
+- [x] **1D.4** Also demonstrate `IOpcUaNodeBrowser` usage - DemoBrowseAsync browses Objects folder, DemoReadAttributesAsync reads first child's full attributes
+- [x] **1D.5** Add the new project to the solution file (added to Atc.Opc.Ua.slnx)
 - [ ] **1D.6** Verify the sample compiles and runs against a real OPC UA server
 
 ### Phase 2: TUI Infrastructure
