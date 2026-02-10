@@ -52,6 +52,28 @@ internal static class LoggingEventIdConstants
     public const int SessionReadEnumStringsFailed = 10086;
     public const int SessionBrowsePropertyFailed = 10087;
 
+    // OpcUaClient - Subscription
+    public const int SubscriptionCreating = 10090;
+    public const int SubscriptionCreated = 10091;
+    public const int SubscriptionCreateFailure = 10092;
+    public const int SubscriptionRemoving = 10093;
+    public const int SubscriptionRemoved = 10094;
+    public const int SubscriptionRemoveFailure = 10095;
+    public const int SubscriptionNodeSubscribing = 10096;
+    public const int SubscriptionNodeSubscribed = 10097;
+    public const int SubscriptionNodeSubscribeFailure = 10098;
+    public const int SubscriptionNodeUnsubscribing = 10099;
+    public const int SubscriptionNodeUnsubscribed = 10100;
+    public const int SubscriptionNodeUnsubscribeFailure = 10101;
+    public const int SubscriptionUnsubscribeAll = 10102;
+    public const int SubscriptionUnsubscribedAll = 10103;
+    public const int SubscriptionNotificationError = 10104;
+    public const int SubscriptionUnsubscribeAllFailure = 10105;
+    public const int SubscriptionRestoredAfterReconnect = 10106;
+    public const int SubscriptionLostAfterReconnect = 10107;
+    public const int SubscriptionNodesSubscribed = 10108;
+    public const int SubscriptionNodesSubscribeFailure = 10109;
+
     // OpcUaScanner
     public const int ScannerClientNotConnected = 11000;
     public const int ScannerStart = 11001;

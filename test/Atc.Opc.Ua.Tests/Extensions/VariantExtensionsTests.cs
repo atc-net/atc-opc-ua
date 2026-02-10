@@ -93,6 +93,43 @@ public sealed class VariantExtensionsTests
     public void ToInvariantString_Int16_ShouldReturnTheNumber()
         => new Variant((short)-42).ToInvariantString().Should().Be("-42");
 
+    [Fact]
+    public void ToPlainValue_Float_ShouldKeepTheFloat()
+        => new Variant(21.5f).ToPlainValue().Should().Be(21.5f);
+
+    [Fact]
+    public void ToPlainValue_FloatArray_ShouldKeepTheArray()
+        => new Variant(new[] { 1.5f, 2.25f }).ToPlainValue().Should().BeEquivalentTo(new[] { 1.5f, 2.25f });
+
+    [Fact]
+    public void ToPlainValue_LocalizedText_ShouldReturnItsText()
+        => new Variant(new LocalizedText("en", "Supply temperature")).ToPlainValue().Should().Be("Supply temperature");
+
+    [Fact]
+    public void ToPlainValue_NodeId_ShouldReturnItsTextForm()
+        => new Variant(new NodeId("Demo.Float", 2)).ToPlainValue().Should().Be("ns=2;s=Demo.Float");
+
+    [Fact]
+    public void ToPlainValue_StatusCode_ShouldReturnItsCode()
+        => new Variant(new StatusCode(StatusCodes.BadNodeIdUnknown)).ToPlainValue().Should().Be(StatusCodes.BadNodeIdUnknown);
+
+    [Fact]
+    public void ToPlainValue_Guid_ShouldReturnAGuid()
+    {
+        // Arrange
+        var guid = Guid.NewGuid();
+
+        // Act
+        var result = new Variant(new Uuid(guid)).ToPlainValue();
+
+        // Assert
+        result.Should().Be(guid);
+    }
+
+    [Fact]
+    public void ToPlainValue_NullValue_ShouldReturnNull()
+        => Variant.Null.ToPlainValue().Should().BeNull();
+
     private static string? WithCulture(
         CultureInfo culture,
         Func<string?> action)

@@ -113,6 +113,8 @@ public partial class OpcUaClient : IOpcUaClient
                     consecutiveKeepAliveFailures = 0;
                 }
 
+                CleanupSubscription();
+
                 await Session.CloseAsync(cancellationToken);
                 Session.Dispose();
                 Session = null;
@@ -419,6 +421,8 @@ public partial class OpcUaClient : IOpcUaClient
                     : 0;
 
                 LogSessionReconnected(Session.SessionName ?? "unknown");
+
+                RestoreSubscriptionAfterReconnect(reconnected);
             }
         }
         catch (Exception ex)
@@ -466,6 +470,9 @@ public partial class OpcUaClient : IOpcUaClient
             {
                 // Ignore: best-effort detach
             }
+
+            CleanupSubscription();
+            subscriptionGate.Dispose();
 
             try
             {
