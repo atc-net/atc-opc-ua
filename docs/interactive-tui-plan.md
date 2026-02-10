@@ -480,28 +480,10 @@ New sample app to validate and demonstrate the subscription/monitoring core libr
 
 ### Phase 4: Dialogs & Interactions
 
-- [ ] **4.1** Create `Tui/Dialogs/ConnectDialog.cs`
-  - Fields: Server URL (text field), Username (optional), Password (optional)
-  - Remember last endpoint
-  - OK/Cancel buttons
-- [ ] **4.2** Create `Tui/Dialogs/WriteValueDialog.cs`
-  - Fields: Current value (read-only), New value (text field), DataType (label)
-  - Only available for writable nodes
-  - OK/Cancel buttons
-- [ ] **4.3** Create `Tui/Dialogs/HelpDialog.cs`
-  - Keyboard shortcuts reference
-  - Application info
-- [ ] **4.4** Wire up keyboard shortcuts in MainWindow
-  - `c` - Connect dialog
-  - `d` - Disconnect
-  - `r` - Refresh tree
-  - `w` - Write value (when variable selected)
-  - `Tab` - Switch focus between panels
-  - `Enter` - Subscribe to variable / Expand-collapse node
-  - `Delete`/`Backspace` - Unsubscribe
-  - `?` - Help dialog
-  - `q` / `Ctrl+Q` - Quit (with confirmation)
-  - `Esc` - Close dialog / Quit
+- [x] **4.1** Create `Tui/Dialogs/ConnectDialog.cs` - Server URL, Username, Password fields with remember-last-endpoint via static fields, validation, OK/Cancel buttons with TGUI001-compliant Accepting handlers
+- [x] **4.2** Create `Tui/Dialogs/WriteValueDialog.cs` - Displays node info (name, nodeId, dataType, current value), new value text field, Write/Cancel buttons
+- [x] **4.3** Help dialog implemented inline in MainWindow.ShowHelp() - Keyboard shortcuts reference with categorized sections (Navigation, Connection, Actions, General)
+- [x] **4.4** Wire up keyboard shortcuts in MainWindow - `c` Connect, `d` Disconnect, `w` Write, `r` Refresh, `Tab` Switch focus, `Enter` Subscribe, `Delete`/`Backspace` Unsubscribe, `?` Help, `q` Quit with confirmation
 
 ### Phase 5: Integration & Polish
 

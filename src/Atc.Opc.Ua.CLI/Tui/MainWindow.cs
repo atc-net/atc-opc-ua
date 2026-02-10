@@ -67,7 +67,7 @@ public sealed class MainWindow : Window
 
         var statusLabel = new Label
         {
-            Text = " [c] Connect  [d] Disconnect  [Tab] Switch  [?] Help  [q] Quit",
+            Text = " [c] Connect  [d] Disconnect  [w] Write  [r] Refresh  [Tab] Switch  [?] Help  [q] Quit",
             X = 0,
             Y = Pos.AnchorEnd(1),
             Width = Dim.Fill(),
@@ -107,13 +107,22 @@ public sealed class MainWindow : Window
         }
         else if (key == Terminal.Gui.Input.Key.C)
         {
-            // Connect dialog will be wired in Phase 4
-            logView.AddInfo("Connect dialog not yet implemented. Coming in Phase 4.");
+            _ = RunGuardedAsync(ShowConnectDialogAsync);
             key.Handled = true;
         }
         else if (key == Terminal.Gui.Input.Key.D)
         {
             _ = RunGuardedAsync(DisconnectAsync);
+            key.Handled = true;
+        }
+        else if (key == Terminal.Gui.Input.Key.W)
+        {
+            _ = RunGuardedAsync(ShowWriteDialogAsync);
+            key.Handled = true;
+        }
+        else if (key == Terminal.Gui.Input.Key.R)
+        {
+            _ = RunGuardedAsync(RefreshTreeAsync);
             key.Handled = true;
         }
         else if (key == Terminal.Gui.Input.Key.Tab)
@@ -220,6 +229,91 @@ public sealed class MainWindow : Window
         });
     }
 
+    private async Task ShowConnectDialogAsync()
+    {
+        if (tuiService.IsConnected)
+        {
+            logView.AddWarning("Already connected. Disconnect first.");
+            return;
+        }
+
+        var dialog = ConnectDialog.Show(app);
+        if (!dialog.WasAccepted)
+        {
+            return;
+        }
+
+        logView.AddInfo($"Connecting to {dialog.ServerUrl}...");
+
+        var serverUri = new Uri(dialog.ServerUrl);
+        var (succeeded, errorMessage) = await tuiService
+            .ConnectAsync(serverUri, dialog.UserName, dialog.Password, CancellationToken.None);
+
+        if (succeeded)
+        {
+            logView.AddInfo($"Connected to {dialog.ServerUrl}");
+            await addressSpaceView.LoadRootAsync(CancellationToken.None);
+        }
+        else
+        {
+            logView.AddError($"Connection failed: {errorMessage}");
+        }
+    }
+
+    private async Task ShowWriteDialogAsync()
+    {
+        var selectedNode = addressSpaceView.SelectedNode;
+        if (selectedNode is null || selectedNode.NodeClass != NodeClassType.Variable)
+        {
+            logView.AddWarning("Select a variable node first.");
+            return;
+        }
+
+        if (!tuiService.IsConnected)
+        {
+            logView.AddWarning("Not connected to a server.");
+            return;
+        }
+
+        // Read current value for the dialog
+        var (attrOk, attributes, _) = await tuiService
+            .ReadNodeAttributesAsync(selectedNode.NodeId, CancellationToken.None);
+
+        var currentValue = attrOk ? attributes?.Value : null;
+        var dataType = selectedNode.DataTypeName;
+
+        var dialog = WriteValueDialog.Show(app, selectedNode.DisplayName, selectedNode.NodeId, currentValue, dataType);
+        if (!dialog.WasAccepted)
+        {
+            return;
+        }
+
+        var (writeOk, writeError) = await tuiService
+            .WriteNodeAsync(selectedNode.NodeId, dialog.NewValue, CancellationToken.None);
+
+        if (writeOk)
+        {
+            logView.AddInfo($"Wrote '{dialog.NewValue}' to {selectedNode.DisplayName}");
+        }
+        else
+        {
+            logView.AddError($"Write failed: {writeError}");
+        }
+    }
+
+    private async Task RefreshTreeAsync()
+    {
+        if (!tuiService.IsConnected)
+        {
+            logView.AddWarning("Not connected.");
+            return;
+        }
+
+        logView.AddInfo("Refreshing address space...");
+        await addressSpaceView.LoadRootAsync(CancellationToken.None);
+        logView.AddInfo("Address space refreshed.");
+    }
+
     private void ConfirmQuit()
     {
         var result = MessageBox.Query(
@@ -245,11 +339,17 @@ public sealed class MainWindow : Window
                                   Tab          Switch focus between panels
                                   Arrow keys   Navigate within panels
 
-                                Actions:
+                                Connection:
                                   c            Connect to OPC UA server
                                   d            Disconnect
+                                  r            Refresh address space
+
+                                Actions:
                                   Enter        Subscribe to selected variable
                                   Delete       Unsubscribe selected variable
+                                  w            Write value to selected variable
+
+                                General:
                                   ?            Show this help
                                   q            Quit
                                 """;

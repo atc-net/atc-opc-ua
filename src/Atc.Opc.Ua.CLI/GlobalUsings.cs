@@ -12,6 +12,7 @@ global using Atc.Opc.Ua.CLI.Commands;
 global using Atc.Opc.Ua.CLI.Commands.Settings;
 global using Atc.Opc.Ua.CLI.Extensions;
 global using Atc.Opc.Ua.CLI.Tui;
+global using Atc.Opc.Ua.CLI.Tui.Dialogs;
 global using Atc.Opc.Ua.CLI.Tui.Models;
 global using Atc.Opc.Ua.CLI.Tui.Services;
 global using Atc.Opc.Ua.CLI.Tui.Views;
