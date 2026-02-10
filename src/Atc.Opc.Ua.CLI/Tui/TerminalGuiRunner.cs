@@ -31,7 +31,9 @@ public sealed class TerminalGuiRunner : IOpcUaInteractiveRunner
         using var registration = cancellationToken.Register(() => app.Invoke(() => app.RequestStop()));
 
         using var tuiService = new OpcUaTuiService(app, opcUaClient, nodeBrowser);
-        var mainWindow = new MainWindow(app, tuiService, logger);
+        var configService = new TuiConfigurationService();
+        using var csvRecorder = new CsvRecorder();
+        var mainWindow = new MainWindow(app, tuiService, configService, csvRecorder, logger);
 
         app.Run(mainWindow);
 

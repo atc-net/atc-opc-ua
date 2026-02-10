@@ -12,10 +12,13 @@ public sealed class MainWindow : Window
 {
     private readonly IApplication app;
     private readonly OpcUaTuiService tuiService;
+    private readonly TuiConfigurationService configService;
+    private readonly CsvRecorder csvRecorder;
     private readonly ILogger logger;
     private readonly AddressSpaceView addressSpaceView;
     private readonly MonitoredVariablesView monitoredVariablesView;
     private readonly NodeDetailsView nodeDetailsView;
+    private readonly ScopeView scopeView;
     private readonly LogView logView;
     private readonly Label statusLabel;
     private string? connectedServerUrl;
@@ -23,14 +26,20 @@ public sealed class MainWindow : Window
     public MainWindow(
         IApplication app,
         OpcUaTuiService tuiService,
+        TuiConfigurationService configService,
+        CsvRecorder csvRecorder,
         ILogger logger)
     {
         ArgumentNullException.ThrowIfNull(app);
         ArgumentNullException.ThrowIfNull(tuiService);
+        ArgumentNullException.ThrowIfNull(configService);
+        ArgumentNullException.ThrowIfNull(csvRecorder);
         ArgumentNullException.ThrowIfNull(logger);
 
         this.app = app;
         this.tuiService = tuiService;
+        this.configService = configService;
+        this.csvRecorder = csvRecorder;
         this.logger = logger;
 
         Title = "atc-opc-ua - Interactive OPC UA Client";
@@ -59,9 +68,17 @@ public sealed class MainWindow : Window
             Height = 5,
         };
 
-        logView = new LogView(app)
+        scopeView = new ScopeView(app)
         {
             X = 0,
+            Y = Pos.Bottom(nodeDetailsView),
+            Width = Dim.Percent(50),
+            Height = Dim.Fill(1),
+        };
+
+        logView = new LogView(app)
+        {
+            X = Pos.Right(scopeView),
             Y = Pos.Bottom(nodeDetailsView),
             Width = Dim.Fill(),
             Height = Dim.Fill(1),
@@ -76,7 +93,7 @@ public sealed class MainWindow : Window
 
         UpdateStatusLabel();
 
-        Add(addressSpaceView, monitoredVariablesView, nodeDetailsView, logView, statusLabel);
+        Add(addressSpaceView, monitoredVariablesView, nodeDetailsView, scopeView, logView, statusLabel);
 
         WireEvents();
         InitializeKeyBindings();
@@ -128,6 +145,11 @@ public sealed class MainWindow : Window
         else if (key == Terminal.Gui.Input.Key.R)
         {
             _ = RunGuardedAsync(RefreshTreeAsync);
+            key.Handled = true;
+        }
+        else if (key == Terminal.Gui.Input.Key.S)
+        {
+            ToggleCsvRecording();
             key.Handled = true;
         }
         else if (key == Terminal.Gui.Input.Key.Tab)
@@ -204,6 +226,7 @@ public sealed class MainWindow : Window
         app.Invoke(() =>
         {
             monitoredVariablesView.AddVariable(handle, initialValue);
+            scopeView.AddSignal(handle, node.DisplayName);
             logView.AddInfo($"Subscribed to {node.DisplayName} ({node.NodeId})");
         });
     }
@@ -211,6 +234,14 @@ public sealed class MainWindow : Window
     private void OnNodeValueChanged(object? sender, MonitoredNodeValue e)
     {
         monitoredVariablesView.UpdateVariable(e.MonitoredItemHandle, e);
+        csvRecorder.Record(e);
+
+        // Push numeric values to scope view
+        if (e.Value is not null &&
+            double.TryParse(e.Value, CultureInfo.InvariantCulture, out var numericValue))
+        {
+            scopeView.PushSample(e.MonitoredItemHandle, numericValue);
+        }
     }
 
     private async Task UnsubscribeFromNodeAsync(uint handle)
@@ -228,6 +259,7 @@ public sealed class MainWindow : Window
             if (succeeded)
             {
                 monitoredVariablesView.RemoveVariable(handle);
+                scopeView.RemoveSignal(handle);
                 logView.AddInfo("Unsubscribed from variable.");
             }
             else
@@ -254,6 +286,7 @@ public sealed class MainWindow : Window
                 connectedServerUrl = null;
                 addressSpaceView.Clear();
                 monitoredVariablesView.Clear();
+                scopeView.Clear();
                 nodeDetailsView.Clear();
                 UpdateStatusLabel();
                 logView.AddInfo("Disconnected.");
@@ -273,7 +306,7 @@ public sealed class MainWindow : Window
             return;
         }
 
-        var dialog = ConnectDialog.Show(app);
+        var dialog = ConnectDialog.Show(app, configService.RecentConnections);
         if (!dialog.WasAccepted)
         {
             return;
@@ -288,6 +321,7 @@ public sealed class MainWindow : Window
         if (succeeded)
         {
             connectedServerUrl = dialog.ServerUrl;
+            configService.AddRecentConnection(dialog.ServerUrl, dialog.UserName);
             UpdateStatusLabel();
             logView.AddInfo($"Connected to {dialog.ServerUrl}");
             await addressSpaceView.LoadRootAsync(CancellationToken.None);
@@ -352,13 +386,38 @@ public sealed class MainWindow : Window
         logView.AddInfo("Address space refreshed.");
     }
 
+    private void ToggleCsvRecording()
+    {
+        if (csvRecorder.IsRecording)
+        {
+            csvRecorder.Stop();
+            logView.AddInfo("CSV recording stopped.");
+        }
+        else
+        {
+            var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture);
+            var filePath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                $"opc-ua-recording-{timestamp}.csv");
+
+            if (csvRecorder.Start(filePath))
+            {
+                logView.AddInfo($"CSV recording started: {filePath}");
+            }
+            else
+            {
+                logView.AddError("Failed to start CSV recording.");
+            }
+        }
+    }
+
     private void UpdateStatusLabel()
     {
         var state = connectedServerUrl is not null
             ? $"Connected: {connectedServerUrl}"
             : "Disconnected";
 
-        statusLabel.Text = $" {state}  |  [c] Connect  [d] Disconnect  [w] Write  [r] Refresh  [Tab] Switch  [?] Help  [q] Quit";
+        statusLabel.Text = $" {state}  |  [c] Connect  [d] Disconnect  [w] Write  [r] Refresh  [s] Record  [Tab] Switch  [?] Help  [q] Quit";
     }
 
     private void ConfirmQuit()
@@ -395,6 +454,7 @@ public sealed class MainWindow : Window
                                   Enter        Subscribe to selected variable
                                   Delete       Unsubscribe selected variable
                                   w            Write value to selected variable
+                                  s            Start/stop CSV recording
 
                                 General:
                                   ?            Show this help

@@ -499,20 +499,12 @@ New sample app to validate and demonstrate the subscription/monitoring core libr
 
 ### Phase 6: Advanced Features
 
-- [ ] **6.1** Configuration save/load (persist connections + subscriptions to JSON)
-- [ ] **6.2** Recent connections list (populate connect dialog with history)
-- [ ] **6.3** Theme support (dark/light) with `ThemeManager`
-- [ ] **6.4** Scope/Oscilloscope view - BrailleCanvas-based real-time signal visualization (up to 5 signals)
-  - Create `Tui/Views/ScopeView.cs` extending `FrameView`
-  - Canvas rendering with configurable time window
-  - Signal color assignment, auto-scaling Y axis
-- [ ] **6.5** Trend plot dialog - time-based plotting in a dialog window
-  - Create `Tui/Dialogs/TrendPlotDialog.cs`
-  - Historical data buffer, configurable time range
-- [ ] **6.6** CSV recording - record monitored values to CSV files
-  - Create `Tui/Services/CsvRecorder.cs`
-  - Start/stop recording via keyboard shortcut or menu
-  - Configurable output path, column format matching monitored variables table
+- [x] **6.1** Configuration save/load - TuiConfigurationService persists recent connections to JSON in %APPDATA%/atc-opc-ua/tui-config.json
+- [x] **6.2** Recent connections list - ConnectDialog shows recent connections ListView, selecting populates fields
+- [ ] **6.3** Theme support (dark/light) with `ThemeManager` (deferred to future release)
+- [x] **6.4** Scope/Oscilloscope view - BrailleCanvas-based real-time signal visualization with custom Unicode braille renderer (2x4 sub-pixel resolution), Bresenham line drawing, auto-scaling Y axis, ring buffer, legend with live values, up to 5 signals
+- [x] **6.5** Trend plot dialog - TrendPlotDialog with braille canvas plotting, min/max/avg statistics, duration display
+- [x] **6.6** CSV recording - CsvRecorder with thread-safe writes, proper CSV escaping, start/stop via `s` key, output to Documents folder with timestamp filename
 
 ---
 
