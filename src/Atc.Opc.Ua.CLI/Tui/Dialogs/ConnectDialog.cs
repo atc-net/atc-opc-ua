@@ -14,9 +14,13 @@ public sealed class ConnectDialog : Dialog
     private static string lastServerUrl = "opc.tcp://localhost:48010";
     private static string lastUserName = string.Empty;
     private static string lastPassword = string.Empty;
+    private static bool lastUseAuth;
 
     private readonly TextField serverUrlField;
+    private readonly OptionSelector authTypeRadio;
+    private readonly Label userNameLabel;
     private readonly TextField userNameField;
+    private readonly Label passwordLabel;
     private readonly TextField passwordField;
 
     private ConnectDialog(IReadOnlyList<RecentConnection>? recentConnections)
@@ -38,10 +42,34 @@ public sealed class ConnectDialog : Dialog
         }
 
         serverUrlField = CreateTextField(lastServerUrl, 1 + yOffset);
-        userNameField = CreateTextField(lastUserName, 3 + yOffset);
-        passwordField = CreateTextField(lastPassword, 5 + yOffset, secret: true);
 
-        AddFieldLabelsAndHint(yOffset);
+        authTypeRadio = new OptionSelector
+        {
+            X = 18,
+            Y = 3 + yOffset,
+            Labels = ["Anonymous", "Username/Password"],
+            Orientation = Orientation.Horizontal,
+            Value = lastUseAuth ? 1 : 0,
+        };
+
+        userNameLabel = new Label { Text = "Username:", X = 1, Y = 5 + yOffset, Visible = lastUseAuth };
+        userNameField = CreateTextField(lastUserName, 5 + yOffset);
+        userNameField.Visible = lastUseAuth;
+
+        passwordLabel = new Label { Text = "Password:", X = 1, Y = 7 + yOffset, Visible = lastUseAuth };
+        passwordField = CreateTextField(lastPassword, 7 + yOffset, secret: true);
+        passwordField.Visible = lastUseAuth;
+
+        authTypeRadio.ValueChanged += (_, _) =>
+        {
+            var showCredentials = authTypeRadio.Value == 1;
+            userNameLabel.Visible = showCredentials;
+            userNameField.Visible = showCredentials;
+            passwordLabel.Visible = showCredentials;
+            passwordField.Visible = showCredentials;
+        };
+
+        AddFieldLabels(yOffset);
     }
 
     public bool WasAccepted { get; private set; }
@@ -52,6 +80,11 @@ public sealed class ConnectDialog : Dialog
     {
         get
         {
+            if (authTypeRadio.Value == 0)
+            {
+                return null;
+            }
+
             var text = userNameField.Text.Trim();
             return string.IsNullOrEmpty(text) ? null : text;
         }
@@ -61,6 +94,11 @@ public sealed class ConnectDialog : Dialog
     {
         get
         {
+            if (authTypeRadio.Value == 0)
+            {
+                return null;
+            }
+
             var text = passwordField.Text.Trim();
             return string.IsNullOrEmpty(text) ? null : text;
         }
@@ -97,8 +135,28 @@ public sealed class ConnectDialog : Dialog
                 return;
             }
 
+            if (dialog.authTypeRadio.Value == 1)
+            {
+                if (string.IsNullOrWhiteSpace(dialog.userNameField.Text))
+                {
+                    MessageBox.Query(app, "Validation", "Username is required.", "OK");
+                    dialog.userNameField.SetFocus();
+                    e.Handled = true;
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(dialog.passwordField.Text))
+                {
+                    MessageBox.Query(app, "Validation", "Password is required.", "OK");
+                    dialog.passwordField.SetFocus();
+                    e.Handled = true;
+                    return;
+                }
+            }
+
             dialog.WasAccepted = true;
             lastServerUrl = dialog.ServerUrl;
+            lastUseAuth = dialog.authTypeRadio.Value == 1;
             lastUserName = dialog.userNameField.Text.Trim() ?? string.Empty;
             lastPassword = dialog.passwordField.Text.Trim() ?? string.Empty;
             app.RequestStop();
@@ -154,6 +212,7 @@ public sealed class ConnectDialog : Dialog
             {
                 var conn = recentConnections[idx];
                 serverUrlField.Text = conn.ServerUrl;
+                authTypeRadio.Value = conn.UserName is not null ? 1 : 0;
                 userNameField.Text = conn.UserName ?? string.Empty;
                 passwordField.Text = string.Empty;
             }
@@ -174,18 +233,19 @@ public sealed class ConnectDialog : Dialog
         };
     }
 
-    private void AddFieldLabelsAndHint(int yOffset)
+    private void AddFieldLabels(int yOffset)
     {
         var urlLabel = new Label { Text = "Server URL:", X = 1, Y = 1 + yOffset };
-        var userLabel = new Label { Text = "Username:", X = 1, Y = 3 + yOffset };
-        var passLabel = new Label { Text = "Password:", X = 1, Y = 5 + yOffset };
-        var hint = new Label
-        {
-            Text = "(Leave username/password empty for anonymous)",
-            X = 1,
-            Y = 7 + yOffset,
-        };
+        var authLabel = new Label { Text = "Authentication:", X = 1, Y = 3 + yOffset };
 
-        Add(urlLabel, serverUrlField, userLabel, userNameField, passLabel, passwordField, hint);
+        Add(
+            urlLabel,
+            serverUrlField,
+            authLabel,
+            authTypeRadio,
+            userNameLabel,
+            userNameField,
+            passwordLabel,
+            passwordField);
     }
 }
