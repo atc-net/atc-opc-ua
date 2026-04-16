@@ -582,6 +582,7 @@ dotnet_diagnostic.CA1031.severity = none            #
 dotnet_diagnostic.CA1056.severity = none            # URI properties should not be strings
 dotnet_diagnostic.CA1308.severity = none            #
 dotnet_diagnostic.CA1860.severity = none            #
+dotnet_diagnostic.CA1873.severity = none            # Evaluation of this argument may be expensive and unnecessary if logging is disabled (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1873)
 dotnet_diagnostic.CA2007.severity = none            # Consider calling ConfigureAwait on the awaited task
 dotnet_diagnostic.CA2227.severity = none            # Collection properties should be read only
 dotnet_diagnostic.CA5400.severity = none            # Ensure HttpClient certificate revocation list check is not disabled

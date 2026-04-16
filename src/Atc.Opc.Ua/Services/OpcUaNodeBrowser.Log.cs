@@ -1,8 +1,5 @@
 namespace Atc.Opc.Ua.Services;
 
-/// <summary>
-/// OpcUaNodeBrowser LoggerMessages.
-/// </summary>
 public partial class OpcUaNodeBrowser
 {
     [LoggerMessage(
