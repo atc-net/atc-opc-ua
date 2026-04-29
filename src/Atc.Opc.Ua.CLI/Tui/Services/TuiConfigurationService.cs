@@ -1,5 +1,3 @@
-using System.Text.Json;
-
 namespace Atc.Opc.Ua.CLI.Tui.Services;
 
 /// <summary>

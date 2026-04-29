@@ -3,14 +3,13 @@ namespace Atc.Opc.Ua.CLI;
 public static class ConsoleHelper
 {
     /// <summary>
-    /// Prints the ATC OPC UA startup banner (Braille logo + ATC block + info rows).
+    /// Prints the ATC OPC UA startup banner (Braille logo + ATC block + info rows)
+    /// and runs the opportunistic NuGet update check.
     /// </summary>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>A task that completes once the banner has been printed.</returns>
+    /// <param name="cancellationToken">Cancellation token forwarded to the update check.</param>
+    /// <returns>A task that completes once the banner has been printed and the update check has finished.</returns>
     public static Task WriteHeaderAsync(CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
         System.Console.OutputEncoding = Encoding.UTF8;
 
         var version = typeof(ConsoleHelper).Assembly
@@ -22,6 +21,6 @@ public static class ConsoleHelper
             StartupBanner.Print(version);
         }
 
-        return Task.CompletedTask;
+        return UpdateCheckRunner.RunAsync(version, cancellationToken);
     }
 }

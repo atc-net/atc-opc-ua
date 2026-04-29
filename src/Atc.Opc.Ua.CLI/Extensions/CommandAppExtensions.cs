@@ -24,7 +24,8 @@ public static class CommandAppExtensions
         => config.AddCommand<TestConnectionCommand>("testconnection")
             .WithDescription("Tests if a connection can be made to a given server.")
             .WithExample($"testconnection -s {SampleOpcUaServerUrl}")
-            .WithExample($"testconnection -s {SampleOpcUaServerUrl} -u username -p password");
+            .WithExample($"testconnection -s {SampleOpcUaServerUrl} -u username -p password")
+            .WithExample($"testconnection -s {SampleOpcUaServerUrl} --no-update-check");
 
     private static Action<IConfigurator<CommandSettings>> ConfigureNodeCommands()
         => node =>
