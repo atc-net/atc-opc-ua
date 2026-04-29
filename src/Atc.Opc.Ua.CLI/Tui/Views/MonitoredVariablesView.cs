@@ -49,7 +49,7 @@ public sealed class MonitoredVariablesView : FrameView
 
         tableView.Style.ShowHorizontalHeaderOverline = false;
         tableView.Style.ShowHorizontalHeaderUnderline = true;
-        tableView.Style.ShowHorizontalBottomline = false;
+        tableView.Style.ShowHorizontalBottomLine = false;
         tableView.Style.AlwaysShowHeaders = true;
         tableView.Style.ShowVerticalCellLines = false;
         tableView.Style.ShowVerticalHeaderLines = false;
@@ -144,7 +144,7 @@ public sealed class MonitoredVariablesView : FrameView
 
     public void HandleDeleteKey()
     {
-        var selectedRow = tableView.SelectedRow;
+        var selectedRow = tableView.Value?.Cursor.Y ?? -1;
         if (selectedRow < 0 || selectedRow >= dataTable.Rows.Count)
         {
             return;

@@ -38,7 +38,7 @@ public sealed class AddressSpaceView : FrameView
         };
 
         treeView.SelectionChanged += OnSelectionChanged;
-        treeView.ObjectActivated += OnObjectActivated;
+        treeView.Activated += OnObjectActivated;
 
         emptyLabel = new Label
         {
@@ -147,7 +147,7 @@ public sealed class AddressSpaceView : FrameView
         {
             node.ChildrenLoaded = true;
             node.HasChildren = false;
-            app.Invoke(() => treeView.RefreshObject(node, false));
+            app.Invoke(() => treeView.RefreshObject(node));
             return;
         }
 
@@ -159,7 +159,7 @@ public sealed class AddressSpaceView : FrameView
 
         app.Invoke(() =>
         {
-            treeView.RefreshObject(node, false);
+            treeView.RefreshObject(node);
             if (node.Children.Count > 0)
             {
                 treeView.Expand(node);
@@ -181,11 +181,12 @@ public sealed class AddressSpaceView : FrameView
 
     private void OnObjectActivated(
         object? sender,
-        ObjectActivatedEventArgs<BrowsedNode> e)
+        EventArgs<Terminal.Gui.Input.ICommandContext?> e)
     {
-        if (e.ActivatedObject?.NodeClass == NodeClassType.Variable)
+        var activated = treeView.SelectedObject;
+        if (activated?.NodeClass == NodeClassType.Variable)
         {
-            SubscribeRequested?.Invoke(e.ActivatedObject);
+            SubscribeRequested?.Invoke(activated);
         }
     }
 }
