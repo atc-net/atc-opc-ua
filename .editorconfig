@@ -592,6 +592,7 @@ dotnet_diagnostic.MA0016.severity = none            # Collection abstraction
 dotnet_diagnostic.MA0048.severity = none            # File name must match type name
 
 dotnet_diagnostic.SA1010.severity = none            # An opening square bracket within a C# statement is not spaced correctly - incorrect for Collection Expressions
+dotnet_diagnostic.SA1206.severity = none            # Allow C# convention `public required` over StyleCop 1.2.0-beta default `required public` ordering
 
 dotnet_diagnostic.S1172.severity = none             # Temporary, due to false positive in latest version of the analyzer package
 dotnet_diagnostic.S2589.severity = none             # Boolean expressions should not be gratuitous

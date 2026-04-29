@@ -27,6 +27,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Atc.Opc.Ua.CLI.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Atc.Opc.Ua\Atc.Opc.Ua.csproj" />
   </ItemGroup>
 

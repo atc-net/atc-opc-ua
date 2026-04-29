@@ -6,8 +6,6 @@ public static class Program
     {
         ArgumentNullException.ThrowIfNull(args);
 
-        args = SetHelpArgumentIfNeeded(args);
-
         var configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
             .Build();
@@ -25,6 +23,15 @@ public static class Program
 
         var app = CommandAppFactory.Create(serviceCollection);
         app.ConfigureCommands();
+
+        if (args.Contains("--no-update-check", StringComparer.OrdinalIgnoreCase))
+        {
+            UpdateCheckRunner.SuppressForThisProcess();
+            args = [.. args.Where(a => !string.Equals(a, "--no-update-check", StringComparison.OrdinalIgnoreCase))];
+        }
+
+        args = SetHelpArgumentIfNeeded(args);
+
         return app.RunAsync(args);
     }
 

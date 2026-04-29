@@ -13,6 +13,7 @@
     <Project Path="src/Atc.Opc.Ua/Atc.Opc.Ua.csproj" />
   </Folder>
   <Folder Name="/test/">
+    <Project Path="test/Atc.Opc.Ua.CLI.Tests/Atc.Opc.Ua.CLI.Tests.csproj" />
     <Project Path="test/Atc.Opc.Ua.Contracts.Tests/Atc.Opc.Ua.Contracts.Tests.csproj" />
     <Project Path="test/Atc.Opc.Ua.Tests/Atc.Opc.Ua.Tests.csproj" />
   </Folder>
