@@ -25,7 +25,7 @@ internal sealed class NodeReadDataTypeMultiCommand : AsyncCommand<ReadDataTypesC
 
     private async Task<int> ExecuteInternalAsync(ReadDataTypesCommandSettings settings)
     {
-        ConsoleHelper.WriteHeader();
+        await ConsoleHelper.WriteHeaderAsync();
 
         var serverUrl = new Uri(settings.ServerUrl!);
         var userName = settings.UserName;

@@ -25,7 +25,7 @@ internal sealed class ExecuteMethodCommand : AsyncCommand<ExecuteMethodCommandSe
 
     private async Task<int> ExecuteInternalAsync(ExecuteMethodCommandSettings settings)
     {
-        ConsoleHelper.WriteHeader();
+        await ConsoleHelper.WriteHeaderAsync();
 
         var serverUrl = new Uri(settings.ServerUrl!);
         var userName = settings.UserName;

@@ -25,7 +25,7 @@ internal sealed class NodeReadObjectCommand : AsyncCommand<ReadObjectNodeCommand
 
     private async Task<int> ExecuteInternalAsync(ReadObjectNodeCommandSettings settings)
     {
-        ConsoleHelper.WriteHeader();
+        await ConsoleHelper.WriteHeaderAsync();
 
         var serverUrl = new Uri(settings.ServerUrl!);
         var userName = settings.UserName;

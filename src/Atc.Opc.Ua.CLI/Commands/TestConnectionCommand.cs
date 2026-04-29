@@ -25,7 +25,7 @@ internal sealed class TestConnectionCommand : AsyncCommand<OpcUaBaseCommandSetti
 
     private async Task<int> ExecuteInternalAsync(OpcUaBaseCommandSettings settings)
     {
-        ConsoleHelper.WriteHeader();
+        await ConsoleHelper.WriteHeaderAsync();
 
         var serverUrl = new Uri(settings.ServerUrl!);
         var userName = settings.UserName;

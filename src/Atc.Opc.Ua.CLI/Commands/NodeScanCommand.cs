@@ -27,7 +27,7 @@ internal sealed class NodeScanCommand : AsyncCommand<ScanNodeCommandSettings>
 
     private async Task<int> ExecuteInternalAsync(ScanNodeCommandSettings settings)
     {
-        ConsoleHelper.WriteHeader();
+        await ConsoleHelper.WriteHeaderAsync();
 
         var serverUrl = new Uri(settings.ServerUrl!);
         var userName = settings.UserName;

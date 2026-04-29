@@ -25,7 +25,7 @@ internal sealed class NodeReadVariableSingleCommand : AsyncCommand<SingleNodeCom
 
     private async Task<int> ExecuteInternalAsync(SingleNodeCommandSettings settings)
     {
-        ConsoleHelper.WriteHeader();
+        await ConsoleHelper.WriteHeaderAsync();
 
         var serverUrl = new Uri(settings.ServerUrl!);
         var userName = settings.UserName;

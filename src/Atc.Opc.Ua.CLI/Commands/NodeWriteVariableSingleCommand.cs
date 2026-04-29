@@ -25,7 +25,7 @@ internal sealed class NodeWriteVariableSingleCommand : AsyncCommand<WriteNodeCom
 
     private async Task<int> ExecuteInternalAsync(WriteNodeCommandSettings settings)
     {
-        ConsoleHelper.WriteHeader();
+        await ConsoleHelper.WriteHeaderAsync();
 
         var serverUrl = new Uri(settings.ServerUrl!);
         var userName = settings.UserName;

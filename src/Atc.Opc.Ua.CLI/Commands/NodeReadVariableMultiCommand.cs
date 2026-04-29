@@ -25,7 +25,7 @@ internal sealed class NodeReadVariableMultiCommand : AsyncCommand<MultiNodeComma
 
     private async Task<int> ExecuteInternalAsync(MultiNodeCommandSettings settings)
     {
-        ConsoleHelper.WriteHeader();
+        await ConsoleHelper.WriteHeaderAsync();
 
         var serverUrl = new Uri(settings.ServerUrl!);
         var userName = settings.UserName;
