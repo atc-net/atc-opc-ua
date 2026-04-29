@@ -149,7 +149,9 @@ public static class Program
         clientLogger!.LogInformation("=== End Scan Demo ===\n");
     }
 
-    private static void PrintNode(NodeBase node, int indent)
+    private static void PrintNode(
+        NodeBase node,
+        int indent)
     {
         var prefix = new string(' ', indent * 2);
 

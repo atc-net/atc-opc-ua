@@ -40,7 +40,9 @@ public sealed class BrowsedNode
     /// <param name="result">The browse result to convert.</param>
     /// <param name="parent">Optional parent node for tree navigation.</param>
     /// <returns>A new <see cref="BrowsedNode"/>.</returns>
-    public static BrowsedNode FromBrowseResult(NodeBrowseResult result, BrowsedNode? parent = null)
+    public static BrowsedNode FromBrowseResult(
+        NodeBrowseResult result,
+        BrowsedNode? parent = null)
     {
         ArgumentNullException.ThrowIfNull(result);
 

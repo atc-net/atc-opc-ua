@@ -215,9 +215,14 @@ public static class Program
         }
     }
 
-    private static void OnNodeValueChanged(object? sender, MonitoredNodeValue e)
+    private static void OnNodeValueChanged(
+        object? sender,
+        MonitoredNodeValue e)
     {
-        var status = e.IsGood ? "Good" : $"0x{e.StatusCode:X8}";
+        var status = e.IsGood
+            ? "Good"
+            : $"0x{e.StatusCode:X8}";
+
         clientLogger!.LogInformation(
             "Value changed: {DisplayName} ({NodeId}) = {Value} [{Status}] at {Timestamp}",
             e.DisplayName,

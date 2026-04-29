@@ -13,7 +13,7 @@ internal sealed class ExecuteMethodCommand : AsyncCommand<ExecuteMethodCommandSe
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public override Task<int> ExecuteAsync(
+    protected override Task<int> ExecuteAsync(
         CommandContext context,
         ExecuteMethodCommandSettings settings,
         CancellationToken cancellationToken)
@@ -23,7 +23,8 @@ internal sealed class ExecuteMethodCommand : AsyncCommand<ExecuteMethodCommandSe
         return ExecuteInternalAsync(settings);
     }
 
-    private async Task<int> ExecuteInternalAsync(ExecuteMethodCommandSettings settings)
+    private async Task<int> ExecuteInternalAsync(
+        ExecuteMethodCommandSettings settings)
     {
         await ConsoleHelper.WriteHeaderAsync();
 

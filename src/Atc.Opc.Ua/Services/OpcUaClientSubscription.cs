@@ -213,7 +213,9 @@ public partial class OpcUaClient
         }
     }
 
-    private void OnMonitoredItemNotification(MonitoredItem monitoredItem, MonitoredItemNotificationEventArgs e)
+    private void OnMonitoredItemNotification(
+        MonitoredItem monitoredItem,
+        MonitoredItemNotificationEventArgs e)
     {
         try
         {

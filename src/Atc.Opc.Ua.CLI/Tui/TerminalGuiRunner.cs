@@ -28,7 +28,7 @@ public sealed class TerminalGuiRunner : IOpcUaInteractiveRunner
     public Task<int> RunAsync(CancellationToken cancellationToken = default)
     {
         using var app = Application.Create().Init();
-        using var registration = cancellationToken.Register(() => app.Invoke(() => app.RequestStop()));
+        using var registration = cancellationToken.Register(() => app.Invoke(app.RequestStop));
 
         using var tuiService = new OpcUaTuiService(app, opcUaClient, nodeBrowser);
         var configService = new TuiConfigurationService();

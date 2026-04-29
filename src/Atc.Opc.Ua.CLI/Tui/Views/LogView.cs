@@ -1,5 +1,3 @@
-using System.Collections.ObjectModel;
-
 namespace Atc.Opc.Ua.CLI.Tui.Views;
 
 /// <summary>
@@ -37,7 +35,9 @@ public sealed class LogView : FrameView
         Add(listView);
     }
 
-    public void AddLog(string level, string message)
+    public void AddLog(
+        string level,
+        string message)
     {
         var timestamp = DateTime.Now.ToString("HH:mm:ss", CultureInfo.InvariantCulture);
         var entry = $"[{timestamp}] [{level}] {message}";

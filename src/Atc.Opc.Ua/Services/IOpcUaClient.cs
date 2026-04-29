@@ -72,7 +72,8 @@ public interface IOpcUaClient : IDisposable
 
     bool IsConnected();
 
-    Task<(bool Succeeded, string? ErrorMessage)> DisconnectAsync(CancellationToken cancellationToken = default);
+    Task<(bool Succeeded, string? ErrorMessage)> DisconnectAsync(
+        CancellationToken cancellationToken = default);
 
     Task<(bool Succeeded, NodeVariable? NodeVariable, string? ErrorMessage)> ReadNodeVariableAsync(
         string nodeId,

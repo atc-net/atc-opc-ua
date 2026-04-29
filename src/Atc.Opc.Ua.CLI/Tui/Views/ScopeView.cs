@@ -34,7 +34,9 @@ public sealed class ScopeView : FrameView
     /// <param name="handle">The monitored item handle.</param>
     /// <param name="displayName">The display name of the signal.</param>
     /// <returns>True if the signal was added; false if at capacity.</returns>
-    public bool AddSignal(uint handle, string displayName)
+    public bool AddSignal(
+        uint handle,
+        string displayName)
     {
         lock (renderLock)
         {
@@ -66,7 +68,9 @@ public sealed class ScopeView : FrameView
     /// </summary>
     /// <param name="handle">The monitored item handle.</param>
     /// <param name="value">The sample value.</param>
-    public void PushSample(uint handle, double value)
+    public void PushSample(
+        uint handle,
+        double value)
     {
         lock (renderLock)
         {
@@ -88,7 +92,8 @@ public sealed class ScopeView : FrameView
         }
     }
 
-    protected override bool OnDrawingContent(Terminal.Gui.ViewBase.DrawContext? context)
+    protected override bool OnDrawingContent(
+        Terminal.Gui.ViewBase.DrawContext? context)
     {
         base.OnDrawingContent(context);
 
@@ -114,9 +119,11 @@ public sealed class ScopeView : FrameView
         return true;
     }
 
-    private void DrawEmptyState(int width, int height)
+    private void DrawEmptyState(
+        int width,
+        int height)
     {
-        var msg = "No signals. Subscribe to variables, they will appear here.";
+        const string msg = "No signals. Subscribe to variables, they will appear here.";
         var x = (width - msg.Length) / 2;
         var y = height / 2;
 
@@ -127,7 +134,9 @@ public sealed class ScopeView : FrameView
         }
     }
 
-    private void RenderSignals(int charWidth, int charHeight)
+    private void RenderSignals(
+        int charWidth,
+        int charHeight)
     {
         if (canvas is null || canvas.PixelWidth != charWidth * 2 || canvas.PixelHeight != charHeight * 4)
         {
@@ -195,7 +204,12 @@ public sealed class ScopeView : FrameView
         DrawLegend(charWidth, charHeight);
     }
 
-    private void DrawSignal(SignalBuffer signal, int pixelWidth, int pixelHeight, double min, double range)
+    private void DrawSignal(
+        SignalBuffer signal,
+        int pixelWidth,
+        int pixelHeight,
+        double min,
+        double range)
     {
         var samples = signal.GetSamples();
         var step = (double)(samples.Length - 1) / (pixelWidth - 1);
@@ -218,14 +232,20 @@ public sealed class ScopeView : FrameView
         }
     }
 
-    private static int MapToPixelY(double value, int pixelHeight, double min, double range)
+    private static int MapToPixelY(
+        double value,
+        int pixelHeight,
+        double min,
+        double range)
     {
         var normalized = (value - min) / range;
         var py = (int)((1.0 - normalized) * (pixelHeight - 1));
         return System.Math.Clamp(py, 0, pixelHeight - 1);
     }
 
-    private void DrawLegend(int charWidth, int charHeight)
+    private void DrawLegend(
+        int charWidth,
+        int charHeight)
     {
         if (charHeight < 2)
         {
@@ -299,7 +319,9 @@ public sealed class ScopeView : FrameView
         private int head;
         private int count;
 
-        public SignalBuffer(string displayName, int capacity)
+        public SignalBuffer(
+            string displayName,
+            int capacity)
         {
             DisplayName = displayName;
             buffer = new double[capacity];
@@ -309,7 +331,10 @@ public sealed class ScopeView : FrameView
 
         public int Count => count;
 
-        public double LastValue => count > 0 ? buffer[(head - 1 + buffer.Length) % buffer.Length] : 0;
+        public double LastValue
+            => count > 0
+                ? buffer[(head - 1 + buffer.Length) % buffer.Length]
+                : 0;
 
         public void Add(double value)
         {

@@ -3,7 +3,8 @@ namespace Atc.Opc.Ua.Tests.Factories;
 public sealed class BrowserFactoryTests
 {
     [Theory, AutoNSubstituteData]
-    public void GetForwardBrowser_ShouldReturnConfiguredBrowser(ISession session)
+    public void GetForwardBrowser_ShouldReturnConfiguredBrowser(
+        ISession session)
     {
         // Act
         var browser = BrowserFactory.GetForwardBrowser(session);
@@ -17,7 +18,8 @@ public sealed class BrowserFactoryTests
     }
 
     [Theory, AutoNSubstituteData]
-    public void GetBackwardsBrowser_ShouldReturnConfiguredBrowser(ISession session)
+    public void GetBackwardsBrowser_ShouldReturnConfiguredBrowser(
+        ISession session)
     {
         // Act
         var browser = BrowserFactory.GetBackwardsBrowser(session);

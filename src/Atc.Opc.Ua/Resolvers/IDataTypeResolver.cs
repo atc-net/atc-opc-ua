@@ -10,6 +10,5 @@ public interface IDataTypeResolver
     /// </summary>
     /// <param name="value">The name of the type to resolve.</param>
     /// <returns>The corresponding .NET Type.</returns>
-    Type GetTypeByName(
-        string? value);
+    Type GetTypeByName(string? value);
 }

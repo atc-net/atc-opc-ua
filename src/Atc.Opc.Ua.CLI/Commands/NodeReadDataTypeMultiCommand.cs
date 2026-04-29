@@ -13,7 +13,7 @@ internal sealed class NodeReadDataTypeMultiCommand : AsyncCommand<ReadDataTypesC
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public override Task<int> ExecuteAsync(
+    protected override Task<int> ExecuteAsync(
         CommandContext context,
         ReadDataTypesCommandSettings settings,
         CancellationToken cancellationToken)
@@ -23,7 +23,8 @@ internal sealed class NodeReadDataTypeMultiCommand : AsyncCommand<ReadDataTypesC
         return ExecuteInternalAsync(settings);
     }
 
-    private async Task<int> ExecuteInternalAsync(ReadDataTypesCommandSettings settings)
+    private async Task<int> ExecuteInternalAsync(
+        ReadDataTypesCommandSettings settings)
     {
         await ConsoleHelper.WriteHeaderAsync();
 

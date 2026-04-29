@@ -13,7 +13,7 @@ internal sealed class NodeReadVariableSingleCommand : AsyncCommand<SingleNodeCom
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public override Task<int> ExecuteAsync(
+    protected override Task<int> ExecuteAsync(
         CommandContext context,
         SingleNodeCommandSettings settings,
         CancellationToken cancellationToken)
@@ -23,7 +23,8 @@ internal sealed class NodeReadVariableSingleCommand : AsyncCommand<SingleNodeCom
         return ExecuteInternalAsync(settings);
     }
 
-    private async Task<int> ExecuteInternalAsync(SingleNodeCommandSettings settings)
+    private async Task<int> ExecuteInternalAsync(
+        SingleNodeCommandSettings settings)
     {
         await ConsoleHelper.WriteHeaderAsync();
 

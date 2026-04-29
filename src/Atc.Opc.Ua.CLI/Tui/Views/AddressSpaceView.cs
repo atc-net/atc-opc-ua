@@ -13,7 +13,9 @@ public sealed class AddressSpaceView : FrameView
     private readonly IApplication app;
     private readonly Label emptyLabel;
 
-    public AddressSpaceView(IApplication app, OpcUaTuiService tuiService)
+    public AddressSpaceView(
+        IApplication app,
+        OpcUaTuiService tuiService)
     {
         ArgumentNullException.ThrowIfNull(app);
         ArgumentNullException.ThrowIfNull(tuiService);
@@ -167,7 +169,9 @@ public sealed class AddressSpaceView : FrameView
 
     private static bool CanExpand(BrowsedNode node) => node.HasChildren;
 
-    private void OnSelectionChanged(object? sender, SelectionChangedEventArgs<BrowsedNode> e)
+    private void OnSelectionChanged(
+        object? sender,
+        SelectionChangedEventArgs<BrowsedNode> e)
     {
         if (e.NewValue is not null)
         {
@@ -175,7 +179,9 @@ public sealed class AddressSpaceView : FrameView
         }
     }
 
-    private void OnObjectActivated(object? sender, ObjectActivatedEventArgs<BrowsedNode> e)
+    private void OnObjectActivated(
+        object? sender,
+        ObjectActivatedEventArgs<BrowsedNode> e)
     {
         if (e.ActivatedObject?.NodeClass == NodeClassType.Variable)
         {

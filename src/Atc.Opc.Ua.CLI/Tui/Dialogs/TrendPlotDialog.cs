@@ -80,7 +80,7 @@ public sealed class TrendPlotDialog : Dialog
         app.Run(dialog);
     }
 
-    protected override bool OnDrawingContent(Terminal.Gui.ViewBase.DrawContext? context)
+    protected override bool OnDrawingContent(DrawContext? context)
     {
         base.OnDrawingContent(context);
 
@@ -137,7 +137,11 @@ public sealed class TrendPlotDialog : Dialog
             $"Min: {min:F2}  Max: {max:F2}  Avg: {avg:F2}  Points: {history.Count}  Duration: {timeSpan:hh\\:mm\\:ss}");
     }
 
-    private static int MapY(double value, int pixelHeight, double min, double range)
+    private static int MapY(
+        double value,
+        int pixelHeight,
+        double min,
+        double range)
     {
         var normalized = (value - min) / range;
         var py = (int)((1.0 - normalized) * (pixelHeight - 1));

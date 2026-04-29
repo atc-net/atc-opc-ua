@@ -25,7 +25,8 @@ public sealed class TuiConfigurationService
         configuration = Load();
     }
 
-    public IReadOnlyList<RecentConnection> RecentConnections => configuration.RecentConnections;
+    public IReadOnlyList<RecentConnection> RecentConnections
+        => configuration.RecentConnections;
 
     /// <summary>
     /// Adds or updates a connection in the recent connections list.
@@ -33,7 +34,9 @@ public sealed class TuiConfigurationService
     /// <param name="serverUrl">The OPC UA server URL.</param>
     /// <param name="userName">Optional username.</param>
     [SuppressMessage("Design", "CA1054:URI parameters should not be strings", Justification = "URLs are strings in TUI text fields")]
-    public void AddRecentConnection(string serverUrl, string? userName)
+    public void AddRecentConnection(
+        string serverUrl,
+        string? userName)
     {
         ArgumentException.ThrowIfNullOrEmpty(serverUrl);
 

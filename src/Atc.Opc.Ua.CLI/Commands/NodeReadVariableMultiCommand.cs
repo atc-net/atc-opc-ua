@@ -13,7 +13,7 @@ internal sealed class NodeReadVariableMultiCommand : AsyncCommand<MultiNodeComma
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public override Task<int> ExecuteAsync(
+    protected override Task<int> ExecuteAsync(
         CommandContext context,
         MultiNodeCommandSettings settings,
         CancellationToken cancellationToken)
@@ -23,7 +23,8 @@ internal sealed class NodeReadVariableMultiCommand : AsyncCommand<MultiNodeComma
         return ExecuteInternalAsync(settings);
     }
 
-    private async Task<int> ExecuteInternalAsync(MultiNodeCommandSettings settings)
+    private async Task<int> ExecuteInternalAsync(
+        MultiNodeCommandSettings settings)
     {
         await ConsoleHelper.WriteHeaderAsync();
 
@@ -64,8 +65,7 @@ internal sealed class NodeReadVariableMultiCommand : AsyncCommand<MultiNodeComma
             : ConsoleExitStatusCodes.Failure;
     }
 
-    private static string GetSimpleStrings(
-        IList<NodeVariable> nodeVariables)
+    private static string GetSimpleStrings(IList<NodeVariable> nodeVariables)
     {
         var sb = new StringBuilder();
         sb.AppendLine();

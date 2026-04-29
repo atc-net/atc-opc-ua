@@ -16,7 +16,7 @@ internal sealed class NodeScanCommand : AsyncCommand<ScanNodeCommandSettings>
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public override Task<int> ExecuteAsync(
+    protected override Task<int> ExecuteAsync(
         CommandContext context,
         ScanNodeCommandSettings settings,
         CancellationToken cancellationToken)
@@ -25,7 +25,8 @@ internal sealed class NodeScanCommand : AsyncCommand<ScanNodeCommandSettings>
         return ExecuteInternalAsync(settings);
     }
 
-    private async Task<int> ExecuteInternalAsync(ScanNodeCommandSettings settings)
+    private async Task<int> ExecuteInternalAsync(
+        ScanNodeCommandSettings settings)
     {
         await ConsoleHelper.WriteHeaderAsync();
 
@@ -96,7 +97,8 @@ internal sealed class NodeScanCommand : AsyncCommand<ScanNodeCommandSettings>
     /// <param name="root">Root node (object or variable).</param>
     /// <returns>(objects, variables)</returns>
     /// <exception cref="ArgumentNullException">If <paramref name="root"/> is null.</exception>
-    private static (int TotalObjectCount, int TotalVariableCount) CountNodes(NodeBase root)
+    private static (int TotalObjectCount, int TotalVariableCount) CountNodes(
+        NodeBase root)
     {
         var objectCount = 0;
         var variableCount = 0;

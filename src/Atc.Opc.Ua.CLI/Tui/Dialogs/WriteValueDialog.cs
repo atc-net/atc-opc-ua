@@ -9,7 +9,11 @@ public sealed class WriteValueDialog : Dialog
 {
     private readonly TextField newValueField;
 
-    private WriteValueDialog(string displayName, string nodeId, string? currentValue, string? dataType)
+    private WriteValueDialog(
+        string displayName,
+        string nodeId,
+        string? currentValue,
+        string? dataType)
     {
         Title = "Write Value";
         Width = 60;

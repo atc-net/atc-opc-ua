@@ -83,10 +83,3 @@ public sealed class NodeTreeDifferTests
         Assert.Equal(20, result.DeletedNodes.Count);
     }
 }
-
-internal sealed record OpcUaScanResult(
-    string EndpointUrl,
-    string StartingNodeId,
-    NodeBase Result,
-    DateTimeOffset Start,
-    DateTimeOffset End);

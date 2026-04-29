@@ -13,7 +13,7 @@ internal sealed class TestConnectionCommand : AsyncCommand<OpcUaBaseCommandSetti
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public override Task<int> ExecuteAsync(
+    protected override Task<int> ExecuteAsync(
         CommandContext context,
         OpcUaBaseCommandSettings settings,
         CancellationToken cancellationToken)
@@ -23,7 +23,8 @@ internal sealed class TestConnectionCommand : AsyncCommand<OpcUaBaseCommandSetti
         return ExecuteInternalAsync(settings);
     }
 
-    private async Task<int> ExecuteInternalAsync(OpcUaBaseCommandSettings settings)
+    private async Task<int> ExecuteInternalAsync(
+        OpcUaBaseCommandSettings settings)
     {
         await ConsoleHelper.WriteHeaderAsync();
 

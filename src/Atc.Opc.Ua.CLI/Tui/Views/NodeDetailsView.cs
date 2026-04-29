@@ -11,7 +11,9 @@ public sealed class NodeDetailsView : FrameView
     private readonly IApplication app;
     private readonly Label detailsLabel;
 
-    public NodeDetailsView(IApplication app, OpcUaTuiService tuiService)
+    public NodeDetailsView(
+        IApplication app,
+        OpcUaTuiService tuiService)
     {
         ArgumentNullException.ThrowIfNull(app);
         ArgumentNullException.ThrowIfNull(tuiService);
@@ -34,7 +36,10 @@ public sealed class NodeDetailsView : FrameView
     }
 
     [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Must not crash on attribute read failure")]
-    public async Task ShowNodeAsync(string nodeId, string displayName, CancellationToken cancellationToken)
+    public async Task ShowNodeAsync(
+        string nodeId,
+        string displayName,
+        CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrEmpty(nodeId);
 

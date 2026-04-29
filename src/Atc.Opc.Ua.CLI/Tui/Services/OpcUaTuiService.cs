@@ -93,7 +93,9 @@ public sealed class OpcUaTuiService : IDisposable
         CancellationToken cancellationToken)
         => client.WriteNodeAsync(nodeId, value, cancellationToken);
 
-    private void OnNodeValueChanged(object? sender, MonitoredNodeValue e)
+    private void OnNodeValueChanged(
+        object? sender,
+        MonitoredNodeValue e)
     {
         // Marshal to UI thread via instance-based invoke
         app.Invoke(() => NodeValueChanged?.Invoke(this, e));

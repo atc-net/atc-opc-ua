@@ -8,7 +8,8 @@ public static class ConsoleHelper
     /// </summary>
     /// <param name="cancellationToken">Cancellation token forwarded to the update check.</param>
     /// <returns>A task that completes once the banner has been printed and the update check has finished.</returns>
-    public static Task WriteHeaderAsync(CancellationToken cancellationToken = default)
+    public static Task WriteHeaderAsync(
+        CancellationToken cancellationToken = default)
     {
         System.Console.OutputEncoding = Encoding.UTF8;
 

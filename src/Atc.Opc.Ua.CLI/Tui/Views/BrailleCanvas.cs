@@ -27,11 +27,14 @@ public sealed class BrailleCanvas
     /// </summary>
     /// <param name="charWidth">Width in terminal character columns.</param>
     /// <param name="charHeight">Height in terminal character rows.</param>
-    public BrailleCanvas(int charWidth, int charHeight)
+    public BrailleCanvas(
+        int charWidth,
+        int charHeight)
     {
         this.charWidth = charWidth;
         this.charHeight = charHeight;
         cells = new int[charWidth][];
+
         for (var i = 0; i < charWidth; i++)
         {
             cells[i] = new int[charHeight];
@@ -64,7 +67,9 @@ public sealed class BrailleCanvas
     /// </summary>
     /// <param name="x">Pixel X coordinate (0 to PixelWidth-1).</param>
     /// <param name="y">Pixel Y coordinate (0 to PixelHeight-1).</param>
-    public void Set(int x, int y)
+    public void Set(
+        int x,
+        int y)
     {
         if (x < 0 || x >= PixelWidth || y < 0 || y >= PixelHeight)
         {
@@ -86,7 +91,11 @@ public sealed class BrailleCanvas
     /// <param name="y0">Start Y.</param>
     /// <param name="x1">End X.</param>
     /// <param name="y1">End Y.</param>
-    public void DrawLine(int x0, int y0, int x1, int y1)
+    public void DrawLine(
+        int x0,
+        int y0,
+        int x1,
+        int y1)
     {
         var dx = System.Math.Abs(x1 - x0);
         var dy = System.Math.Abs(y1 - y0);
@@ -124,7 +133,9 @@ public sealed class BrailleCanvas
     /// <param name="cx">Character column.</param>
     /// <param name="cy">Character row.</param>
     /// <returns>The braille Unicode character.</returns>
-    public char GetChar(int cx, int cy)
+    public char GetChar(
+        int cx,
+        int cy)
     {
         if (cx < 0 || cx >= charWidth || cy < 0 || cy >= charHeight)
         {

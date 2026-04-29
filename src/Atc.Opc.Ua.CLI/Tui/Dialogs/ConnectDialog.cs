@@ -1,5 +1,3 @@
-using System.Collections.ObjectModel;
-
 namespace Atc.Opc.Ua.CLI.Tui.Dialogs;
 
 /// <summary>
@@ -110,7 +108,9 @@ public sealed class ConnectDialog : Dialog
     /// <param name="app">The Terminal.Gui application instance.</param>
     /// <param name="recentConnections">Optional list of recent connections to display.</param>
     /// <returns>The dialog with connection details and acceptance state.</returns>
-    public static ConnectDialog Show(IApplication app, IReadOnlyList<RecentConnection>? recentConnections = null)
+    public static ConnectDialog Show(
+        IApplication app,
+        IReadOnlyList<RecentConnection>? recentConnections = null)
     {
         ArgumentNullException.ThrowIfNull(app);
 
@@ -182,7 +182,8 @@ public sealed class ConnectDialog : Dialog
         return dialog;
     }
 
-    private void AddRecentConnectionsList(IReadOnlyList<RecentConnection> recentConnections)
+    private void AddRecentConnectionsList(
+        IReadOnlyList<RecentConnection> recentConnections)
     {
         var recentLabel = new Label
         {
@@ -192,8 +193,10 @@ public sealed class ConnectDialog : Dialog
         };
 
         var recentItems = new ObservableCollection<string>(
-            recentConnections.Select(c =>
-                c.UserName is not null ? $"{c.ServerUrl} ({c.UserName})" : c.ServerUrl));
+            recentConnections.Select(x =>
+                x.UserName is not null
+                    ? $"{x.ServerUrl} ({x.UserName})"
+                    : x.ServerUrl));
 
         var recentList = new ListView
         {
@@ -221,9 +224,11 @@ public sealed class ConnectDialog : Dialog
         Add(recentLabel, recentList);
     }
 
-    private static TextField CreateTextField(string initialText, int y, bool secret = false)
-    {
-        return new TextField
+    private static TextField CreateTextField(
+        string initialText,
+        int y,
+        bool secret = false)
+        => new()
         {
             Text = initialText,
             Secret = secret,
@@ -231,7 +236,6 @@ public sealed class ConnectDialog : Dialog
             Y = y,
             Width = Dim.Fill(2),
         };
-    }
 
     private void AddFieldLabels(int yOffset)
     {

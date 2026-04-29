@@ -231,7 +231,9 @@ public sealed class MainWindow : Window
         });
     }
 
-    private void OnNodeValueChanged(object? sender, MonitoredNodeValue e)
+    private void OnNodeValueChanged(
+        object? sender,
+        MonitoredNodeValue e)
     {
         monitoredVariablesView.UpdateVariable(e.MonitoredItemHandle, e);
         csvRecorder.Record(e);

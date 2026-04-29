@@ -1,6 +1,3 @@
-using System.Collections.Concurrent;
-using System.Data;
-
 namespace Atc.Opc.Ua.CLI.Tui.Views;
 
 /// <summary>
@@ -76,7 +73,9 @@ public sealed class MonitoredVariablesView : FrameView
     [SuppressMessage("Design", "MA0046:The delegate must have 2 parameters", Justification = "Internal TUI event")]
     public event Action<uint>? UnsubscribeRequested;
 
-    public void AddVariable(uint handle, MonitoredNodeValue value)
+    public void AddVariable(
+        uint handle,
+        MonitoredNodeValue value)
     {
         ArgumentNullException.ThrowIfNull(value);
 
@@ -91,6 +90,7 @@ public sealed class MonitoredVariablesView : FrameView
         row["Value"] = value.Value ?? string.Empty;
         row["Status"] = value.IsGood ? "Good" : $"0x{value.StatusCode:X8}";
         row["Timestamp"] = value.ServerTimestamp?.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture) ?? string.Empty;
+
         dataTable.Rows.Add(row);
         rowsByHandle[handle] = row;
 
@@ -122,7 +122,9 @@ public sealed class MonitoredVariablesView : FrameView
     /// </summary>
     /// <param name="handle">The monitored item handle.</param>
     /// <param name="value">The updated node value.</param>
-    public void UpdateVariable(uint handle, MonitoredNodeValue value)
+    public void UpdateVariable(
+        uint handle,
+        MonitoredNodeValue value)
     {
         ArgumentNullException.ThrowIfNull(value);
 
