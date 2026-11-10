@@ -14,6 +14,10 @@ public static class NodeTreeDiffer
     /// <summary>
     /// Compare two node trees (current vs. previous) and compute differences by NodeId.
     /// </summary>
+    /// <remarks>
+    /// A node can appear more than once in a tree, e.g. a variable reachable from two objects. It's one node, so it's
+    /// counted once, as its first occurrence.
+    /// </remarks>
     /// <param name="currentRoot">Root node of the current scan.</param>
     /// <param name="previousRoot">Root node of the previous scan.</param>
     /// <returns>A <see cref="NodeTreeComparisonResult"/> instance.</returns>
@@ -21,16 +25,8 @@ public static class NodeTreeDiffer
         NodeBase? currentRoot,
         NodeBase? previousRoot)
     {
-        var currentFlat = Flatten(currentRoot);
-        var previousFlat = Flatten(previousRoot);
-
-        var currentById = currentFlat
-            .Where(n => !string.IsNullOrEmpty(n.NodeId))
-            .ToDictionary(n => n.NodeId, StringComparer.Ordinal);
-
-        var previousById = previousFlat
-            .Where(n => !string.IsNullOrEmpty(n.NodeId))
-            .ToDictionary(n => n.NodeId, StringComparer.Ordinal);
+        var currentById = IndexByNodeId(Flatten(currentRoot));
+        var previousById = IndexByNodeId(Flatten(previousRoot));
 
         var deleted = new List<NodeBase>();
         var added = new List<NodeBase>();
@@ -62,6 +58,21 @@ public static class NodeTreeDiffer
             deleted,
             added,
             unchanged);
+    }
+
+    private static Dictionary<string, NodeBase> IndexByNodeId(
+        IEnumerable<NodeBase> nodes)
+    {
+        var byNodeId = new Dictionary<string, NodeBase>(StringComparer.Ordinal);
+        foreach (var node in nodes)
+        {
+            if (!string.IsNullOrEmpty(node.NodeId))
+            {
+                byNodeId.TryAdd(node.NodeId, node);
+            }
+        }
+
+        return byNodeId;
     }
 
     private static IEnumerable<NodeBase> Flatten(NodeBase? root)

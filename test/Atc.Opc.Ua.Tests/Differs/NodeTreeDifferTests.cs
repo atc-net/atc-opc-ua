@@ -64,6 +64,49 @@ public sealed class NodeTreeDifferTests
     }
 
     [Fact]
+    public void Diff_VariableReachableFromTwoObjects_ShouldCountItOnce()
+    {
+        // Arrange
+        var shared = new NodeVariable { NodeId = "ns=2;i=50", DisplayName = "Shared" };
+
+        var previousRoot = new NodeObject { NodeId = "ns=2;i=1", DisplayName = "Root" };
+        previousRoot.NodeVariables.Add(shared);
+
+        var currentRoot = new NodeObject { NodeId = "ns=2;i=1", DisplayName = "Root" };
+        var firstParent = new NodeObject { NodeId = "ns=2;i=10", DisplayName = "First" };
+        var secondParent = new NodeObject { NodeId = "ns=2;i=11", DisplayName = "Second" };
+        firstParent.NodeVariables.Add(shared);
+        secondParent.NodeVariables.Add(new NodeVariable { NodeId = "ns=2;i=50", DisplayName = "Shared" });
+        currentRoot.NodeObjects.Add(firstParent);
+        currentRoot.NodeObjects.Add(secondParent);
+
+        // Act
+        var result = NodeTreeDiffer.Diff(currentRoot, previousRoot);
+
+        // Assert
+        result.UnchangedNodes.Select(n => n.NodeId).Should().BeEquivalentTo("ns=2;i=1", "ns=2;i=50");
+        result.AddedNodes.Select(n => n.NodeId).Should().BeEquivalentTo("ns=2;i=10", "ns=2;i=11");
+        result.DeletedNodes.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Diff_SameNodeTwiceInThePreviousTree_ShouldCountItOnce()
+    {
+        // Arrange
+        var previousRoot = new NodeObject { NodeId = "ns=2;i=1", DisplayName = "Root" };
+        previousRoot.NodeVariables.Add(new NodeVariable { NodeId = "ns=2;i=50", DisplayName = "Shared" });
+        previousRoot.NodeVariables.Add(new NodeVariable { NodeId = "ns=2;i=50", DisplayName = "Shared" });
+
+        var currentRoot = new NodeObject { NodeId = "ns=2;i=1", DisplayName = "Root" };
+
+        // Act
+        var result = NodeTreeDiffer.Diff(currentRoot, previousRoot);
+
+        // Assert
+        result.DeletedNodes.Select(n => n.NodeId).Should().ContainSingle().Which.Should().Be("ns=2;i=50");
+    }
+
+    [Fact]
     public void Diff_Should_Find_Nested_Added_And_Deleted_And_Unchanged()
     {
         // Arrange
