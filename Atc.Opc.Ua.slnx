@@ -4,6 +4,7 @@
   </Folder>
   <Folder Name="/sample/">
     <Project Path="sample/Atc.Opc.Ua.Sample/Atc.Opc.Ua.Sample.csproj" />
+    <Project Path="sample/Atc.Opc.Ua.Reconnect.Sample/Atc.Opc.Ua.Reconnect.Sample.csproj" />
     <Project Path="sample/Atc.Opc.Ua.Subscription.Sample/Atc.Opc.Ua.Subscription.Sample.csproj" />
   </Folder>
   <Folder Name="/src/">
