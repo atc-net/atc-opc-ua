@@ -62,7 +62,8 @@ public partial class OpcUaClient
         }
     }
 
-    private static string ArgumentsToString(IReadOnlyList<MethodExecutionParameter> arguments)
+    private static string ArgumentsToString(
+        IReadOnlyList<MethodExecutionParameter> arguments)
     {
         var sb = new StringBuilder();
         for (var i = 0; i < arguments.Count; i++)
@@ -209,7 +210,8 @@ public partial class OpcUaClient
         request.InputArguments = variantCollection;
     }
 
-    private static List<MethodExecutionResult> MapMethodExecutionResults(CallMethodResultCollection results)
+    private static List<MethodExecutionResult> MapMethodExecutionResults(
+        CallMethodResultCollection results)
     {
         var data = new List<MethodExecutionResult>();
         foreach (var outputArgument in results[0].OutputArguments)

@@ -364,7 +364,7 @@ public partial class OpcUaClient
             }
 
             // Resolve rich DataType information
-            var resolvedTypeInfo = await dataTypeInfoResolver.ResolveAsync(variableNode, Session!, cancellationToken);
+            var resolvedTypeInfo = await dataTypeInfoResolver.ResolveAsync(variableNode, Session, cancellationToken);
 
             NodeVariable? nodeVariable;
 
@@ -656,7 +656,7 @@ public partial class OpcUaClient
         }
 
         // Resolve rich DataType information
-        var resolvedTypeInfo = await dataTypeInfoResolver.ResolveAsync(variableNode, Session!, cancellationToken);
+        var resolvedTypeInfo = await dataTypeInfoResolver.ResolveAsync(variableNode, Session, cancellationToken);
 
         var nodeVariable = childNode.MapToNodeVariableWithValue(parentNode.NodeId, sampleValue, resolvedTypeInfo);
         if (nodeVariable is null)

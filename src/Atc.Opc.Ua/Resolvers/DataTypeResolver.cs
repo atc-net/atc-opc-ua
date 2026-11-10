@@ -62,17 +62,13 @@ public sealed class DataTypeResolver : IDataTypeResolver
         Tuple.Create(typeof(ushort?), "ushort?"),
     ];
 
-    public Type GetTypeByName(
-        string? value)
+    public Type GetTypeByName(string? value)
     {
         ArgumentNullException.ThrowIfNull(value);
 
-        if (TryGetTypeByName(value, out var result))
-        {
-            return result!;
-        }
-
-        throw new NotSupportedException($"Value is not supported: {value}");
+        return TryGetTypeByName(value, out var result)
+            ? result!
+            : throw new NotSupportedException($"Value is not supported: {value}");
     }
 
     public bool TryGetTypeByName(

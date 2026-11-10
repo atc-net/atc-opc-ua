@@ -15,14 +15,16 @@ internal sealed class NodeReadDataTypeSingleCommand : AsyncCommand<ReadDataTypeC
 
     public override Task<int> ExecuteAsync(
         CommandContext context,
-        ReadDataTypeCommandSettings settings)
+        ReadDataTypeCommandSettings settings,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(settings);
 
         return ExecuteInternalAsync(settings);
     }
 
-    private async Task<int> ExecuteInternalAsync(ReadDataTypeCommandSettings settings)
+    private async Task<int> ExecuteInternalAsync(
+        ReadDataTypeCommandSettings settings)
     {
         ConsoleHelper.WriteHeader();
 

@@ -9,7 +9,7 @@ public sealed class VariableNodeExtensionsTests
         VariableNode? variableNode = null;
 
         // Act
-        var act = () => variableNode!.CreateBasicOpcUaDataType();
+        var act = () => variableNode.CreateBasicOpcUaDataType();
 
         // Assert
         act.Should().Throw<ArgumentNullException>().WithParameterName("variableNode");
@@ -109,7 +109,7 @@ public sealed class VariableNodeExtensionsTests
         VariableNode? variableNode = null;
 
         // Act
-        var act = () => variableNode!.CreateBasicDotNetTypeDescriptor();
+        var act = () => variableNode.CreateBasicDotNetTypeDescriptor();
 
         // Assert
         act.Should().Throw<ArgumentNullException>().WithParameterName("variableNode");
@@ -195,7 +195,7 @@ public sealed class VariableNodeExtensionsTests
         result.Name.Should().Be("int[]");
         result.ClrTypeName.Should().Be("int[]");
         result.ArrayElementType.Should().NotBeNull();
-        result.ArrayElementType!.Kind.Should().Be(DotNetTypeKind.Primitive);
+        result.ArrayElementType.Kind.Should().Be(DotNetTypeKind.Primitive);
         result.ArrayElementType.Name.Should().Be("Int32");
         result.ArrayElementType.ClrTypeName.Should().Be("int");
     }
@@ -215,7 +215,7 @@ public sealed class VariableNodeExtensionsTests
         result.Name.Should().Be("string[]");
         result.ClrTypeName.Should().Be("string[]");
         result.ArrayElementType.Should().NotBeNull();
-        result.ArrayElementType!.Kind.Should().Be(DotNetTypeKind.Primitive);
+        result.ArrayElementType.Kind.Should().Be(DotNetTypeKind.Primitive);
         result.ArrayElementType.Name.Should().Be("String");
         result.ArrayElementType.ClrTypeName.Should().Be("string");
     }
@@ -253,7 +253,7 @@ public sealed class VariableNodeExtensionsTests
         result.Kind.Should().Be(DotNetTypeKind.Array);
         result.ClrTypeName.Should().Be("Variant");
         result.ArrayElementType.Should().NotBeNull();
-        result.ArrayElementType!.Kind.Should().Be(DotNetTypeKind.Unknown);
+        result.ArrayElementType.Kind.Should().Be(DotNetTypeKind.Unknown);
         result.ArrayElementType.ClrTypeName.Should().Be("object");
     }
 

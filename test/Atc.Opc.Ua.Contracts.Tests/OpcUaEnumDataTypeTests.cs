@@ -74,7 +74,7 @@ public sealed class OpcUaEnumDataTypeTests
 
         // Assert
         deserialized.Should().NotBeNull();
-        deserialized!.Value.Should().Be(42);
+        deserialized.Value.Should().Be(42);
         deserialized.Name.Should().Be("TestValue");
         deserialized.DisplayName.Should().Be("Test Display Name");
         deserialized.Description.Should().Be("A test description");
@@ -213,7 +213,7 @@ public sealed class OpcUaEnumDataTypeTests
 
         // Assert
         deserialized.Should().NotBeNull();
-        deserialized!.NodeId.Should().Be("i=852");
+        deserialized.NodeId.Should().Be("i=852");
         deserialized.Name.Should().Be("ServerState");
         deserialized.Members.Should().HaveCount(2);
         deserialized.Members[0].Name.Should().Be("Running");

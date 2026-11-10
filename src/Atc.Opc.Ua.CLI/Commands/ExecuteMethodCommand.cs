@@ -15,14 +15,16 @@ internal sealed class ExecuteMethodCommand : AsyncCommand<ExecuteMethodCommandSe
 
     public override Task<int> ExecuteAsync(
         CommandContext context,
-        ExecuteMethodCommandSettings settings)
+        ExecuteMethodCommandSettings settings,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(settings);
 
         return ExecuteInternalAsync(settings);
     }
 
-    private async Task<int> ExecuteInternalAsync(ExecuteMethodCommandSettings settings)
+    private async Task<int> ExecuteInternalAsync(
+        ExecuteMethodCommandSettings settings)
     {
         ConsoleHelper.WriteHeader();
 

@@ -21,8 +21,7 @@ public class OpcUaDisconnectException : Exception
     /// Initializes a new instance of the <see cref="OpcUaDisconnectException"/> class.
     /// </summary>
     /// <param name="message">The message that describes the error.</param>
-    public OpcUaDisconnectException(
-        string message)
+    public OpcUaDisconnectException(string message)
         : base(message)
     {
     }

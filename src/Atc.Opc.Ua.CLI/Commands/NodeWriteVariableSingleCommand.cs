@@ -15,14 +15,16 @@ internal sealed class NodeWriteVariableSingleCommand : AsyncCommand<WriteNodeCom
 
     public override Task<int> ExecuteAsync(
         CommandContext context,
-        WriteNodeCommandSettings settings)
+        WriteNodeCommandSettings settings,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(settings);
 
         return ExecuteInternalAsync(settings);
     }
 
-    private async Task<int> ExecuteInternalAsync(WriteNodeCommandSettings settings)
+    private async Task<int> ExecuteInternalAsync(
+        WriteNodeCommandSettings settings)
     {
         ConsoleHelper.WriteHeader();
 

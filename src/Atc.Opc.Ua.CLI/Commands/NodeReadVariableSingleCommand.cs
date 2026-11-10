@@ -15,14 +15,16 @@ internal sealed class NodeReadVariableSingleCommand : AsyncCommand<SingleNodeCom
 
     public override Task<int> ExecuteAsync(
         CommandContext context,
-        SingleNodeCommandSettings settings)
+        SingleNodeCommandSettings settings,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(settings);
 
         return ExecuteInternalAsync(settings);
     }
 
-    private async Task<int> ExecuteInternalAsync(SingleNodeCommandSettings settings)
+    private async Task<int> ExecuteInternalAsync(
+        SingleNodeCommandSettings settings)
     {
         ConsoleHelper.WriteHeader();
 

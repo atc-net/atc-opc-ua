@@ -1,6 +1,9 @@
 {
   "sdk": {
-      "rollForward": "latestMajor",
-      "allowPrerelease": false
+    "rollForward": "latestMajor",
+    "allowPrerelease": false
+  },
+  "test": {
+    "runner": "Microsoft.Testing.Platform"
   }
 }

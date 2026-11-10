@@ -56,17 +56,17 @@ public sealed class NodeJsonConverterTests
 
         // Act
         var json = JsonSerializer.Serialize(scan, options);
-        var clone = JsonSerializer.Deserialize<NodeScanResult>(json, options)!;
+        var clone = JsonSerializer.Deserialize<NodeScanResult>(json, options);
 
         // Assert
         clone.Succeeded.Should().BeTrue();
         clone.Root.Should().BeOfType<NodeObject>();
-        var clonedRoot = (NodeObject)clone.Root!;
+        var clonedRoot = (NodeObject)clone.Root;
         clonedRoot.NodeObjects.Should().HaveCount(1);
         var clonedObjA = clonedRoot.NodeObjects[0];
         clonedObjA.NodeVariables.Should().HaveCount(1);
         clonedObjA.NodeVariables[0].DisplayName.Should().Be("VarA1");
-        clonedObjA.NodeVariables[0].DataTypeOpcUa!.Name.Should().Be("Int32");
+        clonedObjA.NodeVariables[0].DataTypeOpcUa.Name.Should().Be("Int32");
     }
 
     [Fact]
@@ -83,11 +83,11 @@ public sealed class NodeJsonConverterTests
 
         // Act
         var json = JsonSerializer.Serialize(scan, options);
-        var clone = JsonSerializer.Deserialize<NodeScanResult>(json, options)!;
+        var clone = JsonSerializer.Deserialize<NodeScanResult>(json, options);
 
         // Assert
         clone.Root.Should().BeOfType<NodeVariable>();
-        var clonedRoot = (NodeVariable)clone.Root!;
+        var clonedRoot = (NodeVariable)clone.Root;
         clonedRoot.NodeVariables.Should().HaveCount(1);
         var clonedChild1 = clonedRoot.NodeVariables[0];
         clonedChild1.NodeVariables.Should().HaveCount(1);
@@ -102,12 +102,12 @@ public sealed class NodeJsonConverterTests
         var options = CreateOptions();
 
         // Act
-        var clone = JsonSerializer.Deserialize<NodeScanResult>(json, options)!;
+        var clone = JsonSerializer.Deserialize<NodeScanResult>(json, options);
 
         // Assert
         clone.Root.Should().BeOfType<NodeObject>();
-        ((NodeObject)clone.Root!).NodeObjects.Should().BeEmpty();
-        ((NodeObject)clone.Root!).NodeVariables.Should().BeEmpty();
+        ((NodeObject)clone.Root).NodeObjects.Should().BeEmpty();
+        ((NodeObject)clone.Root).NodeVariables.Should().BeEmpty();
     }
 
     [Fact]
@@ -118,11 +118,11 @@ public sealed class NodeJsonConverterTests
         var options = CreateOptions();
 
         // Act
-        var clone = JsonSerializer.Deserialize<NodeScanResult>(json, options)!;
+        var clone = JsonSerializer.Deserialize<NodeScanResult>(json, options);
 
         // Assert
         clone.Root.Should().BeOfType<NodeVariable>();
-        ((NodeVariable)clone.Root!).DataTypeOpcUa.Should().BeNull();
+        ((NodeVariable)clone.Root).DataTypeOpcUa.Should().BeNull();
     }
 
     [Fact]

@@ -15,14 +15,16 @@ internal sealed class TestConnectionCommand : AsyncCommand<OpcUaBaseCommandSetti
 
     public override Task<int> ExecuteAsync(
         CommandContext context,
-        OpcUaBaseCommandSettings settings)
+        OpcUaBaseCommandSettings settings,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(settings);
 
         return ExecuteInternalAsync(settings);
     }
 
-    private async Task<int> ExecuteInternalAsync(OpcUaBaseCommandSettings settings)
+    private async Task<int> ExecuteInternalAsync(
+        OpcUaBaseCommandSettings settings)
     {
         ConsoleHelper.WriteHeader();
 

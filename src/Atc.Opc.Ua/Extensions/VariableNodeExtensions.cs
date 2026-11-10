@@ -2,7 +2,8 @@ namespace Atc.Opc.Ua.Extensions;
 
 public static class VariableNodeExtensions
 {
-    public static OpUaDataType CreateBasicOpcUaDataType(this VariableNode variableNode)
+    public static OpUaDataType CreateBasicOpcUaDataType(
+        this VariableNode variableNode)
     {
         ArgumentNullException.ThrowIfNull(variableNode);
 
@@ -21,7 +22,8 @@ public static class VariableNodeExtensions
         };
     }
 
-    public static DotNetTypeDescriptor CreateBasicDotNetTypeDescriptor(this VariableNode variableNode)
+    public static DotNetTypeDescriptor CreateBasicDotNetTypeDescriptor(
+        this VariableNode variableNode)
     {
         ArgumentNullException.ThrowIfNull(variableNode);
 

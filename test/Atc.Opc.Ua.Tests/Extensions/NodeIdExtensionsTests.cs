@@ -87,7 +87,7 @@ public sealed class NodeIdExtensionsTests
     public void GetIdentifierAsString_NullNodeId_ShouldThrowArgumentNullException()
     {
         // Arrange
-        NodeId nodeId = null!;
+        NodeId nodeId = null;
 
         // Act
         var act = () => nodeId.GetIdentifierAsString();

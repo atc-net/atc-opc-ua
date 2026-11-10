@@ -222,7 +222,8 @@ public sealed class DataTypeInfoResolver
         return new ResolvedDataTypeInfo(opcUaType, dotNetType);
     }
 
-    private static ResolvedDataTypeInfo CreateUnknownTypeInfo(string nodeIdString)
+    private static ResolvedDataTypeInfo CreateUnknownTypeInfo(
+        string nodeIdString)
     {
         var opcUaType = new OpUaDataType
         {

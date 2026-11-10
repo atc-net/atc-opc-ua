@@ -26,7 +26,7 @@ public sealed class OpcUaScannerTests
         await client
             .DidNotReceiveWithAnyArgs()
             .ReadNodeObjectAsync(
-                nodeId: null!,
+                nodeId: null,
                 includeObjects: false,
                 includeVariables: false,
                 includeSampleValues: false,
@@ -58,7 +58,7 @@ public sealed class OpcUaScannerTests
         await client
             .DidNotReceiveWithAnyArgs()
             .ReadNodeObjectAsync(
-                nodeId: null!,
+                nodeId: null,
                 includeObjects: false,
                 includeVariables: false,
                 includeSampleValues: false,
@@ -90,7 +90,7 @@ public sealed class OpcUaScannerTests
         await client
             .DidNotReceiveWithAnyArgs()
             .ReadNodeObjectAsync(
-                nodeId: null!,
+                nodeId: null,
                 includeObjects: false,
                 includeVariables: false,
                 includeSampleValues: false,

@@ -27,8 +27,7 @@ public static class Program
         return app.RunAsync(args);
     }
 
-    private static string[] SetHelpArgumentIfNeeded(
-        string[] args)
+    private static string[] SetHelpArgumentIfNeeded(string[] args)
     {
         if (args.Length == 0)
         {

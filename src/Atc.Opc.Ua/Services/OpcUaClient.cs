@@ -70,8 +70,7 @@ public partial class OpcUaClient : IOpcUaClient
     {
     }
 
-    public OpcUaClient(
-        ILogger<OpcUaClient> logger)
+    public OpcUaClient(ILogger<OpcUaClient> logger)
         : this(
             logger,
             new OptionsWrapper<OpcUaSecurityOptions>(new OpcUaSecurityOptions()))
@@ -90,7 +89,8 @@ public partial class OpcUaClient : IOpcUaClient
     /// </summary>
     /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>A tuple indicating whether the disconnection was successful, and an error message if not.</returns>
-    public async Task<(bool Succeeded, string? ErrorMessage)> DisconnectAsync(CancellationToken cancellationToken = default)
+    public async Task<(bool Succeeded, string? ErrorMessage)> DisconnectAsync(
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -311,7 +311,8 @@ public partial class OpcUaClient : IOpcUaClient
     /// Asynchronously builds and validates an OPC UA application instance.
     /// </summary>
     /// <returns>A task representing the asynchronous operation, with the created application instance as result.</returns>
-    private async Task<ApplicationInstance> BuildAndValidateOpcUaApplicationAsync(CancellationToken cancellationToken = default)
+    private async Task<ApplicationInstance> BuildAndValidateOpcUaApplicationAsync(
+        CancellationToken cancellationToken = default)
     {
         var applicationConfiguration = ApplicationConfigurationFactory.Create(clientOptions.ApplicationName, securityOptions);
         applicationConfiguration = ApplicationInstance.FixupAppConfig(applicationConfiguration);
@@ -325,12 +326,9 @@ public partial class OpcUaClient : IOpcUaClient
             lifeTimeInMonths: CertificateFactory.DefaultLifeTime,
             cancellationToken);
 
-        if (!hasAppCertificate)
-        {
-            throw new CertificateValidationException("OPC UA application certificate cannot be validated.");
-        }
-
-        return application;
+        return hasAppCertificate
+            ? application
+            : throw new CertificateValidationException("OPC UA application certificate cannot be validated.");
     }
 
     /// <summary>
@@ -339,7 +337,9 @@ public partial class OpcUaClient : IOpcUaClient
     /// </summary>
     /// <param name="session">The session the keep alive event is received for</param>
     /// <param name="e">The event arguments</param>
-    private void SessionOnKeepAlive(ISession session, KeepAliveEventArgs e)
+    private void SessionOnKeepAlive(
+        ISession session,
+        KeepAliveEventArgs e)
     {
         try
         {
@@ -386,7 +386,9 @@ public partial class OpcUaClient : IOpcUaClient
     /// </summary>
     /// <param name="sender">The sender.</param>
     /// <param name="e">The event args.</param>
-    private void OnReconnectComplete(object? sender, EventArgs e)
+    private void OnReconnectComplete(
+        object? sender,
+        EventArgs e)
     {
         try
         {
