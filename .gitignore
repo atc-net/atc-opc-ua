@@ -349,3 +349,6 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 .claude/settings.local.json
+
+# OPC UA certificate stores the client creates in its working directory (they contain private keys)
+opc/
