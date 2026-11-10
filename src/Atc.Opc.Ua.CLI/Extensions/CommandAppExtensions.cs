@@ -41,7 +41,8 @@ public static class CommandAppExtensions
             method.SetDescription("Operations related to methods.");
 
             method.AddCommand<ExecuteMethodCommand>("execute")
-                .WithDescription("Used to execute a given method.");
+                .WithDescription("Used to execute a given method.")
+                .WithExample($"method execute -s {SampleOpcUaServerUrl} --parent-node-id \"ns=2;s=Demo.Method\" --method-node-id \"ns=2;s=Demo.Method.Multiply\" --data-types double --data-values 3 --data-types double --data-values 4");
         };
 
     private static void ConfigureNodeReadCommands(
