@@ -73,7 +73,7 @@ public static class NodeExtensions
         var data = MapToNodeVariable(node, parentNodeId, resolvedTypeInfo);
         if (data is not null && nodeDataValue is not null)
         {
-            data.SampleValue = nodeDataValue.ToString();
+            data.SampleValue = nodeDataValue.WrappedValue.ToInvariantString() ?? nodeDataValue.ToString();
         }
 
         return data;
