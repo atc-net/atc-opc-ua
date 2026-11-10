@@ -8,6 +8,7 @@ internal static class LoggingEventIdConstants
     public const int SessionConnectionFailure = 10002;
     public const int SessionReconnected = 10003;
     public const int SessionReconnectFailure = 10004;
+    public const int SessionReconnecting = 10005;
 
     public const int SessionAlreadyConnected = 10010;
     public const int SessionNotConnected = 10011;

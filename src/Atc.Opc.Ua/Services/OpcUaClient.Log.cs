@@ -25,7 +25,7 @@ public partial class OpcUaClient
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionReconnected,
-        Level = LogLevel.Trace,
+        Level = LogLevel.Information,
         Message = "Session with name '{SessionName}' was reconnected")]
     private partial void LogSessionReconnected(string sessionName);
 
@@ -34,6 +34,14 @@ public partial class OpcUaClient
         Level = LogLevel.Error,
         Message = "Session failed to reconnect")]
     private partial void LogSessionReconnectFailure(Exception ex);
+
+    [LoggerMessage(
+        EventId = LoggingEventIdConstants.SessionReconnecting,
+        Level = LogLevel.Warning,
+        Message = "Session with name '{SessionName}' is reconnecting after {ConsecutiveKeepAliveFailures} failed keep-alive requests")]
+    private partial void LogSessionReconnecting(
+        string sessionName,
+        int consecutiveKeepAliveFailures);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionAlreadyConnected,
@@ -184,13 +192,13 @@ public partial class OpcUaClient
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionKeepAliveFailureCountReset,
-        Level = LogLevel.Trace,
-        Message = "KeepAlive failure count reset")]
-    private partial void LogSessionKeepAliveFailureCountReset();
+        Level = LogLevel.Information,
+        Message = "KeepAlive requests succeed again after {ConsecutiveKeepAliveFailures} failures")]
+    private partial void LogSessionKeepAliveFailureCountReset(int consecutiveKeepAliveFailures);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionKeepAliveFailure,
-        Level = LogLevel.Trace,
+        Level = LogLevel.Warning,
         Message = "KeepAlive request failed: '{ServiceResult}', consecutive failures: '{ConsecutiveKeepAliveFailures}'")]
     private partial void LogSessionKeepAliveFailure(
         string serviceResult,

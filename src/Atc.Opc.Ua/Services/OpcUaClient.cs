@@ -29,6 +29,8 @@ public partial class OpcUaClient : IOpcUaClient
     private readonly OpcUaClientKeepAliveOptions keepAliveOptions;
     private readonly DataTypeInfoResolver dataTypeInfoResolver = new();
 
+    // The OPC UA stack raises keep-alive events from several threads at once; this guards the reconnect state.
+    private readonly Lock reconnectLock = new();
     private SessionReconnectHandler? reconnectHandler;
     private int consecutiveKeepAliveFailures;
 
@@ -104,9 +106,12 @@ public partial class OpcUaClient : IOpcUaClient
                     Session.KeepAlive -= SessionOnKeepAlive;
                 }
 
-                reconnectHandler?.Dispose();
-                reconnectHandler = null;
-                consecutiveKeepAliveFailures = 0;
+                lock (reconnectLock)
+                {
+                    reconnectHandler?.Dispose();
+                    reconnectHandler = null;
+                    consecutiveKeepAliveFailures = 0;
+                }
 
                 await Session.CloseAsync(cancellationToken);
                 Session.Dispose();
@@ -348,31 +353,36 @@ public partial class OpcUaClient : IOpcUaClient
                 return;
             }
 
-            if (ServiceResult.IsGood(e.Status))
+            lock (reconnectLock)
             {
-                if (consecutiveKeepAliveFailures != 0)
+                if (ServiceResult.IsGood(e.Status))
                 {
-                    consecutiveKeepAliveFailures = 0;
-                    LogSessionKeepAliveFailureCountReset();
+                    if (consecutiveKeepAliveFailures != 0)
+                    {
+                        LogSessionKeepAliveFailureCountReset(consecutiveKeepAliveFailures);
+                        consecutiveKeepAliveFailures = 0;
+                    }
+
+                    return;
                 }
 
-                return;
-            }
+                consecutiveKeepAliveFailures++;
 
-            consecutiveKeepAliveFailures++;
-            LogSessionKeepAliveFailure(e.Status?.ToString() ?? "Unknown", consecutiveKeepAliveFailures);
+                // A reconnect is already running: its start was logged, and its end will be.
+                if (reconnectHandler is not null)
+                {
+                    return;
+                }
 
-            // Avoid multiple concurrent reconnect attempts.
-            if (reconnectHandler is not null)
-            {
-                return;
-            }
+                LogSessionKeepAliveFailure(e.Status?.ToString() ?? "Unknown", consecutiveKeepAliveFailures);
 
-            if (consecutiveKeepAliveFailures >= keepAliveOptions.MaxFailuresBeforeReconnect)
-            {
-                // Start background reconnect; session remains usable if server recovers quickly.
-                reconnectHandler = new SessionReconnectHandler();
-                reconnectHandler.BeginReconnect(Session, keepAliveOptions.ReconnectPeriodMilliseconds, OnReconnectComplete);
+                if (consecutiveKeepAliveFailures >= keepAliveOptions.MaxFailuresBeforeReconnect)
+                {
+                    // Start background reconnect; session remains usable if server recovers quickly.
+                    LogSessionReconnecting(Session.SessionName ?? "unknown", consecutiveKeepAliveFailures);
+                    reconnectHandler = new SessionReconnectHandler();
+                    reconnectHandler.BeginReconnect(Session, keepAliveOptions.ReconnectPeriodMilliseconds, OnReconnectComplete);
+                }
             }
         }
         catch (Exception exception)
@@ -417,9 +427,12 @@ public partial class OpcUaClient : IOpcUaClient
         }
         finally
         {
-            reconnectHandler?.Dispose();
-            reconnectHandler = null;
-            consecutiveKeepAliveFailures = 0;
+            lock (reconnectLock)
+            {
+                reconnectHandler?.Dispose();
+                reconnectHandler = null;
+                consecutiveKeepAliveFailures = 0;
+            }
         }
     }
 
@@ -483,8 +496,11 @@ public partial class OpcUaClient : IOpcUaClient
 
             try
             {
-                reconnectHandler?.Dispose();
-                reconnectHandler = null;
+                lock (reconnectLock)
+                {
+                    reconnectHandler?.Dispose();
+                    reconnectHandler = null;
+                }
             }
             catch
             {
