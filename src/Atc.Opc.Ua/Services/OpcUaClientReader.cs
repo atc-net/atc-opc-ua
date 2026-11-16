@@ -851,7 +851,16 @@ public partial class OpcUaClient
                     return await TryGetDataValueForVariableAsync(node, loadComplexTypeSystem: true, cancellationToken);
                 }
 
-                LogSessionReadNodeVariableValueEmpty(node.NodeId.ToString(), statusCode.ToString());
+                if (StatusCode.IsGood(statusCode))
+                {
+                    // The value was read, and it's null, e.g. a variable of the Null data type: nothing went wrong.
+                    LogSessionReadNodeVariableValueNull(node.NodeId.ToString());
+                }
+                else
+                {
+                    LogSessionReadNodeVariableValueEmpty(node.NodeId.ToString(), statusCode.ToString());
+                }
+
                 return sampleValue;
             }
 

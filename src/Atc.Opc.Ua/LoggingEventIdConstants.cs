@@ -33,6 +33,7 @@ internal static class LoggingEventIdConstants
     public const int SessionNodeSkipped = 10047;
     public const int SessionReadParentNodeFailure = 10048;
     public const int SessionHandlingNode = 10049;
+    public const int SessionReadNodeVariableValueNull = 10051;
 
     public const int SessionExecuteCommandRequest = 10060;
 

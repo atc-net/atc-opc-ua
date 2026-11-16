@@ -141,6 +141,12 @@ public partial class OpcUaClient
     private partial void LogSessionReadNodeVariableValueEmpty(string nodeId, string statusCode);
 
     [LoggerMessage(
+        EventId = LoggingEventIdConstants.SessionReadNodeVariableValueNull,
+        Level = LogLevel.Debug,
+        Message = "Variable with nodeId '{NodeId}' has no value")]
+    private partial void LogSessionReadNodeVariableValueNull(string nodeId);
+
+    [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionReadNodeNotSupportedNodeClass,
         Level = LogLevel.Warning,
         Message = "Encountered not supported node class '{NodeClass}', when reading node with nodeId '{NodeId}'")]
