@@ -123,7 +123,10 @@ public interface IOpcUaClient : IDisposable
     Task UnsubscribeAllAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Connects to a server anonymously. Does nothing, with a warning, when the client is already connected.
+    /// Connects to a server anonymously. Does nothing, with a warning, when the client already has a session.
+    /// That includes a session whose connection is down, which the client reconnects in the background; to start over
+    /// instead, call <see cref="DisconnectAsync"/> first. When the session was closed, e.g. through <c>Session</c>, it's
+    /// disposed first, and its subscription is dropped: create the subscription again after connecting.
     /// </summary>
     /// <param name="serverUri">The server, e.g. <c>opc.tcp://localhost:50000</c>.</param>
     /// <param name="cancellationToken">Cancellation token for the operation.</param>
@@ -134,7 +137,10 @@ public interface IOpcUaClient : IDisposable
 
     /// <summary>
     /// Connects to a server with a username and password, or anonymously when either is empty. Does nothing, with a
-    /// warning, when the client is already connected.
+    /// warning, when the client already has a session.
+    /// That includes a session whose connection is down, which the client reconnects in the background; to start over
+    /// instead, call <see cref="DisconnectAsync"/> first. When the session was closed, e.g. through <c>Session</c>, it's
+    /// disposed first, and its subscription is dropped: create the subscription again after connecting.
     /// </summary>
     /// <param name="serverUri">The server, e.g. <c>opc.tcp://localhost:50000</c>.</param>
     /// <param name="userName">The username.</param>
@@ -148,9 +154,11 @@ public interface IOpcUaClient : IDisposable
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Whether the client is connected to a server.
+    /// Whether the client has a session with a server: one was created and hasn't been closed. It doesn't check that
+    /// the server still answers. While the connection is down, it stays <see langword="true"/>, calls fail with the
+    /// stack's status code, e.g. <c>BadConnectionClosed</c>, and the client reconnects in the background.
     /// </summary>
-    /// <returns><see langword="true"/> when connected.</returns>
+    /// <returns><see langword="true"/> when the client has a session.</returns>
     bool IsConnected();
 
     /// <summary>

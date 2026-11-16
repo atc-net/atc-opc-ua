@@ -8,12 +8,15 @@ internal static class LoggingEventIdConstants
     public const int SessionReconnected = 10003;
     public const int SessionReconnectFailure = 10004;
     public const int SessionReconnecting = 10005;
+    public const int SessionReplacedAfterReconnect = 10006;
 
     public const int SessionAlreadyConnected = 10010;
     public const int SessionUntrustedCertificateAccepted = 10012;
 
     public const int SessionDisconnecting = 10020;
     public const int SessionDisconnected = 10021;
+    public const int SessionClosingStale = 10023;
+    public const int SessionCloseStaleFailure = 10024;
 
     public const int SessionNodeNotFound = 10030;
     public const int SessionParentNodeNotFound = 10031;

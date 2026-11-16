@@ -21,6 +21,11 @@ public partial class OpcUaClient : IOpcUaClient
 {
     private const string NotConnectedMessage = "The client isn't connected. Call ConnectAsync first.";
 
+    /// <summary>
+    /// How long to wait for the server when closing a session that is no longer connected, before connecting again.
+    /// </summary>
+    private static readonly TimeSpan StaleSessionCloseTimeout = TimeSpan.FromSeconds(5);
+
     private readonly ApplicationConfiguration configuration;
     private readonly OpcUaSecurityOptions securityOptions;
     private readonly OpcUaClientOptions clientOptions;
@@ -85,10 +90,7 @@ public partial class OpcUaClient : IOpcUaClient
     {
     }
 
-    /// <summary>
-    /// Determines whether the client is currently connected to an OPC UA server.
-    /// </summary>
-    /// <returns>A value indicating whether the client is connected.</returns>
+    /// <inheritdoc/>
     public bool IsConnected()
         => Session is not null && Session.Connected;
 
@@ -133,7 +135,16 @@ public partial class OpcUaClient : IOpcUaClient
     private async Task InvokeDisconnectAsync(
         CancellationToken cancellationToken)
     {
-        var session = Session;
+        ISession? session;
+        lock (reconnectLock)
+        {
+            // Stop a running reconnect first, so it can't swap a session in while this one closes.
+            reconnectHandler?.Dispose();
+            reconnectHandler = null;
+            consecutiveKeepAliveFailures = 0;
+            session = Session;
+        }
+
         if (session is null)
         {
             return;
@@ -145,13 +156,6 @@ public partial class OpcUaClient : IOpcUaClient
         if (keepAliveOptions.Enable)
         {
             session.KeepAlive -= SessionOnKeepAlive;
-        }
-
-        lock (reconnectLock)
-        {
-            reconnectHandler?.Dispose();
-            reconnectHandler = null;
-            consecutiveKeepAliveFailures = 0;
         }
 
         CleanupSubscription();
@@ -168,6 +172,30 @@ public partial class OpcUaClient : IOpcUaClient
         }
 
         LogSessionDisconnected(sessionName);
+    }
+
+    /// <summary>
+    /// Closes a session that was closed without disconnecting the client, e.g. through <see cref="Session"/>, before
+    /// connecting again: stops its reconnect, and drops its subscription. Waits at most <see cref="StaleSessionCloseTimeout"/> for the server. A failure is logged and
+    /// ignored; the session is disposed either way.
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    private async Task CloseStaleSessionAsync(
+        CancellationToken cancellationToken)
+    {
+        LogSessionClosingStale(Session?.SessionName ?? "unknown");
+
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeout.CancelAfter(StaleSessionCloseTimeout);
+
+        try
+        {
+            await InvokeDisconnectAsync(timeout.Token);
+        }
+        catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
+        {
+            LogSessionCloseStaleFailure(ex.Message);
+        }
     }
 
     /// <summary>
@@ -188,6 +216,14 @@ public partial class OpcUaClient : IOpcUaClient
         {
             LogSessionAlreadyConnected();
             return;
+        }
+
+        // A session that was closed, e.g. through Session, without disconnecting the client: dispose it, so it isn't
+        // left behind, and its reconnect can't swap it back in later. A dropped connection doesn't get here: the
+        // session counts as connected until it's closed, and the client reconnects it in the background.
+        if (Session is not null)
+        {
+            await CloseStaleSessionAsync(cancellationToken);
         }
 
         LogSessionConnecting(serverUri.AbsoluteUri);
@@ -377,9 +413,9 @@ public partial class OpcUaClient : IOpcUaClient
                 if (consecutiveKeepAliveFailures >= keepAliveOptions.MaxFailuresBeforeReconnect)
                 {
                     // Start background reconnect; session remains usable if server recovers quickly.
-                    LogSessionReconnecting(Session.SessionName ?? "unknown", consecutiveKeepAliveFailures);
+                    LogSessionReconnecting(session.SessionName ?? "unknown", consecutiveKeepAliveFailures);
                     reconnectHandler = new SessionReconnectHandler();
-                    reconnectHandler.BeginReconnect(Session, keepAliveOptions.ReconnectPeriodMilliseconds, OnReconnectComplete);
+                    reconnectHandler.BeginReconnect(session, keepAliveOptions.ReconnectPeriodMilliseconds, OnReconnectComplete);
                 }
             }
         }
@@ -398,27 +434,48 @@ public partial class OpcUaClient : IOpcUaClient
         object? sender,
         EventArgs e)
     {
+        if (sender is not SessionReconnectHandler handler)
+        {
+            return;
+        }
+
+        ISession? replaced = null;
         try
         {
-            if (sender is not SessionReconnectHandler handler)
+            // Under the lock, so a disconnect can't run between the check and the swap.
+            lock (reconnectLock)
             {
-                return;
+                // A reconnect that a disconnect, or a new connect, stopped: its session isn't the client's anymore.
+                if (!ReferenceEquals(handler, reconnectHandler))
+                {
+                    return;
+                }
+
+                // Swap in the new, reconnected session.
+                if (handler.Session is Session reconnected)
+                {
+                    if (Session is not null && !ReferenceEquals(Session, reconnected))
+                    {
+                        replaced = Session;
+                    }
+
+                    Session = reconnected;
+
+                    // Re-apply keep-alive interval based on options. The event subscription remains
+                    // on the Session instance when enabled; if disabled we ensure interval is 0.
+                    reconnected.KeepAliveInterval = keepAliveOptions.Enable
+                        ? keepAliveOptions.IntervalMilliseconds
+                        : 0;
+
+                    LogSessionReconnected(reconnected.SessionName ?? "unknown");
+
+                    RestoreSubscriptionAfterReconnect(reconnected);
+                }
             }
 
-            // Swap in the new, reconnected session.
-            if (handler.Session is Session reconnected)
+            if (replaced is not null)
             {
-                Session = reconnected;
-
-                // Re-apply keep-alive interval based on options. The event subscription remains
-                // on the Session instance when enabled; if disabled we ensure interval is 0.
-                Session.KeepAliveInterval = keepAliveOptions.Enable
-                    ? keepAliveOptions.IntervalMilliseconds
-                    : 0;
-
-                LogSessionReconnected(Session.SessionName ?? "unknown");
-
-                RestoreSubscriptionAfterReconnect(reconnected);
+                DisposeReplacedSession(replaced);
             }
         }
         catch (Exception ex)
@@ -429,11 +486,34 @@ public partial class OpcUaClient : IOpcUaClient
         {
             lock (reconnectLock)
             {
-                reconnectHandler?.Dispose();
-                reconnectHandler = null;
-                consecutiveKeepAliveFailures = 0;
+                // Only while it's still the client's reconnect; a disconnect may have stopped it already.
+                if (ReferenceEquals(handler, reconnectHandler))
+                {
+                    handler.Dispose();
+                    reconnectHandler = null;
+                    consecutiveKeepAliveFailures = 0;
+                }
             }
         }
+    }
+
+    /// <summary>
+    /// Disposes the session that a reconnect replaced with a new one, because the old session couldn't be reactivated,
+    /// e.g. after the server restarted. The OPC UA stack leaves that to the session's owner. The subscription was
+    /// recreated on the new session before this.
+    /// </summary>
+    /// <param name="session">The replaced session.</param>
+    private void DisposeReplacedSession(ISession session)
+    {
+        if (keepAliveOptions.Enable)
+        {
+            session.KeepAlive -= SessionOnKeepAlive;
+        }
+
+        var sessionName = session.SessionName ?? "unknown";
+        Utils.SilentDispose(session);
+
+        LogSessionReplacedAfterReconnect(sessionName);
     }
 
     /// <summary>

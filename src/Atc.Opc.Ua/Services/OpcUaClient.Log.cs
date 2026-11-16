@@ -38,6 +38,12 @@ public partial class OpcUaClient
         int consecutiveKeepAliveFailures);
 
     [LoggerMessage(
+        EventId = LoggingEventIdConstants.SessionReplacedAfterReconnect,
+        Level = LogLevel.Information,
+        Message = "Session with name '{SessionName}' was replaced by a new session after reconnecting; the old one is disposed")]
+    private partial void LogSessionReplacedAfterReconnect(string sessionName);
+
+    [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionAlreadyConnected,
         Level = LogLevel.Warning,
         Message = "Session is already connected")]
@@ -60,6 +66,18 @@ public partial class OpcUaClient
         Level = LogLevel.Information,
         Message = "Session with name '{SessionName}' is disconnected")]
     private partial void LogSessionDisconnected(string sessionName);
+
+    [LoggerMessage(
+        EventId = LoggingEventIdConstants.SessionClosingStale,
+        Level = LogLevel.Information,
+        Message = "Closing session with name '{SessionName}', which is no longer connected, before connecting again")]
+    private partial void LogSessionClosingStale(string sessionName);
+
+    [LoggerMessage(
+        EventId = LoggingEventIdConstants.SessionCloseStaleFailure,
+        Level = LogLevel.Warning,
+        Message = "Closing the session that was no longer connected failed; connecting with a new one: '{ErrorMessage}'")]
+    private partial void LogSessionCloseStaleFailure(string errorMessage);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionNodeNotFound,
