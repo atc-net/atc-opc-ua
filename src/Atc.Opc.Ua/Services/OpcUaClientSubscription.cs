@@ -26,30 +26,28 @@ public partial class OpcUaClient
     public event EventHandler<MonitoredNodeValue>? NodeValueChanged;
 
     /// <inheritdoc/>
-    public async Task<(bool Succeeded, string? ErrorMessage)> CreateSubscriptionAsync(
+    public Task CreateSubscriptionAsync(
         SubscriptionOptions? options = null,
         CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            return await RunExclusiveAsync(
+        => RunExclusiveAsync(
                 async () =>
                 {
-                    if (Session is null || !Session.Connected)
+                    var session = Session;
+                    if (session is null || !session.Connected)
                     {
-                        return (false, "Session is not connected.");
+                        throw new InvalidOperationException(NotConnectedMessage);
                     }
 
                     if (activeSubscription is not null)
                     {
-                        return (false, "A subscription already exists. Remove it first.");
+                        throw new InvalidOperationException("A subscription already exists. Remove it first.");
                     }
 
                     activeSubscriptionOptions = options ?? new SubscriptionOptions();
 
                     LogSubscriptionCreating(activeSubscriptionOptions.PublishingIntervalMs);
 
-                    var subscription = new Subscription(Session.DefaultSubscription)
+                    var subscription = new Subscription(session.DefaultSubscription)
                     {
                         DisplayName = SubscriptionDisplayName,
                         PublishingInterval = activeSubscriptionOptions.PublishingIntervalMs,
@@ -59,7 +57,7 @@ public partial class OpcUaClient
                         Priority = 0,
                     };
 
-                    Session.AddSubscription(subscription);
+                    session.AddSubscription(subscription);
                     try
                     {
                         await subscription.CreateAsync(cancellationToken);
@@ -67,7 +65,7 @@ public partial class OpcUaClient
                     catch
                     {
                         // Not created on the server: take it out of the session again, so a reconnect doesn't recreate it.
-                        await RemoveFromSessionAsync(Session, subscription);
+                        await RemoveFromSessionAsync(session, subscription);
                         throw;
                     }
 
@@ -75,31 +73,20 @@ public partial class OpcUaClient
                     activeSubscription = subscription;
 
                     LogSubscriptionCreated(subscription.Id);
-
-                    return (true, (string?)null);
                 },
-                cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            LogSubscriptionCreateFailure(ex.Message);
-            return (false, ex.Message);
-        }
-    }
+                cancellationToken)
+            .NormalizeCancellation(cancellationToken);
 
     /// <inheritdoc/>
-    public async Task<(bool Succeeded, string? ErrorMessage)> RemoveSubscriptionAsync(
+    public Task<bool> RemoveSubscriptionAsync(
         CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            return await RunExclusiveAsync(
+        => RunExclusiveAsync(
                 async () =>
                 {
                     var subscription = activeSubscription;
                     if (subscription is null)
                     {
-                        return (false, "No active subscription.");
+                        return false;
                     }
 
                     LogSubscriptionRemoving(subscription.Id);
@@ -107,9 +94,12 @@ public partial class OpcUaClient
                     DetachMonitoredNodes();
 
                     await subscription.DeleteAsync(silent: true, cancellationToken);
-                    if (Session is not null)
+
+                    // Read once: a reconnect or a disconnect can change Session between the check and the call.
+                    var session = Session;
+                    if (session is not null)
                     {
-                        await Session.RemoveSubscriptionAsync(subscription, cancellationToken);
+                        await session.RemoveSubscriptionAsync(subscription, cancellationToken);
                     }
 
                     subscription.Dispose();
@@ -117,93 +107,54 @@ public partial class OpcUaClient
 
                     LogSubscriptionRemoved();
 
-                    return (true, (string?)null);
+                    return true;
                 },
-                cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            LogSubscriptionRemoveFailure(ex.Message);
-            return (false, ex.Message);
-        }
-    }
+                cancellationToken)
+            .NormalizeCancellation(cancellationToken);
 
     /// <inheritdoc/>
-    public async Task<(bool Succeeded, uint MonitoredItemHandle, string? ErrorMessage)> SubscribeToNodeAsync(
+    public Task<uint> SubscribeToNodeAsync(
         string nodeId,
         string? displayName = null,
         CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var results = await RunExclusiveAsync(
-                () => SubscribeNodesCoreAsync([(nodeId, displayName)], logEachNode: true, cancellationToken),
-                cancellationToken);
+        ArgumentException.ThrowIfNullOrWhiteSpace(nodeId);
 
-            if (results is null)
-            {
-                return (false, 0, NoActiveSubscriptionMessage);
-            }
-
-            var result = results[0];
-            return (result.Succeeded, result.MonitoredItemHandle, result.ErrorMessage);
-        }
-        catch (Exception ex)
-        {
-            LogSubscriptionNodeSubscribeFailure(nodeId, ex.Message);
-            return (false, 0, ex.Message);
-        }
+        return InvokeSubscribeToNodeAsync(nodeId.Trim(), displayName, cancellationToken).NormalizeCancellation(cancellationToken);
     }
 
     /// <inheritdoc/>
-    public async Task<(bool Succeeded, IReadOnlyList<NodeSubscriptionResult> Results, string? ErrorMessage)> SubscribeToNodesAsync(
+    public Task<IReadOnlyList<NodeSubscriptionResult>> SubscribeToNodesAsync(
         IReadOnlyCollection<string> nodeIds,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(nodeIds);
 
-        try
-        {
-            var results = await RunExclusiveAsync(
-                () => SubscribeNodesCoreAsync([.. nodeIds.Select(x => (x, (string?)null))], logEachNode: false, cancellationToken),
-                cancellationToken);
+        return RunExclusiveAsync(
+                async () =>
+                {
+                    var results = await SubscribeNodesCoreAsync([.. nodeIds.Select(x => (x, (string?)null))], logEachNode: false, cancellationToken)
+                                  ?? throw new InvalidOperationException(NoActiveSubscriptionMessage);
 
-            if (results is null)
-            {
-                return (false, [], NoActiveSubscriptionMessage);
-            }
-
-            LogSubscriptionNodesSubscribed(results.Count(x => x.Succeeded), results.Count);
-
-            // The call completed; each result says whether its node is monitored.
-            return (true, results, null);
-        }
-        catch (Exception ex)
-        {
-            LogSubscriptionNodesSubscribeFailure(nodeIds.Count, ex.Message);
-            return (false, [], ex.Message);
-        }
+                    LogSubscriptionNodesSubscribed(results.Count(x => x.Succeeded), results.Count);
+                    return results;
+                },
+                cancellationToken)
+            .NormalizeCancellation(cancellationToken);
     }
 
     /// <inheritdoc/>
-    public async Task<(bool Succeeded, string? ErrorMessage)> UnsubscribeFromNodeAsync(
+    public Task<bool> UnsubscribeFromNodeAsync(
         uint monitoredItemHandle,
         CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            return await RunExclusiveAsync(
+        => RunExclusiveAsync(
                 async () =>
                 {
                     var subscription = activeSubscription;
-                    if (subscription is null)
+                    if (subscription is null ||
+                        !monitoredNodes.TryGet(monitoredItemHandle, out var node))
                     {
-                        return (false, "No active subscription.");
-                    }
-
-                    if (!monitoredNodes.TryGet(monitoredItemHandle, out var node))
-                    {
-                        return (false, $"Monitored item with handle {monitoredItemHandle} not found.");
+                        return false;
                     }
 
                     LogSubscriptionNodeUnsubscribing(node.Item.StartNodeId.ToString(), monitoredItemHandle);
@@ -216,30 +167,21 @@ public partial class OpcUaClient
 
                     LogSubscriptionNodeUnsubscribed(monitoredItemHandle);
 
-                    return (true, (string?)null);
+                    return true;
                 },
-                cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            LogSubscriptionNodeUnsubscribeFailure(monitoredItemHandle, ex.Message);
-            return (false, ex.Message);
-        }
-    }
+                cancellationToken)
+            .NormalizeCancellation(cancellationToken);
 
     /// <inheritdoc/>
-    public async Task<(bool Succeeded, string? ErrorMessage)> UnsubscribeAllAsync(
+    public Task UnsubscribeAllAsync(
         CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            return await RunExclusiveAsync(
+        => RunExclusiveAsync(
                 async () =>
                 {
                     var subscription = activeSubscription;
                     if (subscription is null)
                     {
-                        return (false, "No active subscription.");
+                        return;
                     }
 
                     var nodes = monitoredNodes.Nodes;
@@ -257,16 +199,38 @@ public partial class OpcUaClient
                     monitoredNodes.Clear();
 
                     LogSubscriptionUnsubscribedAll(nodes.Count);
-
-                    return (true, (string?)null);
                 },
-                cancellationToken);
-        }
-        catch (Exception ex)
+                cancellationToken)
+            .NormalizeCancellation(cancellationToken);
+
+    /// <summary>
+    /// Subscribes one node, and throws when the server rejects it.
+    /// </summary>
+    /// <param name="nodeId">The node to subscribe to.</param>
+    /// <param name="displayName">The display name to use, or <see langword="null"/> for the node's own.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <returns>The monitored item's handle.</returns>
+    private async Task<uint> InvokeSubscribeToNodeAsync(
+        string nodeId,
+        string? displayName,
+        CancellationToken cancellationToken)
+    {
+        var results = await RunExclusiveAsync(
+            () => SubscribeNodesCoreAsync([(nodeId, displayName)], logEachNode: true, cancellationToken),
+            cancellationToken);
+
+        var result = results?[0] ?? throw new InvalidOperationException(NoActiveSubscriptionMessage);
+        if (result.Succeeded)
         {
-            LogSubscriptionUnsubscribeAllFailure(ex.Message);
-            return (false, ex.Message);
+            return result.MonitoredItemHandle;
         }
+
+        if (result.StatusCode == StatusCodes.BadNodeIdInvalid)
+        {
+            throw new ArgumentException($"'{nodeId}' isn't a valid node id.", nameof(nodeId));
+        }
+
+        throw new ServiceResultException(result.StatusCode, $"Subscribing to node '{nodeId}' failed: {result.ErrorMessage}.");
     }
 
     /// <summary>
@@ -292,6 +256,18 @@ public partial class OpcUaClient
         }
     }
 
+    /// <inheritdoc cref="RunExclusiveAsync{TResult}(Func{Task{TResult}}, CancellationToken)"/>
+    private Task RunExclusiveAsync(
+        Func<Task> operation,
+        CancellationToken cancellationToken)
+        => RunExclusiveAsync(
+            async () =>
+            {
+                await operation();
+                return true;
+            },
+            cancellationToken);
+
     /// <summary>
     /// Subscribes nodes with three round trips, however many nodes there are: one read of their display name, data type
     /// and access level, one read of the data type names not seen before (cached per client, so usually skipped), and
@@ -307,8 +283,10 @@ public partial class OpcUaClient
         bool logEachNode,
         CancellationToken cancellationToken)
     {
+        // Read once, so both reads below use the same session, even when a reconnect replaces it in between.
         var subscription = activeSubscription;
-        if (subscription is null || Session is null)
+        var session = Session;
+        if (subscription is null || session is null)
         {
             return null;
         }
@@ -317,10 +295,10 @@ public partial class OpcUaClient
         var parsed = ParseNodeIds(requests, results);
 
         // Round trip 1: the display name, data type and access level of every node.
-        var attributes = await ReadMonitoredNodeAttributesAsync(Session, [.. parsed.Select(x => x.NodeId)], cancellationToken);
+        var attributes = await ReadMonitoredNodeAttributesAsync(session, [.. parsed.Select(x => x.NodeId)], cancellationToken);
 
         // Round trip 2, only for data types not seen before: their names.
-        await ResolveDataTypeNamesAsync(Session, attributes.Select(x => x.DataTypeId), cancellationToken);
+        await ResolveDataTypeNamesAsync(session, attributes.Select(x => x.DataTypeId), cancellationToken);
 
         var prepared = PrepareMonitoredItems(requests, parsed, attributes, results, logEachNode);
         if (prepared.Count > 0)
@@ -451,7 +429,7 @@ public partial class OpcUaClient
         foreach (var (index, item) in prepared.Except(rejected))
         {
             var handle = (uint)item.Handle;
-            results[index] = new NodeSubscriptionResult(requests[index].NodeId, Succeeded: true, handle, ErrorMessage: null);
+            results[index] = new NodeSubscriptionResult(requests[index].NodeId, Succeeded: true, handle, StatusCodes.Good, ErrorMessage: null);
             if (logEachNode)
             {
                 LogSubscriptionNodeSubscribed(requests[index].NodeId, handle);
@@ -519,8 +497,8 @@ public partial class OpcUaClient
         uint statusCode)
     {
         var error = GetStatusCodeName(statusCode) ?? $"0x{statusCode:X8}";
-        LogSubscriptionNodeSubscribeFailure(nodeId, error);
-        return new NodeSubscriptionResult(nodeId, Succeeded: false, MonitoredItemHandle: 0, error);
+        LogSubscriptionNodeRejected(nodeId, error);
+        return new NodeSubscriptionResult(nodeId, Succeeded: false, MonitoredItemHandle: 0, statusCode, error);
     }
 
     /// <summary>

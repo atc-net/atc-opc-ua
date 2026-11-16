@@ -20,58 +20,35 @@ internal sealed class ExecuteMethodCommand : AsyncCommand<ExecuteMethodCommandSe
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        return ExecuteInternalAsync(settings);
+        return ExecuteInternalAsync(settings, cancellationToken);
     }
 
     private async Task<int> ExecuteInternalAsync(
-        ExecuteMethodCommandSettings settings)
+        ExecuteMethodCommandSettings settings,
+        CancellationToken cancellationToken)
     {
-        await ConsoleHelper.WriteHeaderAsync();
+        await ConsoleHelper.WriteHeaderAsync(cancellationToken);
 
-        var serverUrl = new Uri(settings.ServerUrl!);
-        var userName = settings.UserName;
-        var password = settings.Password;
-
-        var sw = Stopwatch.StartNew();
-
-        var (succeeded, _) = userName is not null && userName.IsSet
-            ? await opcUaClient.ConnectAsync(serverUrl, userName.Value, password!.Value, CancellationToken.None)
-            : await opcUaClient.ConnectAsync(serverUrl, CancellationToken.None);
-
-        if (succeeded)
-        {
-            var (succeededExecutingMethod, executionResults, errorMessage) = await opcUaClient.ExecuteMethodAsync(
-                settings.ParentNodeId,
-                settings.MethodNodeId,
-                MapSettingsToMethodExecutionParameters(settings),
-                CancellationToken.None);
-
-            if (succeededExecutingMethod)
+        return await OpcUaCommandRunner.RunAsync(
+            opcUaClient,
+            settings,
+            logger,
+            async ct =>
             {
-                if (executionResults is not null)
+                var executionResults = await opcUaClient.ExecuteMethodAsync(
+                    settings.ParentNodeId,
+                    settings.MethodNodeId,
+                    MapSettingsToMethodExecutionParameters(settings),
+                    ct);
+
+                logger.LogInformation("Received the following data:");
+                foreach (var executionResult in executionResults)
                 {
-                    logger.LogInformation("Received the following data:");
-                    foreach (var executionResult in executionResults)
-                    {
-                        var spaces = string.Empty.PadRight(16 - executionResult.DataEncoding.ToString().Length);
-                        logger.LogInformation($"  {executionResult.DataEncoding}{spaces}{executionResult.Value}");
-                    }
+                    var spaces = string.Empty.PadRight(16 - executionResult.DataEncoding.ToString().Length);
+                    logger.LogInformation($"  {executionResult.DataEncoding}{spaces}{executionResult.Value}");
                 }
-            }
-            else
-            {
-                logger.LogError(errorMessage);
-            }
-
-            await opcUaClient.DisconnectAsync(CancellationToken.None);
-        }
-
-        sw.Stop();
-        logger.LogDebug($"Time for operation: {sw.Elapsed.GetPrettyTime()}");
-
-        return succeeded
-            ? ConsoleExitStatusCodes.Success
-            : ConsoleExitStatusCodes.Failure;
+            },
+            cancellationToken);
     }
 
     private static List<MethodExecutionParameter> MapSettingsToMethodExecutionParameters(

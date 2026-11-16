@@ -78,10 +78,14 @@ public static class Program
 
         // 1. Connect
         logger.LogInformation("=== Connecting to {ServerUri} ===", ServerUri);
-        var (connected, connectError) = await client.ConnectAsync(ServerUri, cts.Token);
-        if (!connected)
+
+        try
         {
-            logger.LogError("Failed to connect: {Error}. Is the OPC PLC container running?", connectError);
+            await client.ConnectAsync(ServerUri, cts.Token);
+        }
+        catch (ServiceResultException ex)
+        {
+            logger.LogError(ex, "Failed to connect: {Error}. Is the OPC PLC container running?", ex.Message);
             return 1;
         }
 
@@ -122,32 +126,28 @@ public static class Program
         var log = logger!;
         log.LogInformation("=== Creating Subscription ===");
 
-        var (created, createError) = await client.CreateSubscriptionAsync(
-            new SubscriptionOptions { PublishingIntervalMs = 500, SamplingIntervalMs = 500 },
-            cancellationToken);
-
-        if (!created)
+        try
         {
-            log.LogError("Failed to create subscription: {Error}", createError);
-            return false;
-        }
+            await client.CreateSubscriptionAsync(
+                new SubscriptionOptions { PublishingIntervalMs = 500, SamplingIntervalMs = 500 },
+                cancellationToken);
 
-        client.NodeValueChanged += (_, e) => ValueCounts.AddOrUpdate(e.MonitoredItemHandle, 1, (_, count) => count + 1);
+            client.NodeValueChanged += (_, e) => ValueCounts.AddOrUpdate(e.MonitoredItemHandle, 1, (_, count) => count + 1);
 
-        foreach (var (nodeId, displayName) in Nodes)
-        {
-            var (subscribed, handle, subscribeError) = await client.SubscribeToNodeAsync(nodeId, displayName, cancellationToken);
-            if (!subscribed)
+            foreach (var (nodeId, displayName) in Nodes)
             {
-                log.LogError("Failed to subscribe to {NodeId}: {Error}", nodeId, subscribeError);
-                return false;
+                var handle = await client.SubscribeToNodeAsync(nodeId, displayName, cancellationToken);
+                DisplayNames[handle] = displayName;
+                log.LogInformation("Subscribed to {DisplayName} ({NodeId}) with handle {Handle}", displayName, nodeId, handle);
             }
 
-            DisplayNames[handle] = displayName;
-            log.LogInformation("Subscribed to {DisplayName} ({NodeId}) with handle {Handle}", displayName, nodeId, handle);
+            return true;
         }
-
-        return true;
+        catch (ServiceResultException ex)
+        {
+            log.LogError(ex, "Failed to subscribe: {Error}", ex.Message);
+            return false;
+        }
     }
 
     private static async Task MonitorAsync(CancellationToken cancellationToken)
@@ -187,14 +187,34 @@ public static class Program
 
         log.LogInformation("=== Check 4: unsubscribing a node after the restart ===");
         var (stepUpHandle, stepUpName) = DisplayNames.First(x => x.Value == "StepUp");
-        var (unsubscribed, unsubscribeError) = await client.UnsubscribeFromNodeAsync(stepUpHandle, cancellationToken);
+        var (unsubscribed, unsubscribeError) = await TryCallAsync(() => client.UnsubscribeFromNodeAsync(stepUpHandle, cancellationToken));
         Check($"Unsubscribing {stepUpName} succeeds ({unsubscribeError ?? "OK"})", unsubscribed);
         Check($"No more values from {stepUpName}", await ExpectNoValuesAsync([stepUpHandle], cancellationToken));
 
         log.LogInformation("=== Check 5: removing the subscription after the restart ===");
-        var (removed, removeError) = await client.RemoveSubscriptionAsync(cancellationToken);
+        var (removed, removeError) = await TryCallAsync(() => client.RemoveSubscriptionAsync(cancellationToken));
         Check($"Removing the subscription succeeds ({removeError ?? "OK"})", removed);
         Check("No more values at all", await ExpectNoValuesAsync(allHandles, cancellationToken));
+    }
+
+    /// <summary>
+    /// Runs a call for a check, so a failure fails the check instead of ending the sample.
+    /// </summary>
+    /// <param name="call">The call; <see langword="false"/> means it found nothing to remove.</param>
+    /// <returns>Whether it succeeded, and why not.</returns>
+    private static async Task<(bool Succeeded, string? Error)> TryCallAsync(
+        Func<Task<bool>> call)
+    {
+        try
+        {
+            return await call()
+                ? (true, null)
+                : (false, "nothing to remove");
+        }
+        catch (ServiceResultException ex)
+        {
+            return (false, ex.Message);
+        }
     }
 
     private static async Task<bool> WaitForValuesAsync(
@@ -203,6 +223,7 @@ public static class Program
     {
         var before = SnapshotCounts();
         var stopwatch = Stopwatch.StartNew();
+
         while (stopwatch.Elapsed < RecoveryTimeout)
         {
             await Task.Delay(TimeSpan.FromMilliseconds(500), cancellationToken);

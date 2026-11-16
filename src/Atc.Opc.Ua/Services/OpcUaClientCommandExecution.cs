@@ -7,59 +7,66 @@ namespace Atc.Opc.Ua.Services;
 [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OK")]
 public partial class OpcUaClient
 {
-    public async Task<(bool Succeeded, IList<MethodExecutionResult>? ExecutionResults, string? ErrorMessage)> ExecuteMethodAsync(
+    /// <inheritdoc/>
+    public Task<IList<MethodExecutionResult>> ExecuteMethodAsync(
         string parentNodeId,
         string methodNodeId,
         List<MethodExecutionParameter> arguments,
         CancellationToken cancellationToken = default)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(parentNodeId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(methodNodeId);
         ArgumentNullException.ThrowIfNull(arguments);
 
-        try
+        return InvokeExecuteMethodAsync(parentNodeId.Trim(), methodNodeId.Trim(), arguments, cancellationToken)
+            .NormalizeCancellation(cancellationToken);
+    }
+
+    /// <summary>
+    /// Calls the method, and checks the server's result.
+    /// </summary>
+    /// <param name="parentNodeId">The object the method belongs to.</param>
+    /// <param name="methodNodeId">The method.</param>
+    /// <param name="arguments">The method's input arguments.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <returns>The method's output arguments.</returns>
+    /// <exception cref="ServiceResultException">The server rejected the call, with its status code.</exception>
+    private async Task<IList<MethodExecutionResult>> InvokeExecuteMethodAsync(
+        string parentNodeId,
+        string methodNodeId,
+        List<MethodExecutionParameter> arguments,
+        CancellationToken cancellationToken)
+    {
+        EnsureConnected();
+
+        var request = new CallMethodRequest
         {
-            var request = new CallMethodRequest
-            {
-                ObjectId = new NodeId(parentNodeId),
-                MethodId = new NodeId(methodNodeId),
-            };
+            ObjectId = new NodeId(parentNodeId),
+            MethodId = new NodeId(methodNodeId),
+        };
 
-            if (arguments.Any())
-            {
-                HandleArguments(request, arguments);
-            }
-
-            LogSessionExecuteCommandRequest(parentNodeId, methodNodeId, ArgumentsToString(arguments));
-
-            var callResponse = await Session!.CallAsync(requestHeader: null, [request], cancellationToken);
-            if (callResponse is null)
-            {
-                return (false, null, "Executing method failed - missing call response");
-            }
-
-            if (callResponse.Results.Any() &&
-                StatusCode.IsGood(callResponse.Results[0].StatusCode))
-            {
-                return (
-                    Succeeded: true,
-                    MapMethodExecutionResults(callResponse.Results),
-                    null);
-            }
-
-            var errorMessage = callResponse.Results![0].StatusCode.ToString();
-            LogSessionExecuteCommandFailure(parentNodeId, methodNodeId, errorMessage!);
-            return (
-                Succeeded: false,
-                null,
-                $"Executing command failed: {errorMessage}.");
-        }
-        catch (Exception ex)
+        if (arguments.Count > 0)
         {
-            LogSessionExecuteCommandFailure(parentNodeId, methodNodeId, ex.Message);
-            return (
-                Succeeded: false,
-                null,
-                $"Executing command failed: {ex.Message}.");
+            HandleArguments(request, arguments);
         }
+
+        LogSessionExecuteCommandRequest(parentNodeId, methodNodeId, ArgumentsToString(arguments));
+
+        var callResponse = await CurrentSession.CallAsync(requestHeader: null, [request], cancellationToken);
+        if (callResponse?.Results is not { Count: > 0 } results)
+        {
+            throw new ServiceResultException(StatusCodes.BadUnexpectedError, "The server didn't return a result for the method call.");
+        }
+
+        var statusCode = results[0].StatusCode.Code;
+        if (StatusCode.IsBad(statusCode))
+        {
+            throw new ServiceResultException(
+                statusCode,
+                $"Calling method '{methodNodeId}' on '{parentNodeId}' failed: {GetStatusCodeName(statusCode) ?? $"0x{statusCode:X8}"}.");
+        }
+
+        return MapMethodExecutionResults(results);
     }
 
     private static string ArgumentsToString(

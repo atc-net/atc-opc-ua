@@ -7,33 +7,18 @@ namespace Atc.Opc.Ua.Services;
 [SuppressMessage("Design", "MA0048:File name must match type name", Justification = "OK - By Design")]
 public partial class OpcUaClient
 {
-    /// <summary>
-    /// Asynchronously reads an enumeration DataType definition from the OPC UA server.
-    /// </summary>
-    /// <param name="dataTypeNodeId">The node-id of the DataType node (e.g. "i=852" for ServerState).</param>
-    /// <param name="cancellationToken">Cancellation token for the operation.</param>
-    /// <returns>A tuple containing success status, the enum DataType definition, and any error message.</returns>
-    public Task<(bool Succeeded, OpcUaEnumDataType? EnumDataType, string? ErrorMessage)> ReadEnumDataTypeAsync(
+    /// <inheritdoc/>
+    public Task<OpcUaEnumDataType?> ReadEnumDataTypeAsync(
         string dataTypeNodeId,
         CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(dataTypeNodeId))
-        {
-            return Task.FromResult<(bool Succeeded, OpcUaEnumDataType? EnumDataType, string? ErrorMessage)>((false, null, "Missing dataTypeNodeId."));
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(dataTypeNodeId);
 
-        dataTypeNodeId = dataTypeNodeId.Trim();
-
-        return InvokeReadEnumDataTypeAsync(dataTypeNodeId, cancellationToken);
+        return InvokeReadEnumDataTypeAsync(dataTypeNodeId.Trim(), cancellationToken).NormalizeCancellation(cancellationToken);
     }
 
-    /// <summary>
-    /// Asynchronously reads multiple enumeration DataType definitions from the OPC UA server.
-    /// </summary>
-    /// <param name="dataTypeNodeIds">The node-ids of the DataType nodes.</param>
-    /// <param name="cancellationToken">Cancellation token for the operation.</param>
-    /// <returns>A tuple containing success status, the list of enum DataType definitions, and any error message.</returns>
-    public Task<(bool Succeeded, IList<OpcUaEnumDataType>? EnumDataTypes, string? ErrorMessage)> ReadEnumDataTypesAsync(
+    /// <inheritdoc/>
+    public Task<IList<OpcUaEnumDataType>> ReadEnumDataTypesAsync(
         string[] dataTypeNodeIds,
         CancellationToken cancellationToken = default)
     {
@@ -41,117 +26,92 @@ public partial class OpcUaClient
 
         if (dataTypeNodeIds.Length == 0)
         {
-            return Task.FromResult<(bool Succeeded, IList<OpcUaEnumDataType>? EnumDataTypes, string? ErrorMessage)>((false, null, "Missing dataTypeNodeIds."));
+            throw new ArgumentException("At least one DataType node id is needed.", nameof(dataTypeNodeIds));
         }
 
-        dataTypeNodeIds = dataTypeNodeIds.Select(id => id.Trim()).ToArray();
+        if (dataTypeNodeIds.Any(string.IsNullOrWhiteSpace))
+        {
+            throw new ArgumentException("A DataType node id is missing or blank.", nameof(dataTypeNodeIds));
+        }
 
-        return dataTypeNodeIds.Any(string.IsNullOrWhiteSpace)
-            ? Task.FromResult<(bool Succeeded, IList<OpcUaEnumDataType>? EnumDataTypes, string? ErrorMessage)>((false, null, "One or more dataTypeNodeIds are invalid."))
-            : InvokeReadEnumDataTypesAsync(dataTypeNodeIds, cancellationToken);
+        return InvokeReadEnumDataTypesAsync([.. dataTypeNodeIds.Select(x => x.Trim())], cancellationToken)
+            .NormalizeCancellation(cancellationToken);
     }
 
-    private async Task<(bool Succeeded, OpcUaEnumDataType? EnumDataType, string? ErrorMessage)> InvokeReadEnumDataTypeAsync(
+    /// <summary>
+    /// Reads an enum DataType, trying its DataTypeDefinition, then its EnumValues, then its EnumStrings.
+    /// </summary>
+    /// <param name="dataTypeNodeId">The DataType node, e.g. <c>i=852</c>.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <returns>The enum DataType, or <see langword="null"/> when the node doesn't exist.</returns>
+    /// <exception cref="ArgumentException">The node isn't a DataType, or isn't an enumeration.</exception>
+    private async Task<OpcUaEnumDataType?> InvokeReadEnumDataTypeAsync(
         string dataTypeNodeId,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
-        if (!IsConnected())
+        EnsureConnected();
+
+        LogSessionReadEnumDataType(dataTypeNodeId);
+
+        var readNode = await ReadNodeOrDefaultAsync(dataTypeNodeId, cancellationToken);
+        if (readNode is null)
         {
-            LogSessionNotConnected();
-            return (false, null, "Session is not connected.");
+            return null;
         }
 
-        try
+        if (readNode.NodeClass != NodeClass.DataType)
         {
-            LogSessionReadEnumDataType(dataTypeNodeId);
-
-            var nodeId = new NodeId(dataTypeNodeId);
-
-            // Read the DataType node to get basic information
-            var readNode = await Session!.ReadNodeAsync(nodeId, cancellationToken);
-            if (readNode is null)
-            {
-                LogSessionNodeNotFound(dataTypeNodeId);
-                return (false, null, $"Could not find node by dataTypeNodeId '{dataTypeNodeId}'");
-            }
-
-            if (readNode.NodeClass != NodeClass.DataType)
-            {
-                LogSessionNodeHasWrongClass(dataTypeNodeId, readNode.NodeClass, NodeClass.DataType);
-                return (false, null, $"Node with dataTypeNodeId '{dataTypeNodeId}' has wrong NodeClass '{readNode.NodeClass}', expected '{nameof(NodeClass.DataType)}'");
-            }
-
-            var enumDataType = new OpcUaEnumDataType
-            {
-                NodeId = dataTypeNodeId,
-                Name = readNode.BrowseName?.Name ?? string.Empty,
-                DisplayName = readNode.DisplayName?.Text ?? string.Empty,
-                Description = readNode.Description?.Text ?? string.Empty,
-            };
-
-            // Strategy 1: Try DataTypeDefinition attribute (OPC UA 1.04+)
-            var definitionRead = await TryReadDataTypeDefinitionAsync(nodeId, enumDataType, cancellationToken);
-            if (definitionRead)
-            {
-                LogSessionReadEnumDataTypeSucceeded(dataTypeNodeId, enumDataType.Members.Count);
-                return (true, enumDataType, null);
-            }
-
-            // Strategy 2: Try EnumValues property (ExtensionObject[] with EnumValueType)
-            var enumValuesRead = await TryReadEnumValuesPropertyAsync(nodeId, enumDataType, cancellationToken);
-            if (enumValuesRead)
-            {
-                LogSessionReadEnumDataTypeSucceeded(dataTypeNodeId, enumDataType.Members.Count);
-                return (true, enumDataType, null);
-            }
-
-            // Strategy 3: Try EnumStrings property (LocalizedText[])
-            var enumStringsRead = await TryReadEnumStringsPropertyAsync(nodeId, enumDataType, cancellationToken);
-            if (enumStringsRead)
-            {
-                LogSessionReadEnumDataTypeSucceeded(dataTypeNodeId, enumDataType.Members.Count);
-                return (true, enumDataType, null);
-            }
-
-            LogSessionReadEnumDataTypeNotEnum(dataTypeNodeId);
-            return (false, null, $"DataType with nodeId '{dataTypeNodeId}' is not an enumeration or has no enum definition.");
+            throw WrongNodeClass(dataTypeNodeId, readNode.NodeClass, NodeClass.DataType, nameof(dataTypeNodeId));
         }
-        catch (Exception ex)
+
+        var nodeId = readNode.NodeId;
+        var enumDataType = new OpcUaEnumDataType
         {
-            LogSessionReadEnumDataTypeFailure(dataTypeNodeId, ex.Message);
-            return (false, null, $"Reading enum DataType with nodeId '{dataTypeNodeId}' failed: '{ex.Message}'");
+            NodeId = dataTypeNodeId,
+            Name = readNode.BrowseName?.Name ?? string.Empty,
+            DisplayName = readNode.DisplayName?.Text ?? string.Empty,
+            Description = readNode.Description?.Text ?? string.Empty,
+        };
+
+        // Strategy 1: the DataTypeDefinition attribute (OPC UA 1.04+), then 2: the EnumValues property
+        // (ExtensionObject[] with EnumValueType), then 3: the EnumStrings property (LocalizedText[]).
+        if (await TryReadDataTypeDefinitionAsync(nodeId, enumDataType, cancellationToken) ||
+            await TryReadEnumValuesPropertyAsync(nodeId, enumDataType, cancellationToken) ||
+            await TryReadEnumStringsPropertyAsync(nodeId, enumDataType, cancellationToken))
+        {
+            LogSessionReadEnumDataTypeSucceeded(dataTypeNodeId, enumDataType.Members.Count);
+            return enumDataType;
         }
+
+        throw new ArgumentException($"DataType '{dataTypeNodeId}' isn't an enumeration, or has no enum definition.", nameof(dataTypeNodeId));
     }
 
-    private async Task<(bool Succeeded, IList<OpcUaEnumDataType>? EnumDataTypes, string? ErrorMessage)> InvokeReadEnumDataTypesAsync(
+    /// <summary>
+    /// Reads several enum DataTypes, one at a time.
+    /// </summary>
+    /// <param name="dataTypeNodeIds">The DataType nodes.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <returns>The enum DataTypes, in the order of <paramref name="dataTypeNodeIds"/>; a node that doesn't exist is left out, with a warning.</returns>
+    private async Task<IList<OpcUaEnumDataType>> InvokeReadEnumDataTypesAsync(
         string[] dataTypeNodeIds,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
-        if (!IsConnected())
-        {
-            LogSessionNotConnected();
-            return (false, null, "Session is not connected.");
-        }
+        EnsureConnected();
 
-        var result = new List<OpcUaEnumDataType>();
-        var errors = new List<string>();
-
+        var result = new List<OpcUaEnumDataType>(dataTypeNodeIds.Length);
         foreach (var dataTypeNodeId in dataTypeNodeIds)
         {
-            var (succeeded, enumDataType, errorMessage) = await ReadEnumDataTypeAsync(dataTypeNodeId, cancellationToken);
-            if (succeeded && enumDataType is not null)
+            var enumDataType = await InvokeReadEnumDataTypeAsync(dataTypeNodeId, cancellationToken);
+            if (enumDataType is null)
             {
-                result.Add(enumDataType);
+                LogSessionNodeLeftOut(dataTypeNodeId);
+                continue;
             }
-            else if (!string.IsNullOrEmpty(errorMessage))
-            {
-                errors.Add(errorMessage);
-            }
+
+            result.Add(enumDataType);
         }
 
-        return errors.Count > 0
-            ? (false, result.Count > 0 ? result : null, string.Join(", ", errors))
-            : (true, result, null);
+        return result;
     }
 
     /// <summary>
@@ -162,6 +122,8 @@ public partial class OpcUaClient
         OpcUaEnumDataType enumDataType,
         CancellationToken cancellationToken = default)
     {
+        var session = CurrentSession;
+
         try
         {
             var nodesToRead = new ReadValueIdCollection
@@ -173,7 +135,7 @@ public partial class OpcUaClient
                 },
             };
 
-            var readResponse = await Session!.ReadAsync(
+            var readResponse = await session.ReadAsync(
                 requestHeader: null,
                 0,
                 TimestampsToReturn.Neither,
@@ -206,7 +168,7 @@ public partial class OpcUaClient
                 return enumDataType.Members.Count > 0;
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (!cancellationToken.IsCancellationRequested && !ex.IsConnectionFailure() && Session is not null)
         {
             LogSessionReadDataTypeDefinitionFailed(ex, dataTypeNodeId.ToString());
         }
@@ -223,6 +185,8 @@ public partial class OpcUaClient
         OpcUaEnumDataType enumDataType,
         CancellationToken cancellationToken = default)
     {
+        var session = CurrentSession;
+
         try
         {
             // Browse for the EnumValues property
@@ -242,7 +206,7 @@ public partial class OpcUaClient
                 },
             };
 
-            var readResponse = await Session!.ReadAsync(
+            var readResponse = await session.ReadAsync(
                 requestHeader: null,
                 0,
                 TimestampsToReturn.Neither,
@@ -280,7 +244,7 @@ public partial class OpcUaClient
                 return enumDataType.Members.Count > 0;
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (!cancellationToken.IsCancellationRequested && !ex.IsConnectionFailure() && Session is not null)
         {
             LogSessionReadEnumValuesFailed(ex, dataTypeNodeId.ToString());
         }
@@ -297,6 +261,8 @@ public partial class OpcUaClient
         OpcUaEnumDataType enumDataType,
         CancellationToken cancellationToken = default)
     {
+        var session = CurrentSession;
+
         try
         {
             // Browse for the EnumStrings property
@@ -316,7 +282,7 @@ public partial class OpcUaClient
                 },
             };
 
-            var readResponse = await Session!.ReadAsync(
+            var readResponse = await session.ReadAsync(
                 requestHeader: null,
                 0,
                 TimestampsToReturn.Neither,
@@ -352,7 +318,7 @@ public partial class OpcUaClient
                 return enumDataType.Members.Count > 0;
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (!cancellationToken.IsCancellationRequested && !ex.IsConnectionFailure() && Session is not null)
         {
             LogSessionReadEnumStringsFailed(ex, dataTypeNodeId.ToString());
         }
@@ -368,9 +334,11 @@ public partial class OpcUaClient
         string propertyName,
         CancellationToken cancellationToken = default)
     {
+        var session = CurrentSession;
+
         try
         {
-            var browser = new Browser(Session!)
+            var browser = new Browser(session)
             {
                 BrowseDirection = BrowseDirection.Forward,
                 ReferenceTypeId = ReferenceTypeIds.HasProperty,
@@ -388,11 +356,11 @@ public partial class OpcUaClient
             {
                 if (string.Equals(reference.BrowseName?.Name, propertyName, StringComparison.Ordinal))
                 {
-                    return ExpandedNodeId.ToNodeId(reference.NodeId, Session!.NamespaceUris);
+                    return ExpandedNodeId.ToNodeId(reference.NodeId, session.NamespaceUris);
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (!cancellationToken.IsCancellationRequested && !ex.IsConnectionFailure() && Session is not null)
         {
             LogSessionBrowsePropertyFailed(ex, parentNodeId.ToString(), propertyName);
         }

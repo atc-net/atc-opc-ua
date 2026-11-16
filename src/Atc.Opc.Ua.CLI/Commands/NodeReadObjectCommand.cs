@@ -20,17 +20,15 @@ internal sealed class NodeReadObjectCommand : AsyncCommand<ReadObjectNodeCommand
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        return ExecuteInternalAsync(settings);
+        return ExecuteInternalAsync(settings, cancellationToken);
     }
 
     private async Task<int> ExecuteInternalAsync(
-        ReadObjectNodeCommandSettings settings)
+        ReadObjectNodeCommandSettings settings,
+        CancellationToken cancellationToken)
     {
-        await ConsoleHelper.WriteHeaderAsync();
+        await ConsoleHelper.WriteHeaderAsync(cancellationToken);
 
-        var serverUrl = new Uri(settings.ServerUrl!);
-        var userName = settings.UserName;
-        var password = settings.Password;
         var nodeId = settings.NodeId;
         var includeObjects = settings.IncludeObjects;
         var includeVariables = settings.IncludeVariables;
@@ -38,36 +36,24 @@ internal sealed class NodeReadObjectCommand : AsyncCommand<ReadObjectNodeCommand
         var nodeObjectReadDepth = settings.NodeObjectReadDepth;
         var nodeVariableReadDepth = settings.NodeVariableReadDepth;
 
-        var sw = Stopwatch.StartNew();
-
-        var (succeeded, _) = userName is not null && userName.IsSet
-            ? await opcUaClient.ConnectAsync(serverUrl, userName.Value, password!.Value, CancellationToken.None)
-            : await opcUaClient.ConnectAsync(serverUrl, CancellationToken.None);
-
-        if (succeeded)
-        {
-            var (succeededReading, nodeObject, _) = await opcUaClient.ReadNodeObjectAsync(
-                nodeId,
-                includeObjects,
-                includeVariables,
-                includeSampleValues,
-                nodeObjectReadDepth,
-                nodeVariableReadDepth,
-                cancellationToken: CancellationToken.None);
-
-            if (succeededReading)
+        return await OpcUaCommandRunner.RunAsync(
+            opcUaClient,
+            settings,
+            logger,
+            async ct =>
             {
-                logger.LogInformation($"Received the following data: '{nodeObject!.ToStringSimple()}'");
-            }
+                var nodeObject = await opcUaClient.ReadNodeObjectAsync(
+                                     nodeId,
+                                     includeObjects,
+                                     includeVariables,
+                                     includeSampleValues,
+                                     nodeObjectReadDepth,
+                                     nodeVariableReadDepth,
+                                     cancellationToken: ct)
+                                 ?? throw OpcUaCommandRunner.NodeNotFound(nodeId);
 
-            await opcUaClient.DisconnectAsync(CancellationToken.None);
-        }
-
-        sw.Stop();
-        logger.LogDebug($"Time for operation: {sw.Elapsed.GetPrettyTime()}");
-
-        return succeeded
-            ? ConsoleExitStatusCodes.Success
-            : ConsoleExitStatusCodes.Failure;
+                logger.LogInformation($"Received the following data: '{nodeObject.ToStringSimple()}'");
+            },
+            cancellationToken);
     }
 }

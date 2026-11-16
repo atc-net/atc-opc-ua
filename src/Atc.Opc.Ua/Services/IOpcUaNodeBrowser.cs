@@ -12,8 +12,10 @@ public interface IOpcUaNodeBrowser
     /// <param name="client">The connected OPC UA client.</param>
     /// <param name="parentNodeId">The node whose children to browse.</param>
     /// <param name="cancellationToken">Cancellation token for the operation.</param>
-    /// <returns>A tuple indicating success, the list of child nodes, and an optional error message.</returns>
-    Task<(bool Succeeded, IList<NodeBrowseResult>? Children, string? ErrorMessage)> BrowseChildrenAsync(
+    /// <returns>The child nodes.</returns>
+    /// <exception cref="InvalidOperationException">The client isn't connected.</exception>
+    /// <exception cref="ServiceResultException">Browsing failed, e.g. with <c>BadNodeIdUnknown</c> for a node that doesn't exist.</exception>
+    Task<IList<NodeBrowseResult>> BrowseChildrenAsync(
         IOpcUaClient client,
         string parentNodeId,
         CancellationToken cancellationToken = default);
@@ -24,8 +26,9 @@ public interface IOpcUaNodeBrowser
     /// <param name="client">The connected OPC UA client.</param>
     /// <param name="nodeId">The node whose attributes to read.</param>
     /// <param name="cancellationToken">Cancellation token for the operation.</param>
-    /// <returns>A tuple indicating success, the attribute set, and an optional error message.</returns>
-    Task<(bool Succeeded, NodeAttributeSet? Attributes, string? ErrorMessage)> ReadNodeAttributesAsync(
+    /// <returns>The attributes, or <see langword="null"/> when the node doesn't exist.</returns>
+    /// <exception cref="InvalidOperationException">The client isn't connected.</exception>
+    Task<NodeAttributeSet?> ReadNodeAttributesAsync(
         IOpcUaClient client,
         string nodeId,
         CancellationToken cancellationToken = default);

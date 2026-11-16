@@ -20,48 +20,30 @@ internal sealed class NodeReadVariableSingleCommand : AsyncCommand<SingleNodeCom
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        return ExecuteInternalAsync(settings);
+        return ExecuteInternalAsync(settings, cancellationToken);
     }
 
     private async Task<int> ExecuteInternalAsync(
-        SingleNodeCommandSettings settings)
+        SingleNodeCommandSettings settings,
+        CancellationToken cancellationToken)
     {
-        await ConsoleHelper.WriteHeaderAsync();
+        await ConsoleHelper.WriteHeaderAsync(cancellationToken);
 
-        var serverUrl = new Uri(settings.ServerUrl!);
-        var userName = settings.UserName;
-        var password = settings.Password;
         var nodeId = settings.NodeId;
         var includeSampleValue = settings.IncludeSampleValue;
         var nodeVariableReadDepth = settings.NodeVariableReadDepth;
 
-        var sw = Stopwatch.StartNew();
-
-        var (succeeded, _) = userName is not null && userName.IsSet
-            ? await opcUaClient.ConnectAsync(serverUrl, userName.Value, password!.Value, CancellationToken.None)
-            : await opcUaClient.ConnectAsync(serverUrl, CancellationToken.None);
-
-        if (succeeded)
-        {
-            var (succeededReading, nodeVariable, _) = await opcUaClient.ReadNodeVariableAsync(
-                nodeId,
-                includeSampleValue,
-                nodeVariableReadDepth,
-                CancellationToken.None);
-
-            if (succeededReading)
+        return await OpcUaCommandRunner.RunAsync(
+            opcUaClient,
+            settings,
+            logger,
+            async ct =>
             {
-                logger.LogInformation($"Received the following data: '{nodeVariable!.ToStringSimple()}'");
-            }
+                var nodeVariable = await opcUaClient.ReadNodeVariableAsync(nodeId, includeSampleValue, nodeVariableReadDepth, cancellationToken: ct)
+                                   ?? throw OpcUaCommandRunner.NodeNotFound(nodeId);
 
-            await opcUaClient.DisconnectAsync(CancellationToken.None);
-        }
-
-        sw.Stop();
-        logger.LogDebug($"Time for operation: {sw.Elapsed.GetPrettyTime()}");
-
-        return succeeded
-            ? ConsoleExitStatusCodes.Success
-            : ConsoleExitStatusCodes.Failure;
+                logger.LogInformation($"Received the following data: '{nodeVariable.ToStringSimple()}'");
+            },
+            cancellationToken);
     }
 }

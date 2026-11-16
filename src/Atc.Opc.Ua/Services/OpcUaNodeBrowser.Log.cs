@@ -15,12 +15,6 @@ public partial class OpcUaNodeBrowser
     private partial void LogBrowseChildrenSucceeded(string parentNodeId, int count);
 
     [LoggerMessage(
-        EventId = LoggingEventIdConstants.BrowseChildrenFailure,
-        Level = LogLevel.Error,
-        Message = "Failed to browse children of node '{ParentNodeId}': '{ErrorMessage}'")]
-    private partial void LogBrowseChildrenFailure(string parentNodeId, string errorMessage);
-
-    [LoggerMessage(
         EventId = LoggingEventIdConstants.ReadAttributes,
         Level = LogLevel.Trace,
         Message = "Reading attributes of node '{NodeId}'")]
@@ -31,10 +25,4 @@ public partial class OpcUaNodeBrowser
         Level = LogLevel.Debug,
         Message = "Read attributes of node '{NodeId}'")]
     private partial void LogReadAttributesSucceeded(string nodeId);
-
-    [LoggerMessage(
-        EventId = LoggingEventIdConstants.ReadAttributesFailure,
-        Level = LogLevel.Error,
-        Message = "Failed to read attributes of node '{NodeId}': '{ErrorMessage}'")]
-    private partial void LogReadAttributesFailure(string nodeId, string errorMessage);
 }

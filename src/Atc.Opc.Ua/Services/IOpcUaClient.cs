@@ -1,5 +1,21 @@
 namespace Atc.Opc.Ua.Services;
 
+/// <summary>
+/// An OPC UA client: connects to a server, reads and writes nodes, calls methods and monitors nodes.
+/// </summary>
+/// <remarks>
+/// <para>
+/// A failed call throws the OPC UA stack's exception, usually a <see cref="ServiceResultException"/> whose
+/// <see cref="ServiceResultException.StatusCode"/> is the server's status code, e.g. <c>BadUserAccessDenied</c>.
+/// A cancelled call throws <see cref="OperationCanceledException"/>, with the stack's exception as
+/// <see cref="Exception.InnerException"/>.
+/// </para>
+/// <para>
+/// Calls that need a connection throw <see cref="InvalidOperationException"/> when the client isn't connected, and
+/// a missing or blank node id throws <see cref="ArgumentException"/>. A read returns <see langword="null"/> only when
+/// the node doesn't exist.
+/// </para>
+/// </remarks>
 public interface IOpcUaClient : IDisposable
 {
     /// <summary>
@@ -37,8 +53,9 @@ public interface IOpcUaClient : IDisposable
     /// </remarks>
     /// <param name="options">Optional subscription configuration. Uses defaults when <see langword="null"/>.</param>
     /// <param name="cancellationToken">Cancellation token for the operation.</param>
-    /// <returns>A tuple indicating success and an optional error message.</returns>
-    Task<(bool Succeeded, string? ErrorMessage)> CreateSubscriptionAsync(
+    /// <returns>A task that completes when the subscription exists on the server.</returns>
+    /// <exception cref="InvalidOperationException">The client isn't connected, or already has a subscription.</exception>
+    Task CreateSubscriptionAsync(
         SubscriptionOptions? options = null,
         CancellationToken cancellationToken = default);
 
@@ -46,8 +63,8 @@ public interface IOpcUaClient : IDisposable
     /// Removes the active subscription and all monitored items.
     /// </summary>
     /// <param name="cancellationToken">Cancellation token for the operation.</param>
-    /// <returns>A tuple indicating success and an optional error message.</returns>
-    Task<(bool Succeeded, string? ErrorMessage)> RemoveSubscriptionAsync(
+    /// <returns><see langword="true"/> when the subscription was removed; <see langword="false"/> when there was none.</returns>
+    Task<bool> RemoveSubscriptionAsync(
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -55,17 +72,18 @@ public interface IOpcUaClient : IDisposable
     /// the node's data type name and access level, which are read once here.
     /// </summary>
     /// <remarks>
-    /// Fails when the server rejects the node, e.g. with <c>BadNodeIdUnknown</c> for a node that doesn't exist.
     /// Subscription calls may be made from several threads; they run one at a time.
     /// </remarks>
     /// <param name="nodeId">The node identifier to subscribe to.</param>
     /// <param name="displayName">Optional display name for the monitored item. Defaults to the node's own display name.</param>
     /// <param name="cancellationToken">Cancellation token for the operation.</param>
     /// <returns>
-    /// A tuple indicating success, the monitored item handle, and an optional error message. The handle is unique
-    /// for the client's lifetime, and stays valid when the subscription is recreated after a reconnect.
+    /// The monitored item's handle. It's unique for the client's lifetime, and stays valid when the subscription is
+    /// recreated after a reconnect.
     /// </returns>
-    Task<(bool Succeeded, uint MonitoredItemHandle, string? ErrorMessage)> SubscribeToNodeAsync(
+    /// <exception cref="InvalidOperationException">There is no subscription; call <see cref="CreateSubscriptionAsync"/> first.</exception>
+    /// <exception cref="ServiceResultException">The server rejects the node, e.g. with <c>BadNodeIdUnknown</c> for a node that doesn't exist.</exception>
+    Task<uint> SubscribeToNodeAsync(
         string nodeId,
         string? displayName = null,
         CancellationToken cancellationToken = default);
@@ -76,16 +94,14 @@ public interface IOpcUaClient : IDisposable
     /// </summary>
     /// <remarks>
     /// Each node gets its own result: a node the server rejects, e.g. with <c>BadNodeIdUnknown</c>, isn't monitored,
-    /// and the others are, so check each result. When the call itself fails, e.g. without an active subscription or
-    /// when the connection drops, no node is monitored. Each monitored item's display name is the node's own display name.
+    /// and the others are, so check each result. When the call itself fails, e.g. when the connection drops, it
+    /// throws, and no node is monitored. Each monitored item's display name is the node's own display name.
     /// </remarks>
     /// <param name="nodeIds">The nodes to subscribe to.</param>
     /// <param name="cancellationToken">Cancellation token for the operation.</param>
-    /// <returns>
-    /// A tuple indicating whether the call completed, a result per node in the order of <paramref name="nodeIds"/>
-    /// (empty when the call failed), and an optional error message.
-    /// </returns>
-    Task<(bool Succeeded, IReadOnlyList<NodeSubscriptionResult> Results, string? ErrorMessage)> SubscribeToNodesAsync(
+    /// <returns>A result per node, in the order of <paramref name="nodeIds"/>.</returns>
+    /// <exception cref="InvalidOperationException">There is no subscription; call <see cref="CreateSubscriptionAsync"/> first.</exception>
+    Task<IReadOnlyList<NodeSubscriptionResult>> SubscribeToNodesAsync(
         IReadOnlyCollection<string> nodeIds,
         CancellationToken cancellationToken = default);
 
@@ -94,47 +110,114 @@ public interface IOpcUaClient : IDisposable
     /// </summary>
     /// <param name="monitoredItemHandle">The handle of the monitored item to remove.</param>
     /// <param name="cancellationToken">Cancellation token for the operation.</param>
-    /// <returns>A tuple indicating success and an optional error message.</returns>
-    Task<(bool Succeeded, string? ErrorMessage)> UnsubscribeFromNodeAsync(
+    /// <returns><see langword="true"/> when it was removed; <see langword="false"/> when there is no subscription or no item with the handle.</returns>
+    Task<bool> UnsubscribeFromNodeAsync(
         uint monitoredItemHandle,
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Removes all monitored items from the active subscription.
+    /// Removes all monitored items from the active subscription. Does nothing when there is no subscription.
     /// </summary>
     /// <param name="cancellationToken">Cancellation token for the operation.</param>
-    /// <returns>A tuple indicating success and an optional error message.</returns>
-    Task<(bool Succeeded, string? ErrorMessage)> UnsubscribeAllAsync(
-        CancellationToken cancellationToken = default);
+    /// <returns>A task that completes when the items are removed.</returns>
+    Task UnsubscribeAllAsync(CancellationToken cancellationToken = default);
 
-    Task<(bool Succeeded, string? ErrorMessage)> ConnectAsync(
+    /// <summary>
+    /// Connects to a server anonymously. Does nothing, with a warning, when the client is already connected.
+    /// </summary>
+    /// <param name="serverUri">The server, e.g. <c>opc.tcp://localhost:50000</c>.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <returns>A task that completes when the client is connected.</returns>
+    Task ConnectAsync(
         Uri serverUri,
         CancellationToken cancellationToken = default);
 
-    Task<(bool Succeeded, string? ErrorMessage)> ConnectAsync(
+    /// <summary>
+    /// Connects to a server with a username and password, or anonymously when either is empty. Does nothing, with a
+    /// warning, when the client is already connected.
+    /// </summary>
+    /// <param name="serverUri">The server, e.g. <c>opc.tcp://localhost:50000</c>.</param>
+    /// <param name="userName">The username.</param>
+    /// <param name="password">The password.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <returns>A task that completes when the client is connected.</returns>
+    Task ConnectAsync(
         Uri serverUri,
         string userName,
         string password,
         CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Whether the client is connected to a server.
+    /// </summary>
+    /// <returns><see langword="true"/> when connected.</returns>
     bool IsConnected();
 
-    Task<(bool Succeeded, string? ErrorMessage)> DisconnectAsync(
-        CancellationToken cancellationToken = default);
+    /// <summary>
+    /// Disconnects from the server. Does nothing when the client isn't connected. The session is released even when
+    /// closing it on the server fails.
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <returns>A task that completes when the session is closed.</returns>
+    Task DisconnectAsync(CancellationToken cancellationToken = default);
 
-    Task<(bool Succeeded, NodeVariable? NodeVariable, string? ErrorMessage)> ReadNodeVariableAsync(
+    /// <summary>
+    /// Reads a variable and, down to <paramref name="nodeVariableReadDepth"/>, its child variables. A child that
+    /// doesn't exist or may not be read, e.g. without access, is skipped with a warning. Any other failure, e.g. a
+    /// dropped connection, fails the read.
+    /// </summary>
+    /// <param name="nodeId">The variable, e.g. <c>ns=2;s=Demo.Dynamic.Scalar.Float</c>.</param>
+    /// <param name="includeSampleValue">Whether to read the variables' values.</param>
+    /// <param name="nodeVariableReadDepth">How deep to read child variables (0 = none).</param>
+    /// <param name="skippedNodeIds">Optional: receives the nodes that were skipped.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <returns>The variable, or <see langword="null"/> when the node doesn't exist.</returns>
+    /// <exception cref="ArgumentException">The node isn't a Variable, or <paramref name="nodeId"/> isn't a valid node id.</exception>
+    Task<NodeVariable?> ReadNodeVariableAsync(
         string nodeId,
         bool includeSampleValue,
         int nodeVariableReadDepth = 0,
+        ICollection<string>? skippedNodeIds = null,
         CancellationToken cancellationToken = default);
 
-    Task<(bool Succeeded, IList<NodeVariable>? NodeVariables, string? ErrorMessage)> ReadNodeVariablesAsync(
+    /// <summary>
+    /// Reads several variables, one at a time.
+    /// </summary>
+    /// <param name="nodeIds">The variables.</param>
+    /// <param name="includeSampleValues">Whether to read the variables' values.</param>
+    /// <param name="nodeVariableReadDepth">How deep to read child variables (0 = none).</param>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <returns>The variables, in the order of <paramref name="nodeIds"/>; a node that doesn't exist is left out, with a warning.</returns>
+    /// <exception cref="ArgumentException">A node isn't a Variable, or a node id is missing or invalid.</exception>
+    Task<IList<NodeVariable>> ReadNodeVariablesAsync(
         string[] nodeIds,
         bool includeSampleValues,
         int nodeVariableReadDepth = 0,
         CancellationToken cancellationToken = default);
 
-    Task<(bool Succeeded, NodeObject? NodeObject, string? ErrorMessage)> ReadNodeObjectAsync(
+    /// <summary>
+    /// Reads an object and, down to the given depths, its child objects and variables. A child that doesn't exist or
+    /// may not be read, e.g. without access, is skipped with a warning. Any other failure, e.g. a dropped connection,
+    /// fails the read.
+    /// </summary>
+    /// <param name="nodeId">The object, e.g. <c>ns=2;s=Demo.Dynamic.Scalar</c>.</param>
+    /// <param name="includeObjects">Whether to read child objects.</param>
+    /// <param name="includeVariables">Whether to read child variables.</param>
+    /// <param name="includeSampleValues">Whether to read the variables' values.</param>
+    /// <param name="nodeObjectReadDepth">How deep to follow child objects.</param>
+    /// <param name="nodeVariableReadDepth">How deep to read child variables (0 = only direct variables).</param>
+    /// <param name="includeObjectNodeIds">Optional: only these child objects.</param>
+    /// <param name="excludeObjectNodeIds">Optional: not these child objects.</param>
+    /// <param name="includeVariableNodeIds">Optional: only these child variables.</param>
+    /// <param name="excludeVariableNodeIds">Optional: not these child variables.</param>
+    /// <param name="skippedNodeIds">
+    /// Optional: receives the nodes that were skipped, because they couldn't be read or their children couldn't be
+    /// browsed.
+    /// </param>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <returns>The object, or <see langword="null"/> when the node doesn't exist.</returns>
+    /// <exception cref="ArgumentException">The node isn't an Object, or <paramref name="nodeId"/> isn't a valid node id.</exception>
+    Task<NodeObject?> ReadNodeObjectAsync(
         string nodeId,
         bool includeObjects,
         bool includeVariables,
@@ -145,28 +228,69 @@ public interface IOpcUaClient : IDisposable
         IReadOnlyCollection<string>? excludeObjectNodeIds = null,
         IReadOnlyCollection<string>? includeVariableNodeIds = null,
         IReadOnlyCollection<string>? excludeVariableNodeIds = null,
+        ICollection<string>? skippedNodeIds = null,
         CancellationToken cancellationToken = default);
 
-    Task<(bool Succeeded, string? ErrorMessage)> WriteNodeAsync(
+    /// <summary>
+    /// Writes a value to a variable.
+    /// </summary>
+    /// <param name="nodeId">The variable.</param>
+    /// <param name="value">The value, of the variable's data type.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <returns>A task that completes when the server accepted the value.</returns>
+    /// <exception cref="ServiceResultException">The server rejected the value, e.g. with <c>BadTypeMismatch</c>.</exception>
+    Task WriteNodeAsync(
         string nodeId,
         object value,
         CancellationToken cancellationToken = default);
 
-    Task<(bool Succeeded, string? ErrorMessage)> WriteNodesAsync(
+    /// <summary>
+    /// Writes values to several variables in one call.
+    /// </summary>
+    /// <param name="nodesToWrite">The variables and their values.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <returns>A task that completes when the server accepted every value.</returns>
+    /// <exception cref="ServiceResultException">
+    /// The server rejected a value. The message names every rejected node; the status code is the first one's.
+    /// </exception>
+    Task WriteNodesAsync(
         IDictionary<string, object> nodesToWrite,
         CancellationToken cancellationToken = default);
 
-    Task<(bool Succeeded, IList<MethodExecutionResult>? ExecutionResults, string? ErrorMessage)> ExecuteMethodAsync(
+    /// <summary>
+    /// Calls a method.
+    /// </summary>
+    /// <param name="parentNodeId">The object the method belongs to.</param>
+    /// <param name="methodNodeId">The method.</param>
+    /// <param name="arguments">The method's input arguments.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <returns>The method's output arguments.</returns>
+    /// <exception cref="ServiceResultException">The server rejected the call, e.g. with <c>BadArgumentsMissing</c>.</exception>
+    Task<IList<MethodExecutionResult>> ExecuteMethodAsync(
         string parentNodeId,
         string methodNodeId,
         List<MethodExecutionParameter> arguments,
         CancellationToken cancellationToken = default);
 
-    Task<(bool Succeeded, OpcUaEnumDataType? EnumDataType, string? ErrorMessage)> ReadEnumDataTypeAsync(
+    /// <summary>
+    /// Reads an enumeration DataType, with its members.
+    /// </summary>
+    /// <param name="dataTypeNodeId">The DataType, e.g. <c>i=852</c> for ServerState.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <returns>The enum DataType, or <see langword="null"/> when the node doesn't exist.</returns>
+    /// <exception cref="ArgumentException">The node isn't a DataType, or isn't an enumeration.</exception>
+    Task<OpcUaEnumDataType?> ReadEnumDataTypeAsync(
         string dataTypeNodeId,
         CancellationToken cancellationToken = default);
 
-    Task<(bool Succeeded, IList<OpcUaEnumDataType>? EnumDataTypes, string? ErrorMessage)> ReadEnumDataTypesAsync(
+    /// <summary>
+    /// Reads several enumeration DataTypes, one at a time.
+    /// </summary>
+    /// <param name="dataTypeNodeIds">The DataTypes.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <returns>The enum DataTypes, in the order of <paramref name="dataTypeNodeIds"/>; a node that doesn't exist is left out, with a warning.</returns>
+    /// <exception cref="ArgumentException">A node isn't a DataType or isn't an enumeration, or a node id is missing.</exception>
+    Task<IList<OpcUaEnumDataType>> ReadEnumDataTypesAsync(
         string[] dataTypeNodeIds,
         CancellationToken cancellationToken = default);
 }

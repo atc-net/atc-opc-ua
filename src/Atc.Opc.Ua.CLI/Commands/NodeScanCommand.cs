@@ -22,72 +22,59 @@ internal sealed class NodeScanCommand : AsyncCommand<ScanNodeCommandSettings>
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(settings);
-        return ExecuteInternalAsync(settings);
+        return ExecuteInternalAsync(settings, cancellationToken);
     }
 
     private async Task<int> ExecuteInternalAsync(
-        ScanNodeCommandSettings settings)
+        ScanNodeCommandSettings settings,
+        CancellationToken cancellationToken)
     {
-        await ConsoleHelper.WriteHeaderAsync();
+        await ConsoleHelper.WriteHeaderAsync(cancellationToken);
 
-        var serverUrl = new Uri(settings.ServerUrl!);
-        var userName = settings.UserName;
-        var password = settings.Password;
-
-        var sw = Stopwatch.StartNew();
-
-        var (succeeded, _) = userName is not null && userName.IsSet
-            ? await opcUaClient.ConnectAsync(serverUrl, userName.Value, password!.Value, CancellationToken.None)
-            : await opcUaClient.ConnectAsync(serverUrl, CancellationToken.None);
-
-        if (succeeded)
+        var options = new OpcUaScannerOptions
         {
-            var options = new OpcUaScannerOptions
-            {
-                StartingNodeId = settings.StartingNodeId ?? string.Empty,
-                ObjectDepth = settings.ObjectDepth,
-                VariableDepth = settings.VariableDepth,
-                IncludeSampleValues = settings.IncludeSampleValues,
-            };
+            StartingNodeId = settings.StartingNodeId ?? string.Empty,
+            ObjectDepth = settings.ObjectDepth,
+            VariableDepth = settings.VariableDepth,
+            IncludeSampleValues = settings.IncludeSampleValues,
+        };
 
-            foreach (var id in settings.IncludeObjectNodeIds)
-            {
-                options.IncludeObjectNodeIds.Add(id);
-            }
-
-            foreach (var id in settings.ExcludeObjectNodeIds)
-            {
-                options.ExcludeObjectNodeIds.Add(id);
-            }
-
-            foreach (var id in settings.IncludeVariableNodeIds)
-            {
-                options.IncludeVariableNodeIds.Add(id);
-            }
-
-            foreach (var id in settings.ExcludeVariableNodeIds)
-            {
-                options.ExcludeVariableNodeIds.Add(id);
-            }
-
-            var scanResult = await scanner.ScanAsync(opcUaClient, options, CancellationToken.None);
-            if (scanResult is { Succeeded: true, Root: not null })
-            {
-                var (totalObjectCount, totalVariableCount) = CountNodes(scanResult.Root!);
-                logger.LogInformation($"Scan completed successfully. Found a total of {totalObjectCount} Objects and {totalVariableCount} Variables");
-            }
-            else
-            {
-                logger.LogError(scanResult.ErrorMessage ?? "Scan failed");
-            }
-
-            await opcUaClient.DisconnectAsync(CancellationToken.None);
+        foreach (var id in settings.IncludeObjectNodeIds)
+        {
+            options.IncludeObjectNodeIds.Add(id);
         }
 
-        sw.Stop();
-        logger.LogDebug($"Time for operation: {sw.Elapsed.GetPrettyTime()}");
+        foreach (var id in settings.ExcludeObjectNodeIds)
+        {
+            options.ExcludeObjectNodeIds.Add(id);
+        }
 
-        return succeeded ? ConsoleExitStatusCodes.Success : ConsoleExitStatusCodes.Failure;
+        foreach (var id in settings.IncludeVariableNodeIds)
+        {
+            options.IncludeVariableNodeIds.Add(id);
+        }
+
+        foreach (var id in settings.ExcludeVariableNodeIds)
+        {
+            options.ExcludeVariableNodeIds.Add(id);
+        }
+
+        return await OpcUaCommandRunner.RunAsync(
+            opcUaClient,
+            settings,
+            logger,
+            async ct =>
+            {
+                var scanResult = await scanner.ScanAsync(opcUaClient, options, ct);
+                var (totalObjectCount, totalVariableCount) = CountNodes(scanResult.Root);
+                logger.LogInformation($"Scan completed successfully. Found a total of {totalObjectCount} Objects and {totalVariableCount} Variables");
+
+                if (scanResult.SkippedNodeIds.Count > 0)
+                {
+                    logger.LogWarning($"Skipped {scanResult.SkippedNodeIds.Count} nodes that can't be read: {string.Join(", ", scanResult.SkippedNodeIds)}");
+                }
+            },
+            cancellationToken);
     }
 
     /// <summary>

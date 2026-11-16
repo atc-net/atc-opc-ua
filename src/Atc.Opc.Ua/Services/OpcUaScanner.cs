@@ -5,72 +5,87 @@ namespace Atc.Opc.Ua.Services;
 /// </summary>
 public partial class OpcUaScanner : IOpcUaScanner
 {
+    private const string NotConnectedMessage = "The client isn't connected. Call ConnectAsync first.";
+
     public OpcUaScanner(ILogger<OpcUaScanner> logger)
         => this.logger = logger;
 
-    public async Task<NodeScanResult> ScanAsync(
+    /// <inheritdoc/>
+    public Task<NodeScanResult> ScanAsync(
         IOpcUaClient client,
         OpcUaScannerOptions options,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(client);
         ArgumentNullException.ThrowIfNull(options);
-
-        if (!client.IsConnected())
-        {
-            LogScannerClientNotConnected();
-            return new NodeScanResult(Succeeded: false, Root: null, "Client is not connected.");
-        }
-
         if (options.ObjectDepth < 0)
         {
-            return new NodeScanResult(Succeeded: false, Root: null, "ObjectDepth cannot be negative.");
+            throw new ArgumentOutOfRangeException(nameof(options), options.ObjectDepth, "ObjectDepth can't be negative.");
         }
 
         if (options.VariableDepth < 0)
         {
-            return new NodeScanResult(Succeeded: false, Root: null, "VariableDepth cannot be negative.");
+            throw new ArgumentOutOfRangeException(nameof(options), options.VariableDepth, "VariableDepth can't be negative.");
         }
 
+        if (!client.IsConnected())
+        {
+            throw new InvalidOperationException(NotConnectedMessage);
+        }
+
+        return InvokeScanAsync(client, options, cancellationToken);
+    }
+
+    /// <summary>
+    /// Scans from the starting node: as an object, or as a variable when it isn't an object.
+    /// </summary>
+    /// <param name="client">The connected client.</param>
+    /// <param name="options">What to scan.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <returns>The tree, and the nodes the scan skipped.</returns>
+    private async Task<NodeScanResult> InvokeScanAsync(
+        IOpcUaClient client,
+        OpcUaScannerOptions options,
+        CancellationToken cancellationToken)
+    {
         var startingNodeId = string.IsNullOrWhiteSpace(options.StartingNodeId)
             ? ObjectIds.ObjectsFolder.ToString()
             : options.StartingNodeId.Trim();
 
         LogScannerStart(startingNodeId, options.ObjectDepth, options.VariableDepth, options.IncludeSampleValues);
 
-        // First attempt: treat as object root.
-        var (objSucceeded, nodeObject, scanErrorMessage) = await client.ReadNodeObjectAsync(
-            startingNodeId,
-            includeObjects: true,
-            includeVariables: true,
-            includeSampleValues: options.IncludeSampleValues,
-            nodeObjectReadDepth: options.ObjectDepth,
-            nodeVariableReadDepth: options.VariableDepth,
-            includeObjectNodeIds: (IReadOnlyCollection<string>?)options.IncludeObjectNodeIds,
-            excludeObjectNodeIds: (IReadOnlyCollection<string>?)options.ExcludeObjectNodeIds,
-            includeVariableNodeIds: (IReadOnlyCollection<string>?)options.IncludeVariableNodeIds,
-            excludeVariableNodeIds: (IReadOnlyCollection<string>?)options.ExcludeVariableNodeIds,
-            cancellationToken);
-
-        if (objSucceeded && nodeObject is not null)
+        var skippedNodeIds = new List<string>();
+        NodeBase? root;
+        try
         {
-            return new NodeScanResult(Succeeded: true, nodeObject, ErrorMessage: null);
+            root = await client.ReadNodeObjectAsync(
+                startingNodeId,
+                includeObjects: true,
+                includeVariables: true,
+                includeSampleValues: options.IncludeSampleValues,
+                nodeObjectReadDepth: options.ObjectDepth,
+                nodeVariableReadDepth: options.VariableDepth,
+                includeObjectNodeIds: (IReadOnlyCollection<string>?)options.IncludeObjectNodeIds,
+                excludeObjectNodeIds: (IReadOnlyCollection<string>?)options.ExcludeObjectNodeIds,
+                includeVariableNodeIds: (IReadOnlyCollection<string>?)options.IncludeVariableNodeIds,
+                excludeVariableNodeIds: (IReadOnlyCollection<string>?)options.ExcludeVariableNodeIds,
+                skippedNodeIds,
+                cancellationToken);
+        }
+        catch (ArgumentException ex) when (string.Equals(ex.ParamName, "nodeId", StringComparison.Ordinal))
+        {
+            // The starting node isn't an object; it may be a variable with child variables.
+            skippedNodeIds.Clear();
+            root = await client.ReadNodeVariableAsync(
+                startingNodeId,
+                includeSampleValue: options.IncludeSampleValues,
+                nodeVariableReadDepth: options.VariableDepth,
+                skippedNodeIds,
+                cancellationToken);
         }
 
-        // Fallback: maybe the starting node is actually a Variable – attempt variable read & recursion.
-        var (varSucceeded, nodeVariable, varError) = await client.ReadNodeVariableAsync(
-            startingNodeId,
-            includeSampleValue: options.IncludeSampleValues,
-            nodeVariableReadDepth: options.VariableDepth,
-            cancellationToken);
-
-        if (varSucceeded && nodeVariable is not null)
-        {
-            return new NodeScanResult(Succeeded: true, nodeVariable, ErrorMessage: null);
-        }
-
-        var errorMessage = scanErrorMessage ?? varError ?? $"Failed to read starting node '{startingNodeId}'";
-        LogScannerReadRootFailure(startingNodeId, errorMessage);
-        return new NodeScanResult(Succeeded: false, Root: null, errorMessage);
+        return root is null
+            ? throw new ServiceResultException(StatusCodes.BadNodeIdUnknown, $"The starting node '{startingNodeId}' doesn't exist.")
+            : new NodeScanResult(root, skippedNodeIds);
     }
 }

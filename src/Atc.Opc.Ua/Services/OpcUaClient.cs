@@ -8,13 +8,9 @@ namespace Atc.Opc.Ua.Services;
 /// </summary>
 /// <remarks>
 /// <para>
-/// This class intentionally catches general exceptions in several places rather than
-/// catching specific exception types. OPC UA server communication can fail due to a wide
-/// variety of conditions (network issues, server errors, certificate problems, timeouts,
-/// protocol violations, etc.) that manifest as different exception types across the OPC UA
-/// stack. Catching <see cref="Exception"/> ensures robust error handling without exposing
-/// low-level communication failures to callers, who receive actionable error messages via
-/// the result tuple pattern instead.
+/// A failed call throws the OPC UA stack's exception, usually a <see cref="ServiceResultException"/> with the server's
+/// status code, and a cancelled call throws <see cref="OperationCanceledException"/>. Calls that need a connection
+/// throw <see cref="InvalidOperationException"/> when the client isn't connected.
 /// </para>
 /// <para>
 /// The Dispose pattern uses broad exception handling as a best-effort cleanup strategy,
@@ -23,6 +19,8 @@ namespace Atc.Opc.Ua.Services;
 /// </remarks>
 public partial class OpcUaClient : IOpcUaClient
 {
+    private const string NotConnectedMessage = "The client isn't connected. Call ConnectAsync first.";
+
     private readonly ApplicationConfiguration configuration;
     private readonly OpcUaSecurityOptions securityOptions;
     private readonly OpcUaClientOptions clientOptions;
@@ -40,6 +38,14 @@ public partial class OpcUaClient : IOpcUaClient
     /// Gets the current session with the OPC UA server.
     /// </summary>
     public ISession? Session { get; private set; }
+
+    /// <summary>
+    /// The session, for a call that checked the connection with <see cref="EnsureConnected"/>. Read it for each request
+    /// rather than keeping it: a reconnect can replace the session, and the next request then uses the new one.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">The client was disconnected while the call ran.</exception>
+    private ISession CurrentSession
+        => Session ?? throw new InvalidOperationException(NotConnectedMessage);
 
     public OpcUaClient(
         ILogger<OpcUaClient> logger,
@@ -86,75 +92,18 @@ public partial class OpcUaClient : IOpcUaClient
     public bool IsConnected()
         => Session is not null && Session.Connected;
 
-    /// <summary>
-    /// Disconnects from the currently connected OPC UA server, if any.
-    /// </summary>
-    /// <param name="cancellationToken">Cancellation token for the operation</param>
-    /// <returns>A tuple indicating whether the disconnection was successful, and an error message if not.</returns>
-    public async Task<(bool Succeeded, string? ErrorMessage)> DisconnectAsync(
-        CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            if (Session is not null)
-            {
-                var sessionName = Session.SessionName ?? "unknown";
-                LogSessionDisconnecting(sessionName);
+    /// <inheritdoc/>
+    public Task DisconnectAsync(CancellationToken cancellationToken = default)
+        => InvokeDisconnectAsync(cancellationToken).NormalizeCancellation(cancellationToken);
 
-                if (keepAliveOptions.Enable)
-                {
-                    Session.KeepAlive -= SessionOnKeepAlive;
-                }
-
-                lock (reconnectLock)
-                {
-                    reconnectHandler?.Dispose();
-                    reconnectHandler = null;
-                    consecutiveKeepAliveFailures = 0;
-                }
-
-                CleanupSubscription();
-
-                await Session.CloseAsync(cancellationToken);
-                Session.Dispose();
-                Session = null;
-
-                dataTypeInfoResolver.ClearCache();
-
-                LogSessionDisconnected(sessionName);
-                return (true, null);
-            }
-
-            LogSessionNotConnected();
-            return (false, "Session is not connected.");
-        }
-        catch (Exception ex)
-        {
-            LogSessionDisconnectionFailure(ex.Message);
-            return (false, ex.Message);
-        }
-    }
-
-    /// <summary>
-    /// Asynchronously connects to an OPC UA server.
-    /// </summary>
-    /// <param name="serverUri">The URI of the OPC UA server.</param>
-    /// <param name="cancellationToken">Cancellation token for the operation</param>
-    /// <returns>A task representing the asynchronous connect operation.</returns>
-    public Task<(bool Succeeded, string? ErrorMessage)> ConnectAsync(
+    /// <inheritdoc/>
+    public Task ConnectAsync(
         Uri serverUri,
         CancellationToken cancellationToken = default)
         => ConnectAsync(serverUri, string.Empty, string.Empty, cancellationToken);
 
-    /// <summary>
-    /// Asynchronously connects to an OPC UA server with specified credentials.
-    /// </summary>
-    /// <param name="serverUri">The URI of the OPC UA server.</param>
-    /// <param name="userName">The username.</param>
-    /// <param name="password">The password.</param>
-    /// <param name="cancellationToken">Cancellation token for the operation</param>
-    /// <returns>A task representing the asynchronous connect operation.</returns>
-    public Task<(bool Succeeded, string? ErrorMessage)> ConnectAsync(
+    /// <inheritdoc/>
+    public Task ConnectAsync(
         Uri serverUri,
         string userName,
         string password,
@@ -162,7 +111,63 @@ public partial class OpcUaClient : IOpcUaClient
     {
         ArgumentNullException.ThrowIfNull(serverUri);
 
-        return InvokeConnectAsync(serverUri, userName, password, cancellationToken);
+        return InvokeConnectAsync(serverUri, userName, password, cancellationToken).NormalizeCancellation(cancellationToken);
+    }
+
+    /// <summary>
+    /// Throws when the client isn't connected, for the calls that need a connection.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">The client isn't connected.</exception>
+    private void EnsureConnected()
+    {
+        if (!IsConnected())
+        {
+            throw new InvalidOperationException(NotConnectedMessage);
+        }
+    }
+
+    /// <summary>
+    /// Closes the session, if there is one. The session is disposed even when closing it fails.
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    private async Task InvokeDisconnectAsync(
+        CancellationToken cancellationToken)
+    {
+        var session = Session;
+        if (session is null)
+        {
+            return;
+        }
+
+        var sessionName = session.SessionName ?? "unknown";
+        LogSessionDisconnecting(sessionName);
+
+        if (keepAliveOptions.Enable)
+        {
+            session.KeepAlive -= SessionOnKeepAlive;
+        }
+
+        lock (reconnectLock)
+        {
+            reconnectHandler?.Dispose();
+            reconnectHandler = null;
+            consecutiveKeepAliveFailures = 0;
+        }
+
+        CleanupSubscription();
+
+        try
+        {
+            await session.CloseAsync(cancellationToken);
+        }
+        finally
+        {
+            session.Dispose();
+            Session = null;
+            dataTypeInfoResolver.ClearCache();
+        }
+
+        LogSessionDisconnected(sessionName);
     }
 
     /// <summary>
@@ -172,55 +177,46 @@ public partial class OpcUaClient : IOpcUaClient
     /// <param name="userName">The username.</param>
     /// <param name="password">The password.</param>
     /// <param name="cancellationToken">Cancellation token for the operation</param>
-    /// <returns>A task representing the asynchronous operation, with a tuple indicating whether the connection was successful, and an error message if not.</returns>
-    private async Task<(bool Succeeded, string? ErrorMessage)> InvokeConnectAsync(
+    /// <returns>A task that completes when the client is connected.</returns>
+    private async Task InvokeConnectAsync(
         Uri serverUri,
         string userName,
         string password,
         CancellationToken cancellationToken = default)
     {
-        try
+        if (IsConnected())
         {
-            if (IsConnected())
-            {
-                LogSessionAlreadyConnected();
-            }
-            else
-            {
-                LogSessionConnecting(serverUri.AbsoluteUri);
-
-                var useSecurity = !string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(password);
-                var endpoint = await GetServerEndpointAsync(serverUri, useSecurity, cancellationToken);
-                var userIdentity = BuildUserIdentity(userName, password);
-                var session = await CreateSessionAsync(endpoint, userIdentity, cancellationToken);
-
-                if (session.Connected)
-                {
-                    Session = session;
-
-                    // Keep alive
-                    if (keepAliveOptions.Enable)
-                    {
-                        Session.KeepAliveInterval = keepAliveOptions.IntervalMilliseconds;
-                        Session.KeepAlive += SessionOnKeepAlive;
-                    }
-                    else
-                    {
-                        // Disable keep-alive by setting interval to 0 and not subscribing to the event.
-                        Session.KeepAliveInterval = 0;
-                    }
-                }
-
-                LogSessionConnected(Session?.SessionName ?? "unknown");
-            }
-
-            return (true, null);
+            LogSessionAlreadyConnected();
+            return;
         }
-        catch (Exception ex)
+
+        LogSessionConnecting(serverUri.AbsoluteUri);
+
+        var useSecurity = !string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(password);
+        var endpoint = await GetServerEndpointAsync(serverUri, useSecurity, cancellationToken);
+        var userIdentity = BuildUserIdentity(userName, password);
+        var session = await CreateSessionAsync(endpoint, userIdentity, cancellationToken);
+
+        if (!session.Connected)
         {
-            LogSessionConnectionFailure(serverUri.AbsoluteUri, ex.Message);
-            return (false, ex.Message);
+            session.Dispose();
+            throw new ServiceResultException(StatusCodes.BadNotConnected, $"The session to '{serverUri.AbsoluteUri}' isn't connected.");
         }
+
+        Session = session;
+
+        if (keepAliveOptions.Enable)
+        {
+            Session.KeepAliveInterval = keepAliveOptions.IntervalMilliseconds;
+            Session.KeepAlive += SessionOnKeepAlive;
+        }
+        else
+        {
+            // Disable keep-alive by setting interval to 0 and not subscribing to the event.
+            Session.KeepAliveInterval = 0;
+        }
+
+        LogSessionConnected(Session.SessionName ?? "unknown");
     }
 
     /// <summary>

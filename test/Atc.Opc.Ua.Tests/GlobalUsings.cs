@@ -11,5 +11,6 @@ global using Atc.Opc.Ua.Serialization.JsonConverters;
 global using Atc.Opc.Ua.Services;
 global using AwesomeAssertions;
 global using Microsoft.Extensions.Logging;
+global using NSubstitute.ExceptionExtensions;
 global using Opc.Ua;
 global using Opc.Ua.Client;

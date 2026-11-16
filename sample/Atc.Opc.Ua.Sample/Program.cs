@@ -46,26 +46,26 @@ public static class Program
         using PeriodicTimer timer = new(TimeSpan.FromSeconds(1));
         while (await timer.WaitForNextTickAsync(cts.Token))
         {
-            await EnsureConnectedAsync(client, cts.Token);
-            var (succeeded, nodeVariables, errorMessage) = await client.ReadNodeVariablesAsync(
-                NodeIds,
-                includeSampleValues: true,
-                cancellationToken: cts.Token);
-
-            if (!succeeded)
-            {
-                clientLogger.LogError("Failed to read node variables: {ErrorMessage}", errorMessage);
-                continue;
-            }
-
-            if (nodeVariables is null)
+            if (!await EnsureConnectedAsync(client, cts.Token))
             {
                 continue;
             }
 
-            foreach (var nodeVariable in nodeVariables)
+            try
             {
-                clientLogger.LogInformation("Node: {NodeId}, DisplayName: {DisplayName}, Value: {Value}", nodeVariable.NodeId, nodeVariable.DisplayName, nodeVariable.SampleValue);
+                var nodeVariables = await client.ReadNodeVariablesAsync(
+                    NodeIds,
+                    includeSampleValues: true,
+                    cancellationToken: cts.Token);
+
+                foreach (var nodeVariable in nodeVariables)
+                {
+                    clientLogger.LogInformation("Node: {NodeId}, DisplayName: {DisplayName}, Value: {Value}", nodeVariable.NodeId, nodeVariable.DisplayName, nodeVariable.SampleValue);
+                }
+            }
+            catch (ServiceResultException ex)
+            {
+                clientLogger.LogError(ex, "Failed to read node variables: {ErrorMessage}", ex.Message);
             }
         }
     }
@@ -78,24 +78,35 @@ public static class Program
 
         foreach (var nodeId in EnumDataTypeNodeIds)
         {
-            var (succeeded, enumDataType, errorMessage) = await client.ReadEnumDataTypeAsync(nodeId, cancellationToken);
-            if (succeeded && enumDataType is not null)
-            {
-                clientLogger!.LogInformation(
-                    "Enum: {Name} ({NodeId}) - {MemberCount} members, HasEnumValues: {HasEnumValues}",
-                    enumDataType.Name,
-                    enumDataType.NodeId,
-                    enumDataType.Members.Count,
-                    enumDataType.HasEnumValues);
+            OpcUaEnumDataType? enumDataType;
 
-                foreach (var member in enumDataType.Members.OrderBy(x => x.Value))
-                {
-                    clientLogger!.LogInformation("  {Value} = {Name}", member.Value, member.Name);
-                }
-            }
-            else
+            try
             {
-                clientLogger!.LogWarning("Failed to read enum DataType {NodeId}: {ErrorMessage}", nodeId, errorMessage);
+                enumDataType = await client.ReadEnumDataTypeAsync(nodeId, cancellationToken);
+            }
+            catch (ArgumentException ex)
+            {
+                // Not an enum DataType
+                clientLogger!.LogWarning(ex, "Failed to read enum DataType {NodeId}: {ErrorMessage}", nodeId, ex.Message);
+                continue;
+            }
+
+            if (enumDataType is null)
+            {
+                clientLogger!.LogWarning("Enum DataType {NodeId} doesn't exist", nodeId);
+                continue;
+            }
+
+            clientLogger!.LogInformation(
+                "Enum: {Name} ({NodeId}) - {MemberCount} members, HasEnumValues: {HasEnumValues}",
+                enumDataType.Name,
+                enumDataType.NodeId,
+                enumDataType.Members.Count,
+                enumDataType.HasEnumValues);
+
+            foreach (var member in enumDataType.Members.OrderBy(x => x.Value))
+            {
+                clientLogger!.LogInformation("  {Value} = {Name}", member.Value, member.Name);
             }
         }
 
@@ -136,15 +147,8 @@ public static class Program
 
         System.Console.WriteLine(startNew.Elapsed.TotalMinutes);
 
-        if (result.Succeeded && result.Root is not null)
-        {
-            clientLogger!.LogInformation("Scan succeeded!");
-            PrintNode(result.Root, indent: 0);
-        }
-        else
-        {
-            clientLogger!.LogWarning("Scan failed: {ErrorMessage}", result.ErrorMessage);
-        }
+        clientLogger!.LogInformation("Scan succeeded, {SkippedCount} nodes skipped", result.SkippedNodeIds.Count);
+        PrintNode(result.Root, indent: 0);
 
         clientLogger!.LogInformation("=== End Scan Demo ===\n");
     }
@@ -243,12 +247,15 @@ public static class Program
             return true;
         }
 
-        (bool IsConnected, string? Message) result = await client.ConnectAsync(ServerUri, UserName!, Password!, cancellationToken);
-        if (!result.IsConnected)
+        try
         {
-            clientLogger!.LogError("Failed to connect to OPC server: {Message}", result.Message);
+            await client.ConnectAsync(ServerUri, UserName!, Password!, cancellationToken);
+            return true;
         }
-
-        return result.IsConnected;
+        catch (ServiceResultException ex)
+        {
+            clientLogger!.LogError(ex, "Failed to connect to OPC server: {Message}", ex.Message);
+            return false;
+        }
     }
 }

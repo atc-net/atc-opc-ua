@@ -20,34 +20,20 @@ internal sealed class TestConnectionCommand : AsyncCommand<OpcUaBaseCommandSetti
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        return ExecuteInternalAsync(settings);
+        return ExecuteInternalAsync(settings, cancellationToken);
     }
 
     private async Task<int> ExecuteInternalAsync(
-        OpcUaBaseCommandSettings settings)
+        OpcUaBaseCommandSettings settings,
+        CancellationToken cancellationToken)
     {
-        await ConsoleHelper.WriteHeaderAsync();
+        await ConsoleHelper.WriteHeaderAsync(cancellationToken);
 
-        var serverUrl = new Uri(settings.ServerUrl!);
-        var userName = settings.UserName;
-        var password = settings.Password;
-
-        var sw = Stopwatch.StartNew();
-
-        var (succeeded, _) = userName is not null && userName.IsSet
-            ? await opcUaClient.ConnectAsync(serverUrl, userName.Value, password!.Value, CancellationToken.None)
-            : await opcUaClient.ConnectAsync(serverUrl, CancellationToken.None);
-
-        if (succeeded)
-        {
-            await opcUaClient.DisconnectAsync(CancellationToken.None);
-        }
-
-        sw.Stop();
-        logger.LogDebug($"Time for operation: {sw.Elapsed.GetPrettyTime()}");
-
-        return succeeded
-            ? ConsoleExitStatusCodes.Success
-            : ConsoleExitStatusCodes.Failure;
+        return await OpcUaCommandRunner.RunAsync(
+            opcUaClient,
+            settings,
+            logger,
+            _ => Task.CompletedTask,
+            cancellationToken);
     }
 }

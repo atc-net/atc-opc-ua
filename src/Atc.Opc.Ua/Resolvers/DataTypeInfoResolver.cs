@@ -187,7 +187,7 @@ public sealed class DataTypeInfoResolver
 
             return new ResolvedDataTypeInfo(opcUaType, structDotNetType);
         }
-        catch
+        catch (Exception ex) when (!cancellationToken.IsCancellationRequested && !ex.IsConnectionFailure())
         {
             return CreateUnknownTypeInfo(nodeIdString);
         }
@@ -319,7 +319,7 @@ public sealed class DataTypeInfoResolver
                 return members;
             }
         }
-        catch
+        catch (Exception ex) when (!cancellationToken.IsCancellationRequested && !ex.IsConnectionFailure())
         {
             // DataTypeDefinition not supported or not available
         }
@@ -385,7 +385,7 @@ public sealed class DataTypeInfoResolver
                 return members;
             }
         }
-        catch
+        catch (Exception ex) when (!cancellationToken.IsCancellationRequested && !ex.IsConnectionFailure())
         {
             // EnumValues property not available or read failed
         }
@@ -449,7 +449,7 @@ public sealed class DataTypeInfoResolver
                 return members;
             }
         }
-        catch
+        catch (Exception ex) when (!cancellationToken.IsCancellationRequested && !ex.IsConnectionFailure())
         {
             // EnumStrings property not available or read failed
         }
@@ -487,7 +487,7 @@ public sealed class DataTypeInfoResolver
                 }
             }
         }
-        catch
+        catch (Exception ex) when (!cancellationToken.IsCancellationRequested && !ex.IsConnectionFailure())
         {
             // Browse failed
         }

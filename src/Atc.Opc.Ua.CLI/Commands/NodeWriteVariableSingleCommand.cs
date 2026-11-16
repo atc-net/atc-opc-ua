@@ -20,17 +20,15 @@ internal sealed class NodeWriteVariableSingleCommand : AsyncCommand<WriteNodeCom
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        return ExecuteInternalAsync(settings);
+        return ExecuteInternalAsync(settings, cancellationToken);
     }
 
     private async Task<int> ExecuteInternalAsync(
-        WriteNodeCommandSettings settings)
+        WriteNodeCommandSettings settings,
+        CancellationToken cancellationToken)
     {
-        await ConsoleHelper.WriteHeaderAsync();
+        await ConsoleHelper.WriteHeaderAsync(cancellationToken);
 
-        var serverUrl = new Uri(settings.ServerUrl!);
-        var userName = settings.UserName;
-        var password = settings.Password;
         var nodeId = settings.NodeId;
         var dataTypeAsString = settings.DataType;
         var value = settings.Value;
@@ -43,49 +41,23 @@ internal sealed class NodeWriteVariableSingleCommand : AsyncCommand<WriteNodeCom
         if (convertedValue is null)
         {
             logger.LogError($"Could not convert input type '{dataTypeAsString}'");
-            return ConsoleExitStatusCodes.Success;
+            return ConsoleExitStatusCodes.Failure;
         }
 
-        var sw = Stopwatch.StartNew();
-
-        var (succeeded, _) = userName is not null && userName.IsSet
-            ? await opcUaClient.ConnectAsync(serverUrl, userName.Value, password!.Value, CancellationToken.None)
-            : await opcUaClient.ConnectAsync(serverUrl, CancellationToken.None);
-
-        if (succeeded)
-        {
-            logger.LogInformation("Connection succeeded");
-
-            var (succeededReading, _, _) = await opcUaClient.ReadNodeVariableAsync(
-                nodeId,
-                includeSampleValue: false,
-                cancellationToken: CancellationToken.None);
-
-            if (succeededReading)
+        return await OpcUaCommandRunner.RunAsync(
+            opcUaClient,
+            settings,
+            logger,
+            async ct =>
             {
-                var (succeededWriting, _) = await opcUaClient.WriteNodeAsync(
-                    nodeId,
-                    convertedValue,
-                    cancellationToken: CancellationToken.None);
+                logger.LogInformation("Connection succeeded");
 
-                if (succeededWriting)
-                {
-                    logger.LogInformation("Value is updated.");
-                }
-            }
+                _ = await opcUaClient.ReadNodeVariableAsync(nodeId, includeSampleValue: false, cancellationToken: ct)
+                    ?? throw OpcUaCommandRunner.NodeNotFound(nodeId);
 
-            await opcUaClient.DisconnectAsync(CancellationToken.None);
-        }
-        else
-        {
-            logger.LogError("Connection failure");
-        }
-
-        sw.Stop();
-        logger.LogDebug($"Time for operation: {sw.Elapsed.GetPrettyTime()}");
-
-        return succeeded
-            ? ConsoleExitStatusCodes.Success
-            : ConsoleExitStatusCodes.Failure;
+                await opcUaClient.WriteNodeAsync(nodeId, convertedValue, ct);
+                logger.LogInformation("Value is updated.");
+            },
+            cancellationToken);
     }
 }

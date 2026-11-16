@@ -5,133 +5,149 @@ namespace Atc.Opc.Ua.Services;
 /// Provides lazy, single-level address space browsing and attribute reading
 /// for OPC UA nodes.
 /// </summary>
-[SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "OPC UA communication can fail with various exception types.")]
+[SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Data type names are best effort.")]
 public partial class OpcUaNodeBrowser : IOpcUaNodeBrowser
 {
+    private const string NotConnectedMessage = "The client isn't connected. Call ConnectAsync first.";
+
     private readonly ILogger<OpcUaNodeBrowser> logger;
 
     public OpcUaNodeBrowser(ILogger<OpcUaNodeBrowser> logger)
         => this.logger = logger;
 
     /// <inheritdoc/>
-    public async Task<(bool Succeeded, IList<NodeBrowseResult>? Children, string? ErrorMessage)> BrowseChildrenAsync(
+    public Task<IList<NodeBrowseResult>> BrowseChildrenAsync(
         IOpcUaClient client,
         string parentNodeId,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(client);
+        ArgumentException.ThrowIfNullOrWhiteSpace(parentNodeId);
 
-        if (string.IsNullOrWhiteSpace(parentNodeId))
-        {
-            return (false, null, "Missing parentNodeId.");
-        }
-
-        if (!client.IsConnected() || client.Session is null)
-        {
-            return (false, null, "Client is not connected.");
-        }
-
-        try
-        {
-            parentNodeId = parentNodeId.Trim();
-            LogBrowseChildren(parentNodeId);
-
-            var browser = BrowserFactory.GetForwardBrowser(client.Session);
-            var references = await browser.BrowseAsync(new NodeId(parentNodeId), cancellationToken);
-
-            var results = new List<NodeBrowseResult>(references.Count);
-
-            foreach (var reference in references)
-            {
-                var nodeClass = MapNodeClass(reference.NodeClass);
-                var nodeIdStr = reference.NodeId.ToString();
-
-                var browseResult = new NodeBrowseResult
-                {
-                    NodeId = nodeIdStr,
-                    DisplayName = reference.DisplayName?.Text ?? string.Empty,
-                    BrowseName = reference.BrowseName?.Name ?? string.Empty,
-                    NodeClass = nodeClass,
-                    HasChildren = nodeClass is NodeClassType.Object or NodeClassType.Variable,
-                };
-
-                if (nodeClass == NodeClassType.Variable)
-                {
-                    browseResult.DataTypeName = await ResolveDataTypeNameAsync(
-                        client.Session,
-                        nodeIdStr,
-                        cancellationToken);
-                }
-
-                results.Add(browseResult);
-            }
-
-            LogBrowseChildrenSucceeded(parentNodeId, results.Count);
-            return (true, results, null);
-        }
-        catch (Exception ex)
-        {
-            LogBrowseChildrenFailure(parentNodeId, ex.Message);
-            return (false, null, ex.Message);
-        }
+        return InvokeBrowseChildrenAsync(GetSession(client), parentNodeId.Trim(), cancellationToken).NormalizeCancellation(cancellationToken);
     }
 
     /// <inheritdoc/>
-    public async Task<(bool Succeeded, NodeAttributeSet? Attributes, string? ErrorMessage)> ReadNodeAttributesAsync(
+    public Task<NodeAttributeSet?> ReadNodeAttributesAsync(
         IOpcUaClient client,
         string nodeId,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(client);
+        ArgumentException.ThrowIfNullOrWhiteSpace(nodeId);
 
-        if (string.IsNullOrWhiteSpace(nodeId))
+        return InvokeReadNodeAttributesAsync(GetSession(client), nodeId.Trim(), cancellationToken).NormalizeCancellation(cancellationToken);
+    }
+
+    /// <summary>
+    /// The client's session, for the calls that need a connection.
+    /// </summary>
+    /// <param name="client">The client.</param>
+    /// <returns>The connected session.</returns>
+    /// <exception cref="InvalidOperationException">The client isn't connected.</exception>
+    private static ISession GetSession(IOpcUaClient client)
+        => client.IsConnected() && client.Session is { } session
+            ? session
+            : throw new InvalidOperationException(NotConnectedMessage);
+
+    /// <summary>
+    /// Browses one level below the node.
+    /// </summary>
+    /// <param name="session">The connected session.</param>
+    /// <param name="parentNodeId">The node whose children are browsed.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <returns>The children.</returns>
+    private async Task<IList<NodeBrowseResult>> InvokeBrowseChildrenAsync(
+        ISession session,
+        string parentNodeId,
+        CancellationToken cancellationToken)
+    {
+        LogBrowseChildren(parentNodeId);
+
+        var browser = BrowserFactory.GetForwardBrowser(session);
+        var references = await browser.BrowseAsync(new NodeId(parentNodeId), cancellationToken);
+
+        var results = new List<NodeBrowseResult>(references.Count);
+
+        foreach (var reference in references)
         {
-            return (false, null, "Missing nodeId.");
-        }
+            var nodeClass = MapNodeClass(reference.NodeClass);
+            var nodeIdStr = reference.NodeId.ToString();
 
-        if (!client.IsConnected() || client.Session is null)
-        {
-            return (false, null, "Client is not connected.");
-        }
-
-        try
-        {
-            nodeId = nodeId.Trim();
-            LogReadAttributes(nodeId);
-
-            var node = await client.Session.ReadNodeAsync(nodeId, cancellationToken);
-            if (node is null)
+            var browseResult = new NodeBrowseResult
             {
-                return (false, null, $"Node '{nodeId}' not found.");
-            }
-
-            var attributes = new NodeAttributeSet
-            {
-                NodeId = nodeId,
-                DisplayName = node.DisplayName?.Text ?? string.Empty,
-                BrowseName = node.BrowseName?.Name ?? string.Empty,
-                NodeClass = MapNodeClass(node.NodeClass),
-                Description = node.Description?.Text,
+                NodeId = nodeIdStr,
+                DisplayName = reference.DisplayName?.Text ?? string.Empty,
+                BrowseName = reference.BrowseName?.Name ?? string.Empty,
+                NodeClass = nodeClass,
+                HasChildren = nodeClass is NodeClassType.Object or NodeClassType.Variable,
             };
 
-            if (node is VariableNode variableNode)
+            if (nodeClass == NodeClassType.Variable)
             {
-                await PopulateVariableAttributesAsync(
-                    client.Session,
-                    nodeId,
-                    variableNode,
-                    attributes,
+                browseResult.DataTypeName = await ResolveDataTypeNameAsync(
+                    session,
+                    nodeIdStr,
                     cancellationToken);
             }
 
-            LogReadAttributesSucceeded(nodeId);
-            return (true, attributes, null);
+            results.Add(browseResult);
         }
-        catch (Exception ex)
+
+        LogBrowseChildrenSucceeded(parentNodeId, results.Count);
+        return results;
+    }
+
+    /// <summary>
+    /// Reads the node's attributes, and for a variable its value, data type and access level.
+    /// </summary>
+    /// <param name="session">The connected session.</param>
+    /// <param name="nodeId">The node.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <returns>The attributes, or <see langword="null"/> when the node doesn't exist.</returns>
+    private async Task<NodeAttributeSet?> InvokeReadNodeAttributesAsync(
+        ISession session,
+        string nodeId,
+        CancellationToken cancellationToken)
+    {
+        LogReadAttributes(nodeId);
+
+        Node? node;
+        try
         {
-            LogReadAttributesFailure(nodeId, ex.Message);
-            return (false, null, ex.Message);
+            node = await session.ReadNodeAsync(nodeId, cancellationToken);
         }
+        catch (ServiceResultException ex) when (ex.StatusCode == StatusCodes.BadNodeIdUnknown)
+        {
+            node = null;
+        }
+
+        if (node is null)
+        {
+            return null;
+        }
+
+        var attributes = new NodeAttributeSet
+        {
+            NodeId = nodeId,
+            DisplayName = node.DisplayName?.Text ?? string.Empty,
+            BrowseName = node.BrowseName?.Name ?? string.Empty,
+            NodeClass = MapNodeClass(node.NodeClass),
+            Description = node.Description?.Text,
+        };
+
+        if (node is VariableNode variableNode)
+        {
+            await PopulateVariableAttributesAsync(
+                session,
+                nodeId,
+                variableNode,
+                attributes,
+                cancellationToken);
+        }
+
+        LogReadAttributesSucceeded(nodeId);
+        return attributes;
     }
 
     private static async Task PopulateVariableAttributesAsync(
@@ -175,7 +191,7 @@ public partial class OpcUaNodeBrowser : IOpcUaNodeBrowser
                 var dtNode = await session.ReadNodeAsync(dataTypeNode, cancellationToken);
                 attributes.DataTypeName = dtNode?.DisplayName?.Text;
             }
-            catch
+            catch (Exception ex) when (!cancellationToken.IsCancellationRequested && !ex.IsConnectionFailure())
             {
                 // Best-effort: DataType name resolution is not critical
             }
@@ -201,7 +217,7 @@ public partial class OpcUaNodeBrowser : IOpcUaNodeBrowser
                 return dtNode?.DisplayName?.Text;
             }
         }
-        catch
+        catch (Exception ex) when (!cancellationToken.IsCancellationRequested && !ex.IsConnectionFailure())
         {
             // Best-effort: data type resolution is not critical for browsing
         }

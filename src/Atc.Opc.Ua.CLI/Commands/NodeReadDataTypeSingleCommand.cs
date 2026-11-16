@@ -20,49 +20,29 @@ internal sealed class NodeReadDataTypeSingleCommand : AsyncCommand<ReadDataTypeC
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        return ExecuteInternalAsync(settings);
+        return ExecuteInternalAsync(settings, cancellationToken);
     }
 
     private async Task<int> ExecuteInternalAsync(
-        ReadDataTypeCommandSettings settings)
+        ReadDataTypeCommandSettings settings,
+        CancellationToken cancellationToken)
     {
-        await ConsoleHelper.WriteHeaderAsync();
+        await ConsoleHelper.WriteHeaderAsync(cancellationToken);
 
-        var serverUrl = new Uri(settings.ServerUrl!);
-        var userName = settings.UserName;
-        var password = settings.Password;
         var nodeId = settings.NodeId;
 
-        var sw = Stopwatch.StartNew();
-
-        var (succeeded, _) = userName is not null && userName.IsSet
-            ? await opcUaClient.ConnectAsync(serverUrl, userName.Value, password!.Value, CancellationToken.None)
-            : await opcUaClient.ConnectAsync(serverUrl, CancellationToken.None);
-
-        if (succeeded)
-        {
-            var (succeededReading, enumDataType, errorMessage) = await opcUaClient.ReadEnumDataTypeAsync(
-                nodeId,
-                CancellationToken.None);
-
-            if (succeededReading && enumDataType is not null)
+        return await OpcUaCommandRunner.RunAsync(
+            opcUaClient,
+            settings,
+            logger,
+            async ct =>
             {
+                var enumDataType = await opcUaClient.ReadEnumDataTypeAsync(nodeId, ct)
+                                   ?? throw OpcUaCommandRunner.NodeNotFound(nodeId);
+
                 RenderEnumDataType(enumDataType);
-            }
-            else
-            {
-                logger.LogError("Failed to read enum DataType: {ErrorMessage}", errorMessage);
-            }
-
-            await opcUaClient.DisconnectAsync(CancellationToken.None);
-        }
-
-        sw.Stop();
-        logger.LogDebug($"Time for operation: {sw.Elapsed.GetPrettyTime()}");
-
-        return succeeded
-            ? ConsoleExitStatusCodes.Success
-            : ConsoleExitStatusCodes.Failure;
+            },
+            cancellationToken);
     }
 
     private void RenderEnumDataType(OpcUaEnumDataType enumDataType)

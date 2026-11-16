@@ -7,79 +7,79 @@ namespace Atc.Opc.Ua.Services;
 [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OK")]
 public partial class OpcUaClient
 {
-    /// <summary>
-    /// Writes a single node to the server.
-    /// </summary>
-    /// <param name="nodeId">The node identifier.</param>
-    /// <param name="value">The value to write.</param>
-    /// <param name="cancellationToken">Cancellation token for the operation</param>
-    /// <returns>A tuple indicating success and an error message if applicable.</returns>
-    public Task<(bool Succeeded, string? ErrorMessage)> WriteNodeAsync(
+    /// <inheritdoc/>
+    public Task WriteNodeAsync(
         string nodeId,
         object value,
         CancellationToken cancellationToken = default)
     {
-        var nodesToWriteCollection = new WriteValueCollection();
-        var writeVal = BuildWriteValue(nodeId, value);
-        nodesToWriteCollection.Add(writeVal);
+        ArgumentException.ThrowIfNullOrWhiteSpace(nodeId);
 
-        return WriteNodeValueCollectionAsync(nodesToWriteCollection, cancellationToken);
+        var nodesToWriteCollection = new WriteValueCollection
+        {
+            BuildWriteValue(nodeId.Trim(), value),
+        };
+
+        return WriteNodeValueCollectionAsync(nodesToWriteCollection, cancellationToken).NormalizeCancellation(cancellationToken);
     }
 
-    /// <summary>
-    /// Writes multiple nodes to the server.
-    /// </summary>
-    /// <param name="nodesToWrite">A dictionary containing node identifiers and values to write.</param>
-    /// <param name="cancellationToken">Cancellation token for the operation</param>
-    /// <returns>A tuple indicating success and an error message if applicable.</returns>
-    public Task<(bool Succeeded, string? ErrorMessage)> WriteNodesAsync(
+    /// <inheritdoc/>
+    public Task WriteNodesAsync(
         IDictionary<string, object> nodesToWrite,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(nodesToWrite);
 
+        if (nodesToWrite.Count == 0)
+        {
+            throw new ArgumentException("At least one node to write is needed.", nameof(nodesToWrite));
+        }
+
+        if (nodesToWrite.Keys.Any(string.IsNullOrWhiteSpace))
+        {
+            throw new ArgumentException("A node id is missing or blank.", nameof(nodesToWrite));
+        }
+
         var nodesToWriteCollection = new WriteValueCollection();
         foreach (var (nodeId, value) in nodesToWrite)
         {
-            var writeVal = BuildWriteValue(nodeId, value);
+            var writeVal = BuildWriteValue(nodeId.Trim(), value);
             nodesToWriteCollection.Add(writeVal);
         }
 
-        return WriteNodeValueCollectionAsync(nodesToWriteCollection, cancellationToken);
+        return WriteNodeValueCollectionAsync(nodesToWriteCollection, cancellationToken).NormalizeCancellation(cancellationToken);
     }
 
     /// <summary>
-    /// Executes the write operation on the server.
+    /// Writes the values in one call, and checks the server's result for every node.
     /// </summary>
-    /// <param name="nodesToWriteCollection">The collection of nodes to write.</param>
-    /// <returns>A tuple indicating success and an error message if applicable.</returns>
-    private async Task<(bool Succeeded, string? ErrorMessage)> WriteNodeValueCollectionAsync(
+    /// <param name="nodesToWriteCollection">The nodes and values to write.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <exception cref="ServiceResultException">The server rejected a value, with the first failed node's status code.</exception>
+    private async Task WriteNodeValueCollectionAsync(
         WriteValueCollection nodesToWriteCollection,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
-        try
-        {
-            var writeResponse = await Session!.WriteAsync(requestHeader: null, nodesToWriteCollection, cancellationToken);
-            if (writeResponse is null)
-            {
-                return (false, "Writing node variable(s) failed - missing write response");
-            }
+        EnsureConnected();
 
-            if (writeResponse.Results.Any() &&
-                StatusCode.IsGood(writeResponse.Results[0]))
-            {
-                return (true, null);
-            }
-
-            var errorMessage = writeResponse.Results[0].ToString();
-            LogSessionWriteNodeVariableFailure(errorMessage);
-            return (false, $"Writing node variable(s) failed: {errorMessage}.");
-        }
-        catch (Exception ex)
+        var writeResponse = await CurrentSession.WriteAsync(requestHeader: null, nodesToWriteCollection, cancellationToken);
+        var results = writeResponse?.Results;
+        if (results is null || results.Count != nodesToWriteCollection.Count)
         {
-            LogSessionWriteNodeVariableFailure(ex.Message);
-            return (false, $"Writing node variable(s) failed: {ex.Message}.");
+            throw new ServiceResultException(StatusCodes.BadUnexpectedError, "The server didn't return a result for every node written.");
         }
+
+        List<(NodeId NodeId, uint Code)> failed = [.. nodesToWriteCollection
+            .Zip(results, (node, result) => (node.NodeId, result.Code))
+            .Where(x => StatusCode.IsBad(x.Code))];
+
+        if (failed.Count == 0)
+        {
+            return;
+        }
+
+        var details = string.Join(", ", failed.Select(x => $"'{x.NodeId}': {GetStatusCodeName(x.Code) ?? $"0x{x.Code:X8}"}"));
+        throw new ServiceResultException(failed[0].Code, $"Writing failed for {details}.");
     }
 
     /// <summary>

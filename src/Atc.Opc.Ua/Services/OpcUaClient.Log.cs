@@ -18,12 +18,6 @@ public partial class OpcUaClient
     private partial void LogSessionConnected(string sessionName);
 
     [LoggerMessage(
-        EventId = LoggingEventIdConstants.SessionConnectionFailure,
-        Level = LogLevel.Error,
-        Message = "Session failed to connect to '{OpcUaUri}': '{ErrorMessage}'")]
-    private partial void LogSessionConnectionFailure(string opcUaUri, string errorMessage);
-
-    [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionReconnected,
         Level = LogLevel.Information,
         Message = "Session with name '{SessionName}' was reconnected")]
@@ -50,12 +44,6 @@ public partial class OpcUaClient
     private partial void LogSessionAlreadyConnected();
 
     [LoggerMessage(
-        EventId = LoggingEventIdConstants.SessionNotConnected,
-        Level = LogLevel.Warning,
-        Message = "Session is not connected")]
-    private partial void LogSessionNotConnected();
-
-    [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionUntrustedCertificateAccepted,
         Level = LogLevel.Information,
         Message = "Untrusted Certificate accepted '{SubjectName}'")]
@@ -72,12 +60,6 @@ public partial class OpcUaClient
         Level = LogLevel.Information,
         Message = "Session with name '{SessionName}' is disconnected")]
     private partial void LogSessionDisconnected(string sessionName);
-
-    [LoggerMessage(
-        EventId = LoggingEventIdConstants.SessionDisconnectionFailure,
-        Level = LogLevel.Error,
-        Message = "Session disconnection failure: '{ErrorMessage}'")]
-    private partial void LogSessionDisconnectionFailure(string errorMessage);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionNodeNotFound,
@@ -135,22 +117,10 @@ public partial class OpcUaClient
     private partial void LogSessionReadNodeVariableSucceeded(string nodeId);
 
     [LoggerMessage(
-        EventId = LoggingEventIdConstants.SessionWriteNodeVariableFailure,
-        Level = LogLevel.Error,
-        Message = "Writing node variable(s) failed: {ErrorMessage}")]
-    private partial void LogSessionWriteNodeVariableFailure(string errorMessage);
-
-    [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionReadNodeVariableValueEmpty,
         Level = LogLevel.Warning,
         Message = "Could not retrieve value for variable with nodeId '{NodeId}' and statusCode '{StatusCode}'")]
     private partial void LogSessionReadNodeVariableValueEmpty(string nodeId, string statusCode);
-
-    [LoggerMessage(
-        EventId = LoggingEventIdConstants.SessionNodeHasWrongClass,
-        Level = LogLevel.Warning,
-        Message = "Node with nodeId '{NodeId}' has wrong NodeClass '{Actual}', expected '{Expected}'")]
-    private partial void LogSessionNodeHasWrongClass(string nodeId, NodeClass actual, NodeClass expected);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionReadNodeNotSupportedNodeClass,
@@ -159,10 +129,18 @@ public partial class OpcUaClient
     private partial void LogSessionReadNodeNotSupportedNodeClass(string nodeId, NodeClass nodeClass);
 
     [LoggerMessage(
-        EventId = LoggingEventIdConstants.SessionReadNodeFailure,
-        Level = LogLevel.Error,
-        Message = "Reading node with nodeId '{NodeId}' failed: '{ErrorMessage}'")]
-    private partial void LogSessionReadNodeFailure(string nodeId, string errorMessage);
+        EventId = LoggingEventIdConstants.SessionNodeSkipped,
+        Level = LogLevel.Warning,
+        Message = "Skipped node with nodeId '{NodeId}', which can't be read: '{Reason}'")]
+    private partial void LogSessionNodeSkipped(
+        string nodeId,
+        string reason);
+
+    [LoggerMessage(
+        EventId = LoggingEventIdConstants.SessionNodeLeftOut,
+        Level = LogLevel.Warning,
+        Message = "Left out node with nodeId '{NodeId}', which doesn't exist")]
+    private partial void LogSessionNodeLeftOut(string nodeId);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionReadParentNodeFailure,
@@ -176,13 +154,6 @@ public partial class OpcUaClient
         Message =
             "Executing method for parentNodeId '{ParentNodeId}' and methodNodeId '{MethodNodeId}' with '{Arguments}'")]
     private partial void LogSessionExecuteCommandRequest(string parentNodeId, string methodNodeId, string arguments);
-
-    [LoggerMessage(
-        EventId = LoggingEventIdConstants.SessionExecuteCommandFailure,
-        Level = LogLevel.Error,
-        Message =
-            "Executing method for parentNodeId '{ParentNodeId}' and methodNodeId '{MethodNodeId}' failed: '{ErrorMessage}'")]
-    private partial void LogSessionExecuteCommandFailure(string parentNodeId, string methodNodeId, string errorMessage);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionKeepAliveRequestFailure,
@@ -215,18 +186,6 @@ public partial class OpcUaClient
         Level = LogLevel.Trace,
         Message = "Successfully read enum DataType with nodeId '{NodeId}' containing {MemberCount} members")]
     private partial void LogSessionReadEnumDataTypeSucceeded(string nodeId, int memberCount);
-
-    [LoggerMessage(
-        EventId = LoggingEventIdConstants.SessionReadEnumDataTypeFailure,
-        Level = LogLevel.Error,
-        Message = "Reading enum DataType with nodeId '{NodeId}' failed: '{ErrorMessage}'")]
-    private partial void LogSessionReadEnumDataTypeFailure(string nodeId, string errorMessage);
-
-    [LoggerMessage(
-        EventId = LoggingEventIdConstants.SessionReadEnumDataTypeNotEnum,
-        Level = LogLevel.Warning,
-        Message = "DataType with nodeId '{NodeId}' is not an enumeration or has no enum definition")]
-    private partial void LogSessionReadEnumDataTypeNotEnum(string nodeId);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionReadDataTypeDefinitionFailed,

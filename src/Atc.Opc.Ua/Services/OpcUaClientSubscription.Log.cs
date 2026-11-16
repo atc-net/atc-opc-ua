@@ -15,12 +15,6 @@ public partial class OpcUaClient
     private partial void LogSubscriptionCreated(uint subscriptionId);
 
     [LoggerMessage(
-        EventId = LoggingEventIdConstants.SubscriptionCreateFailure,
-        Level = LogLevel.Error,
-        Message = "Failed to create subscription: '{ErrorMessage}'")]
-    private partial void LogSubscriptionCreateFailure(string errorMessage);
-
-    [LoggerMessage(
         EventId = LoggingEventIdConstants.SubscriptionRemoving,
         Level = LogLevel.Information,
         Message = "Removing subscription with id {SubscriptionId}")]
@@ -31,12 +25,6 @@ public partial class OpcUaClient
         Level = LogLevel.Information,
         Message = "Subscription removed")]
     private partial void LogSubscriptionRemoved();
-
-    [LoggerMessage(
-        EventId = LoggingEventIdConstants.SubscriptionRemoveFailure,
-        Level = LogLevel.Error,
-        Message = "Failed to remove subscription: '{ErrorMessage}'")]
-    private partial void LogSubscriptionRemoveFailure(string errorMessage);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SubscriptionNodeSubscribing,
@@ -51,10 +39,12 @@ public partial class OpcUaClient
     private partial void LogSubscriptionNodeSubscribed(string nodeId, uint handle);
 
     [LoggerMessage(
-        EventId = LoggingEventIdConstants.SubscriptionNodeSubscribeFailure,
-        Level = LogLevel.Error,
-        Message = "Failed to subscribe to node '{NodeId}': '{ErrorMessage}'")]
-    private partial void LogSubscriptionNodeSubscribeFailure(string nodeId, string errorMessage);
+        EventId = LoggingEventIdConstants.SubscriptionNodeRejected,
+        Level = LogLevel.Warning,
+        Message = "The server rejected node '{NodeId}': '{ErrorMessage}'")]
+    private partial void LogSubscriptionNodeRejected(
+        string nodeId,
+        string errorMessage);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SubscriptionNodeUnsubscribing,
@@ -69,12 +59,6 @@ public partial class OpcUaClient
     private partial void LogSubscriptionNodeUnsubscribed(uint handle);
 
     [LoggerMessage(
-        EventId = LoggingEventIdConstants.SubscriptionNodeUnsubscribeFailure,
-        Level = LogLevel.Error,
-        Message = "Failed to unsubscribe monitored item with handle {Handle}: '{ErrorMessage}'")]
-    private partial void LogSubscriptionNodeUnsubscribeFailure(uint handle, string errorMessage);
-
-    [LoggerMessage(
         EventId = LoggingEventIdConstants.SubscriptionUnsubscribeAll,
         Level = LogLevel.Information,
         Message = "Unsubscribing all {Count} monitored items")]
@@ -85,12 +69,6 @@ public partial class OpcUaClient
         Level = LogLevel.Information,
         Message = "Unsubscribed all {Count} monitored items")]
     private partial void LogSubscriptionUnsubscribedAll(int count);
-
-    [LoggerMessage(
-        EventId = LoggingEventIdConstants.SubscriptionUnsubscribeAllFailure,
-        Level = LogLevel.Error,
-        Message = "Failed to unsubscribe all monitored items: '{ErrorMessage}'")]
-    private partial void LogSubscriptionUnsubscribeAllFailure(string errorMessage);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SubscriptionRestoredAfterReconnect,
@@ -109,12 +87,6 @@ public partial class OpcUaClient
         Level = LogLevel.Information,
         Message = "Subscribed to {Subscribed} of {Total} nodes")]
     private partial void LogSubscriptionNodesSubscribed(int subscribed, int total);
-
-    [LoggerMessage(
-        EventId = LoggingEventIdConstants.SubscriptionNodesSubscribeFailure,
-        Level = LogLevel.Error,
-        Message = "Failed to subscribe to {Count} nodes: '{ErrorMessage}'")]
-    private partial void LogSubscriptionNodesSubscribeFailure(int count, string errorMessage);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SubscriptionNotificationError,

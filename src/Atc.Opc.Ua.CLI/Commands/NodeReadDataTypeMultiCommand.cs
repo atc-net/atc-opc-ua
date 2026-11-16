@@ -20,62 +20,31 @@ internal sealed class NodeReadDataTypeMultiCommand : AsyncCommand<ReadDataTypesC
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        return ExecuteInternalAsync(settings);
+        return ExecuteInternalAsync(settings, cancellationToken);
     }
 
     private async Task<int> ExecuteInternalAsync(
-        ReadDataTypesCommandSettings settings)
+        ReadDataTypesCommandSettings settings,
+        CancellationToken cancellationToken)
     {
-        await ConsoleHelper.WriteHeaderAsync();
+        await ConsoleHelper.WriteHeaderAsync(cancellationToken);
 
-        var serverUrl = new Uri(settings.ServerUrl!);
-        var userName = settings.UserName;
-        var password = settings.Password;
         var nodeIds = settings.NodeIds;
 
-        var sw = Stopwatch.StartNew();
-
-        var (succeeded, _) = userName is not null && userName.IsSet
-            ? await opcUaClient.ConnectAsync(serverUrl, userName.Value, password!.Value, CancellationToken.None)
-            : await opcUaClient.ConnectAsync(serverUrl, CancellationToken.None);
-
-        if (succeeded)
-        {
-            var (succeededReading, enumDataTypes, errorMessage) = await opcUaClient.ReadEnumDataTypesAsync(
-                nodeIds,
-                CancellationToken.None);
-
-            if (succeededReading && enumDataTypes is not null)
+        return await OpcUaCommandRunner.RunAsync(
+            opcUaClient,
+            settings,
+            logger,
+            async ct =>
             {
+                var enumDataTypes = await opcUaClient.ReadEnumDataTypesAsync(nodeIds, ct);
                 foreach (var enumDataType in enumDataTypes)
                 {
                     RenderEnumDataType(enumDataType);
                     AnsiConsole.WriteLine();
                 }
-            }
-            else if (enumDataTypes is not null && enumDataTypes.Count > 0)
-            {
-                logger.LogWarning("Some enum DataTypes could not be read: {ErrorMessage}", errorMessage);
-                foreach (var enumDataType in enumDataTypes)
-                {
-                    RenderEnumDataType(enumDataType);
-                    AnsiConsole.WriteLine();
-                }
-            }
-            else
-            {
-                logger.LogError("Failed to read enum DataTypes: {ErrorMessage}", errorMessage);
-            }
-
-            await opcUaClient.DisconnectAsync(CancellationToken.None);
-        }
-
-        sw.Stop();
-        logger.LogDebug($"Time for operation: {sw.Elapsed.GetPrettyTime()}");
-
-        return succeeded
-            ? ConsoleExitStatusCodes.Success
-            : ConsoleExitStatusCodes.Failure;
+            },
+            cancellationToken);
     }
 
     private void RenderEnumDataType(OpcUaEnumDataType enumDataType)

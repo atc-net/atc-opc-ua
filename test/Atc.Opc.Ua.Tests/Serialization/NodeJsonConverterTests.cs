@@ -30,7 +30,7 @@ public sealed class NodeJsonConverterTests
         childObj.NodeVariables.Add(childVar);
         root.NodeObjects.Add(childObj);
 
-        var scan = new NodeScanResult(Succeeded: true, root, ErrorMessage: null);
+        var scan = new NodeScanResult(root, SkippedNodeIds: []);
         var options = CreateOptions();
 
         // Act
@@ -51,7 +51,7 @@ public sealed class NodeJsonConverterTests
         var varA1 = new NodeVariable { ParentNodeId = objA.NodeId, NodeId = "i=3", NodeIdentifier = "3", DisplayName = "VarA1", DataTypeDotnet = new DotNetTypeDescriptor { Kind = DotNetTypeKind.Primitive, Name = "Int32", ClrTypeName = "int" }, SampleValue = "42", DataTypeOpcUa = new OpUaDataType { Name = "Int32", IsArray = false } };
         objA.NodeVariables.Add(varA1);
         root.NodeObjects.Add(objA);
-        var scan = new NodeScanResult(Succeeded: true, root, ErrorMessage: null);
+        var scan = new NodeScanResult(root, SkippedNodeIds: []);
         var options = CreateOptions();
 
         // Act
@@ -59,7 +59,7 @@ public sealed class NodeJsonConverterTests
         var clone = JsonSerializer.Deserialize<NodeScanResult>(json, options);
 
         // Assert
-        clone.Succeeded.Should().BeTrue();
+        clone.SkippedNodeIds.Should().BeEmpty();
         clone.Root.Should().BeOfType<NodeObject>();
         var clonedRoot = (NodeObject)clone.Root;
         clonedRoot.NodeObjects.Should().HaveCount(1);
@@ -78,7 +78,7 @@ public sealed class NodeJsonConverterTests
         var child2 = new NodeVariable { ParentNodeId = child1.NodeId, NodeId = "v=1.1.1", NodeIdentifier = "1.1.1", DisplayName = "Child2", DataTypeDotnet = new DotNetTypeDescriptor { Kind = DotNetTypeKind.Primitive, Name = "String", ClrTypeName = "string" }, SampleValue = "hello" };
         child1.NodeVariables.Add(child2);
         rootVar.NodeVariables.Add(child1);
-        var scan = new NodeScanResult(Succeeded: true, rootVar, ErrorMessage: null);
+        var scan = new NodeScanResult(rootVar, SkippedNodeIds: []);
         var options = CreateOptions();
 
         // Act
@@ -98,7 +98,7 @@ public sealed class NodeJsonConverterTests
     public void Deserialize_ObjectRoot_MissingCollections_ShouldYieldEmptyLists()
     {
         // Arrange
-        const string json = "{\"Succeeded\":true,\"Root\":{\"$type\":\"object\",\"ParentNodeId\":\"i=0\",\"NodeId\":\"i=1\",\"NodeIdentifier\":\"1\",\"NodeClass\":\"Object\",\"DisplayName\":\"Root\"},\"ErrorMessage\":null}";
+        const string json = "{\"Root\":{\"$type\":\"object\",\"ParentNodeId\":\"i=0\",\"NodeId\":\"i=1\",\"NodeIdentifier\":\"1\",\"NodeClass\":\"Object\",\"DisplayName\":\"Root\"},\"SkippedNodeIds\":[]}";
         var options = CreateOptions();
 
         // Act
@@ -114,7 +114,7 @@ public sealed class NodeJsonConverterTests
     public void Deserialize_VariableRoot_DatatypeNull_ShouldLeaveOpcUaNull()
     {
         // Arrange
-        const string json = "{\"Succeeded\":true,\"Root\":{\"$type\":\"variable\",\"ParentNodeId\":\"i=0\",\"NodeId\":\"i=9\",\"NodeIdentifier\":\"9\",\"NodeClass\":\"Variable\",\"DisplayName\":\"Var\",\"DataTypeDotnet\":{\"Kind\":\"Unknown\",\"Name\":\"object\",\"ClrType\":\"object\"},\"SampleValue\":\"\",\"NodeVariables\":[]},\"ErrorMessage\":null}";
+        const string json = "{\"Root\":{\"$type\":\"variable\",\"ParentNodeId\":\"i=0\",\"NodeId\":\"i=9\",\"NodeIdentifier\":\"9\",\"NodeClass\":\"Variable\",\"DisplayName\":\"Var\",\"DataTypeDotnet\":{\"Kind\":\"Unknown\",\"Name\":\"object\",\"ClrType\":\"object\"},\"SampleValue\":\"\",\"NodeVariables\":[]},\"SkippedNodeIds\":[]}";
         var options = CreateOptions();
 
         // Act
@@ -129,7 +129,7 @@ public sealed class NodeJsonConverterTests
     public void Deserialize_InvalidDiscriminator_ShouldThrow()
     {
         // Arrange
-        const string json = "{\"Succeeded\":true,\"Root\":{\"$type\":\"bogus\",\"ParentNodeId\":\"i=0\",\"NodeId\":\"i=1\",\"NodeIdentifier\":\"1\",\"NodeClass\":\"Object\",\"DisplayName\":\"Root\"},\"ErrorMessage\":null}";
+        const string json = "{\"Root\":{\"$type\":\"bogus\",\"ParentNodeId\":\"i=0\",\"NodeId\":\"i=1\",\"NodeIdentifier\":\"1\",\"NodeClass\":\"Object\",\"DisplayName\":\"Root\"},\"SkippedNodeIds\":[]}";
         var options = CreateOptions();
 
         // Act
