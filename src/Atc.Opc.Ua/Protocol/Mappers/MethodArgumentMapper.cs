@@ -1,7 +1,8 @@
 namespace Atc.Opc.Ua.Protocol.Mappers;
 
 /// <summary>
-/// Converts method arguments, given as text with a data type, into the values sent to the server.
+/// Converts a method's arguments: the input arguments, given as text with a data type, into the values sent to the
+/// server, and the output arguments the server returns into text with a data type.
 /// </summary>
 internal static class MethodArgumentMapper
 {
@@ -30,6 +31,35 @@ internal static class MethodArgumentMapper
         }
 
         return variants;
+    }
+
+    /// <summary>
+    /// Converts a method's output arguments.
+    /// </summary>
+    /// <param name="outputArguments">The output arguments the server returned.</param>
+    /// <returns>
+    /// One result for each output argument, in the same order. An output without a value, or of a type that has no
+    /// <see cref="OpcUaDataEncodingType"/>, gets <see cref="OpcUaDataEncodingType.None"/>.
+    /// </returns>
+    public static List<MethodExecutionResult> ToResults(
+        VariantCollection outputArguments)
+    {
+        ArgumentNullException.ThrowIfNull(outputArguments);
+
+        var results = new List<MethodExecutionResult>(outputArguments.Count);
+        foreach (var outputArgument in outputArguments)
+        {
+            // The enum's values are the OPC UA built-in type ids; an empty output has no type info.
+            var dataEncoding = (OpcUaDataEncodingType)(outputArgument.TypeInfo?.BuiltInType ?? BuiltInType.Null);
+            if (!Enum.IsDefined(dataEncoding))
+            {
+                dataEncoding = OpcUaDataEncodingType.None;
+            }
+
+            results.Add(new MethodExecutionResult(dataEncoding, outputArgument.Value?.ToString() ?? string.Empty));
+        }
+
+        return results;
     }
 
     [SuppressMessage("Design", "MA0051:Method is too long", Justification = "OK - one case per data type keeps each conversion visible.")]

@@ -129,4 +129,41 @@ public sealed class MethodArgumentMapperTests
         // Assert
         variants.Select(v => v.Value).Should().Equal(7, "seven", false);
     }
+
+    [Fact]
+    public void ToResults_EmptyOutputBetweenOthers_ShouldKeepItAsNoneAndKeepThePositions()
+    {
+        // Arrange
+        var outputArguments = new VariantCollection
+        {
+            new Variant(42),
+            Variant.Null,
+            new Variant("ok"),
+        };
+
+        // Act
+        var results = MethodArgumentMapper.ToResults(outputArguments);
+
+        // Assert
+        results.Should().Equal(
+            new MethodExecutionResult(OpcUaDataEncodingType.Int32, "42"),
+            new MethodExecutionResult(OpcUaDataEncodingType.None, string.Empty),
+            new MethodExecutionResult(OpcUaDataEncodingType.String, "ok"));
+    }
+
+    [Fact]
+    public void ToResults_OutputOfABuiltInTypeWithoutAnEnumValue_ShouldGetNone()
+    {
+        // Arrange
+        var outputArguments = new VariantCollection
+        {
+            new Variant(3, new TypeInfo(BuiltInType.Enumeration, ValueRanks.Scalar)),
+        };
+
+        // Act
+        var results = MethodArgumentMapper.ToResults(outputArguments);
+
+        // Assert
+        results.Should().Equal(new MethodExecutionResult(OpcUaDataEncodingType.None, "3"));
+    }
 }
