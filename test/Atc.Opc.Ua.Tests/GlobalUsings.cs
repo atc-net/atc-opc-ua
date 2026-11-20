@@ -7,6 +7,7 @@ global using Atc.Opc.Ua.Differs;
 global using Atc.Opc.Ua.Extensions;
 global using Atc.Opc.Ua.Factories;
 global using Atc.Opc.Ua.Options;
+global using Atc.Opc.Ua.Protocol.Mappers;
 global using Atc.Opc.Ua.Protocol.Runtime;
 global using Atc.Opc.Ua.Serialization.JsonConverters;
 global using Atc.Opc.Ua.Services;
