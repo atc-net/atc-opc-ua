@@ -4,10 +4,10 @@ public static class ApplicationConfigurationFactory
 {
     public static ApplicationConfiguration Create(
         string applicationName,
-        OpcUaSecurityOptions opaUaSecurityOptions)
+        OpcUaSecurityOptions opcUaSecurityOptions)
     {
         ArgumentNullException.ThrowIfNull(applicationName);
-        ArgumentNullException.ThrowIfNull(opaUaSecurityOptions);
+        ArgumentNullException.ThrowIfNull(opcUaSecurityOptions);
 
         var config = new ApplicationConfiguration
         {
@@ -20,30 +20,30 @@ public static class ApplicationConfigurationFactory
             {
                 ApplicationCertificate = new CertificateIdentifier
                 {
-                    StoreType = opaUaSecurityOptions.ApplicationCertificate.StoreType,
-                    StorePath = $"{opaUaSecurityOptions.PkiRootPath}/{opaUaSecurityOptions.ApplicationCertificate.StorePath}",
-                    SubjectName = opaUaSecurityOptions.ApplicationCertificate.SubjectName ?? applicationName,
+                    StoreType = opcUaSecurityOptions.ApplicationCertificate.StoreType,
+                    StorePath = $"{opcUaSecurityOptions.PkiRootPath}/{opcUaSecurityOptions.ApplicationCertificate.StorePath}",
+                    SubjectName = opcUaSecurityOptions.ApplicationCertificate.SubjectName ?? applicationName,
                 },
                 RejectedCertificateStore = new CertificateTrustList
                 {
-                    StoreType = opaUaSecurityOptions.RejectedCertificates.StoreType,
-                    StorePath = $"{opaUaSecurityOptions.PkiRootPath}/{opaUaSecurityOptions.RejectedCertificates.StorePath}",
+                    StoreType = opcUaSecurityOptions.RejectedCertificates.StoreType,
+                    StorePath = $"{opcUaSecurityOptions.PkiRootPath}/{opcUaSecurityOptions.RejectedCertificates.StorePath}",
                 },
                 TrustedIssuerCertificates = new CertificateTrustList
                 {
-                    StoreType = opaUaSecurityOptions.TrustedIssuerCertificates.StoreType,
-                    StorePath = $"{opaUaSecurityOptions.PkiRootPath}/{opaUaSecurityOptions.TrustedIssuerCertificates.StorePath}",
+                    StoreType = opcUaSecurityOptions.TrustedIssuerCertificates.StoreType,
+                    StorePath = $"{opcUaSecurityOptions.PkiRootPath}/{opcUaSecurityOptions.TrustedIssuerCertificates.StorePath}",
                 },
                 TrustedPeerCertificates = new CertificateTrustList
                 {
-                    StoreType = opaUaSecurityOptions.TrustedPeerCertificates.StoreType,
-                    StorePath = $"{opaUaSecurityOptions.PkiRootPath}/{opaUaSecurityOptions.TrustedPeerCertificates.StorePath}",
+                    StoreType = opcUaSecurityOptions.TrustedPeerCertificates.StoreType,
+                    StorePath = $"{opcUaSecurityOptions.PkiRootPath}/{opcUaSecurityOptions.TrustedPeerCertificates.StorePath}",
                 },
-                AddAppCertToTrustedStore = opaUaSecurityOptions.AddAppCertToTrustedStore,
-                AutoAcceptUntrustedCertificates = opaUaSecurityOptions.AutoAcceptUntrustedCertificates,
-                MinimumCertificateKeySize = opaUaSecurityOptions.MinimumCertificateKeySize,
-                RejectSHA1SignedCertificates = opaUaSecurityOptions.RejectSha1SignedCertificates,
-                RejectUnknownRevocationStatus = opaUaSecurityOptions.RejectUnknownRevocationStatus,
+                AddAppCertToTrustedStore = opcUaSecurityOptions.AddAppCertToTrustedStore,
+                AutoAcceptUntrustedCertificates = opcUaSecurityOptions.AutoAcceptUntrustedCertificates,
+                MinimumCertificateKeySize = opcUaSecurityOptions.MinimumCertificateKeySize,
+                RejectSHA1SignedCertificates = opcUaSecurityOptions.RejectSha1SignedCertificates,
+                RejectUnknownRevocationStatus = opcUaSecurityOptions.RejectUnknownRevocationStatus,
             },
             TransportConfigurations = new TransportConfigurationCollection(),
             TransportQuotas = TransportQuotaConfigExtensions.DefaultTransportQuotas(),
