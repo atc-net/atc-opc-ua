@@ -66,7 +66,7 @@ public partial class OpcUaClient
                 $"Calling method '{methodNodeId}' on '{parentNodeId}' failed: {GetStatusCodeName(statusCode) ?? $"0x{statusCode:X8}"}.");
         }
 
-        return MapMethodExecutionResults(results);
+        return MethodArgumentMapper.ToResults(results[0].OutputArguments);
     }
 
     private static string ArgumentsToString(
@@ -87,34 +87,5 @@ public partial class OpcUaClient
         }
 
         return sb.ToString();
-    }
-
-    private static List<MethodExecutionResult> MapMethodExecutionResults(
-        CallMethodResultCollection results)
-    {
-        var data = new List<MethodExecutionResult>();
-        foreach (var outputArgument in results[0].OutputArguments)
-        {
-            if (!Enum<OpcUaDataEncodingType>.TryParse(
-                    outputArgument.TypeInfo.BuiltInType.ToString(),
-                    ignoreCase: true,
-                    out var dataType))
-            {
-                continue;
-            }
-
-            var dataValue = string.Empty;
-            if (outputArgument.Value is not null)
-            {
-                dataValue = outputArgument.Value.ToString();
-            }
-
-            data.Add(
-                new MethodExecutionResult(
-                    dataType,
-                    dataValue!));
-        }
-
-        return data;
     }
 }
