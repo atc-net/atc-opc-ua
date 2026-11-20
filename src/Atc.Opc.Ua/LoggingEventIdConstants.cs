@@ -11,7 +11,10 @@ internal static class LoggingEventIdConstants
     public const int SessionReplacedAfterReconnect = 10006;
 
     public const int SessionAlreadyConnected = 10010;
-    public const int SessionUntrustedCertificateAccepted = 10012;
+    public const int ServerCertificateUntrustedAccepted = 10012;
+    public const int ServerCertificateAcceptedWithoutValidation = 10013;
+    public const int ServerCertificateValidationWouldFail = 10014;
+    public const int ServerCertificateRejected = 10015;
 
     public const int SessionDisconnecting = 10020;
     public const int SessionDisconnected = 10021;

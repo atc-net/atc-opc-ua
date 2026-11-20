@@ -50,10 +50,41 @@ public partial class OpcUaClient
     private partial void LogSessionAlreadyConnected();
 
     [LoggerMessage(
-        EventId = LoggingEventIdConstants.SessionUntrustedCertificateAccepted,
+        EventId = LoggingEventIdConstants.ServerCertificateUntrustedAccepted,
         Level = LogLevel.Information,
-        Message = "Untrusted Certificate accepted '{SubjectName}'")]
-    private partial void LogSessionUntrustedCertificateAccepted(string subjectName);
+        Message = "Untrusted server certificate '{Subject}' ({Thumbprint}) accepted, because AutoAcceptUntrustedCertificates is on")]
+    private partial void LogServerCertificateUntrustedAccepted(
+        string subject,
+        string thumbprint);
+
+    [LoggerMessage(
+        EventId = LoggingEventIdConstants.ServerCertificateAcceptedWithoutValidation,
+        Level = LogLevel.Debug,
+        Message = "Server certificate '{Subject}' ({Thumbprint}) accepted without validation (AcceptAny), despite {StatusCode}")]
+    private partial void LogServerCertificateAcceptedWithoutValidation(
+        string subject,
+        string thumbprint,
+        string statusCode);
+
+    [LoggerMessage(
+        EventId = LoggingEventIdConstants.ServerCertificateValidationWouldFail,
+        Level = LogLevel.Warning,
+        Message = "Server certificate validation would have failed for '{Subject}' ({Thumbprint}): {StatusCode}. {Hint}")]
+    private partial void LogServerCertificateValidationWouldFail(
+        string subject,
+        string thumbprint,
+        string statusCode,
+        string hint);
+
+    [LoggerMessage(
+        EventId = LoggingEventIdConstants.ServerCertificateRejected,
+        Level = LogLevel.Warning,
+        Message = "Server certificate '{Subject}' ({Thumbprint}) rejected: {StatusCode}. {Hint}")]
+    private partial void LogServerCertificateRejected(
+        string subject,
+        string thumbprint,
+        string statusCode,
+        string hint);
 
     [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionDisconnecting,
