@@ -40,6 +40,9 @@ public static class ApplicationConfigurationFactory
                     StorePath = $"{opcUaSecurityOptions.PkiRootPath}/{opcUaSecurityOptions.TrustedPeerCertificates.StorePath}",
                 },
                 AddAppCertToTrustedStore = opcUaSecurityOptions.AddAppCertToTrustedStore,
+
+                // While OpcUaClient's certificate handler is registered, the OPC UA stack ignores this, and
+                // ServerCertificateValidationPolicy.Decide applies it; it's kept so the stack's configuration matches the options.
                 AutoAcceptUntrustedCertificates = opcUaSecurityOptions.AutoAcceptUntrustedCertificates,
                 MinimumCertificateKeySize = opcUaSecurityOptions.MinimumCertificateKeySize,
                 RejectSHA1SignedCertificates = opcUaSecurityOptions.RejectSha1SignedCertificates,

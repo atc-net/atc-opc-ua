@@ -49,7 +49,15 @@ public sealed class OpcUaSecurityOptions
     public bool AddAppCertToTrustedStore { get; set; } = true;
 
     /// <summary>
-    /// Whether to auto accept untrusted certificates.
+    /// How the certificate a server presents is checked. Defaults to <see cref="Options.ServerCertificateValidation.Validate"/>.
+    /// </summary>
+    public ServerCertificateValidation ServerCertificateValidation { get; set; } = ServerCertificateValidation.Validate;
+
+    /// <summary>
+    /// Whether to accept a server certificate that isn't in the trusted store yet. It accepts only "untrusted": an
+    /// expired certificate, a key below <see cref="MinimumCertificateKeySize"/> or a CA that isn't known is still
+    /// refused. It applies with every <see cref="ServerCertificateValidation"/> value, so with
+    /// <see cref="Options.ServerCertificateValidation.Audit"/> an untrusted certificate is accepted without a warning.
     /// </summary>
     public bool AutoAcceptUntrustedCertificates { get; set; }
 

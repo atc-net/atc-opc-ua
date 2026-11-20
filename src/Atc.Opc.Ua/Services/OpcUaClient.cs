@@ -67,6 +67,14 @@ public partial class OpcUaClient : IOpcUaClient
         securityOptions = opcUaSecurityOptions.Value ?? throw new ArgumentNullException(nameof(opcUaSecurityOptions));
         clientOptions = opcUaClientOptions.Value ?? throw new ArgumentNullException(nameof(opcUaClientOptions));
         keepAliveOptions = opcUaClientKeepAliveOptions.Value ?? throw new ArgumentNullException(nameof(opcUaClientKeepAliveOptions));
+
+        if (!Enum.IsDefined(securityOptions.ServerCertificateValidation))
+        {
+            throw new ArgumentException(
+                $"'{securityOptions.ServerCertificateValidation}' isn't a {nameof(ServerCertificateValidation)} value.",
+                nameof(opcUaSecurityOptions));
+        }
+
         var application = BuildAndValidateOpcUaApplicationAsync().GetAwaiter().GetResult();
         configuration = application.ApplicationConfiguration;
         configuration.CertificateValidator.CertificateValidation += CertificateValidation;
@@ -273,7 +281,8 @@ public partial class OpcUaClient : IOpcUaClient
     }
 
     /// <summary>
-    /// Handles the certificate validation event.
+    /// Decides on an error the OPC UA stack found in a server certificate, as
+    /// <see cref="OpcUaSecurityOptions.ServerCertificateValidation"/> says. The stack raises it once for each error.
     /// </summary>
     /// <param name="sender">The sender of the event.</param>
     /// <param name="e">The event arguments.</param>
@@ -281,14 +290,41 @@ public partial class OpcUaClient : IOpcUaClient
         CertificateValidator sender,
         CertificateValidationEventArgs e)
     {
-        const bool certificateAccepted = true;
+        var error = e.Error.StatusCode;
+        var decision = ServerCertificateValidationPolicy.Decide(
+            securityOptions.ServerCertificateValidation,
+            securityOptions.AutoAcceptUntrustedCertificates,
+            error);
 
-        if (certificateAccepted)
+        var subject = e.Certificate?.Subject ?? "unknown";
+        var thumbprint = e.Certificate?.Thumbprint ?? "unknown";
+        var statusCode = StatusCodes.GetBrowseName(error.Code);
+
+        switch (decision)
         {
-            LogSessionUntrustedCertificateAccepted(e.Certificate.SubjectName.Name);
+            case ServerCertificateDecision.AcceptUntrusted:
+                LogServerCertificateUntrustedAccepted(subject, thumbprint);
+                break;
+            case ServerCertificateDecision.AcceptWithoutValidation:
+                LogServerCertificateAcceptedWithoutValidation(subject, thumbprint, statusCode);
+                break;
+            case ServerCertificateDecision.AcceptAudited:
+                LogServerCertificateValidationWouldFail(
+                    subject,
+                    thumbprint,
+                    statusCode,
+                    ServerCertificateValidationPolicy.GetHint(error, refused: false, securityOptions));
+                break;
+            default:
+                LogServerCertificateRejected(
+                    subject,
+                    thumbprint,
+                    statusCode,
+                    ServerCertificateValidationPolicy.GetHint(error, refused: true, securityOptions));
+                break;
         }
 
-        e.Accept = certificateAccepted;
+        e.Accept = decision != ServerCertificateDecision.Reject;
     }
 
     /// <summary>
