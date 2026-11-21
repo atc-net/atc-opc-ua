@@ -2,14 +2,14 @@ namespace Atc.Opc.Ua.CLI.Commands;
 
 internal sealed class NodeReadVariableSingleCommand : AsyncCommand<SingleNodeCommandSettings>
 {
-    private readonly IOpcUaClient opcUaClient;
+    private readonly OpcUaClientFactory clientFactory;
     private readonly ILogger<NodeReadVariableSingleCommand> logger;
 
     public NodeReadVariableSingleCommand(
-        IOpcUaClient opcUaClient,
+        OpcUaClientFactory clientFactory,
         ILogger<NodeReadVariableSingleCommand> logger)
     {
-        this.opcUaClient = opcUaClient ?? throw new ArgumentNullException(nameof(opcUaClient));
+        this.clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -34,12 +34,12 @@ internal sealed class NodeReadVariableSingleCommand : AsyncCommand<SingleNodeCom
         var nodeVariableReadDepth = settings.NodeVariableReadDepth;
 
         return await OpcUaCommandRunner.RunAsync(
-            opcUaClient,
+            clientFactory,
             settings,
             logger,
-            async ct =>
+            async (client, ct) =>
             {
-                var nodeVariable = await opcUaClient.ReadNodeVariableAsync(nodeId, includeSampleValue, nodeVariableReadDepth, cancellationToken: ct)
+                var nodeVariable = await client.ReadNodeVariableAsync(nodeId, includeSampleValue, nodeVariableReadDepth, cancellationToken: ct)
                                    ?? throw OpcUaCommandRunner.NodeNotFound(nodeId);
 
                 logger.LogInformation($"Received the following data: '{nodeVariable.ToStringSimple()}'");

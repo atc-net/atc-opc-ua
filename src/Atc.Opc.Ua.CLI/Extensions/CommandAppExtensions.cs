@@ -23,6 +23,8 @@ public static class CommandAppExtensions
             .WithDescription("Tests if a connection can be made to a given server.")
             .WithExample($"testconnection -s {SampleOpcUaServerUrl}")
             .WithExample($"testconnection -s {SampleOpcUaServerUrl} -u username -p password")
+            .WithExample($"testconnection -s {SampleOpcUaServerUrl} -u username -p password --auto-accept")
+            .WithExample($"testconnection -s {SampleOpcUaServerUrl} -u username -p password --certificate-validation Audit")
             .WithExample($"testconnection -s {SampleOpcUaServerUrl} --no-update-check");
 
     private static Action<IConfigurator<CommandSettings>> ConfigureNodeCommands()

@@ -2,14 +2,14 @@ namespace Atc.Opc.Ua.CLI.Commands;
 
 internal sealed class NodeWriteVariableSingleCommand : AsyncCommand<WriteNodeCommandSettings>
 {
-    private readonly IOpcUaClient opcUaClient;
+    private readonly OpcUaClientFactory clientFactory;
     private readonly ILogger<NodeWriteVariableSingleCommand> logger;
 
     public NodeWriteVariableSingleCommand(
-        IOpcUaClient opcUaClient,
+        OpcUaClientFactory clientFactory,
         ILogger<NodeWriteVariableSingleCommand> logger)
     {
-        this.opcUaClient = opcUaClient ?? throw new ArgumentNullException(nameof(opcUaClient));
+        this.clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -45,17 +45,17 @@ internal sealed class NodeWriteVariableSingleCommand : AsyncCommand<WriteNodeCom
         }
 
         return await OpcUaCommandRunner.RunAsync(
-            opcUaClient,
+            clientFactory,
             settings,
             logger,
-            async ct =>
+            async (client, ct) =>
             {
                 logger.LogInformation("Connection succeeded");
 
-                _ = await opcUaClient.ReadNodeVariableAsync(nodeId, includeSampleValue: false, cancellationToken: ct)
+                _ = await client.ReadNodeVariableAsync(nodeId, includeSampleValue: false, cancellationToken: ct)
                     ?? throw OpcUaCommandRunner.NodeNotFound(nodeId);
 
-                await opcUaClient.WriteNodeAsync(nodeId, convertedValue, ct);
+                await client.WriteNodeAsync(nodeId, convertedValue, ct);
                 logger.LogInformation("Value is updated.");
             },
             cancellationToken);

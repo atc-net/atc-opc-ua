@@ -2,16 +2,16 @@ namespace Atc.Opc.Ua.CLI.Commands;
 
 internal sealed class NodeScanCommand : AsyncCommand<ScanNodeCommandSettings>
 {
-    private readonly IOpcUaClient opcUaClient;
+    private readonly OpcUaClientFactory clientFactory;
     private readonly IOpcUaScanner scanner;
     private readonly ILogger<NodeScanCommand> logger;
 
     public NodeScanCommand(
-        IOpcUaClient opcUaClient,
+        OpcUaClientFactory clientFactory,
         IOpcUaScanner scanner,
         ILogger<NodeScanCommand> logger)
     {
-        this.opcUaClient = opcUaClient ?? throw new ArgumentNullException(nameof(opcUaClient));
+        this.clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
         this.scanner = scanner ?? throw new ArgumentNullException(nameof(scanner));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
@@ -60,12 +60,12 @@ internal sealed class NodeScanCommand : AsyncCommand<ScanNodeCommandSettings>
         }
 
         return await OpcUaCommandRunner.RunAsync(
-            opcUaClient,
+            clientFactory,
             settings,
             logger,
-            async ct =>
+            async (client, ct) =>
             {
-                var scanResult = await scanner.ScanAsync(opcUaClient, options, ct);
+                var scanResult = await scanner.ScanAsync(client, options, ct);
                 var (totalObjectCount, totalVariableCount) = CountNodes(scanResult.Root);
                 logger.LogInformation($"Scan completed successfully. Found a total of {totalObjectCount} Objects and {totalVariableCount} Variables");
 

@@ -2,14 +2,14 @@ namespace Atc.Opc.Ua.CLI.Commands;
 
 internal sealed class NodeReadDataTypeSingleCommand : AsyncCommand<ReadDataTypeCommandSettings>
 {
-    private readonly IOpcUaClient opcUaClient;
+    private readonly OpcUaClientFactory clientFactory;
     private readonly ILogger<NodeReadDataTypeSingleCommand> logger;
 
     public NodeReadDataTypeSingleCommand(
-        IOpcUaClient opcUaClient,
+        OpcUaClientFactory clientFactory,
         ILogger<NodeReadDataTypeSingleCommand> logger)
     {
-        this.opcUaClient = opcUaClient ?? throw new ArgumentNullException(nameof(opcUaClient));
+        this.clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -32,12 +32,12 @@ internal sealed class NodeReadDataTypeSingleCommand : AsyncCommand<ReadDataTypeC
         var nodeId = settings.NodeId;
 
         return await OpcUaCommandRunner.RunAsync(
-            opcUaClient,
+            clientFactory,
             settings,
             logger,
-            async ct =>
+            async (client, ct) =>
             {
-                var enumDataType = await opcUaClient.ReadEnumDataTypeAsync(nodeId, ct)
+                var enumDataType = await client.ReadEnumDataTypeAsync(nodeId, ct)
                                    ?? throw OpcUaCommandRunner.NodeNotFound(nodeId);
 
                 RenderEnumDataType(enumDataType);

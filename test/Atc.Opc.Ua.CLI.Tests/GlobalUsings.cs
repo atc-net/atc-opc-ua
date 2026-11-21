@@ -1,3 +1,11 @@
+global using System.Net;
+global using System.Security.Cryptography;
+global using System.Security.Cryptography.X509Certificates;
+global using Atc.Opc.Ua.CLI.Commands;
+global using Atc.Opc.Ua.CLI.Commands.Settings;
+global using Atc.Opc.Ua.CLI.Helpers;
 global using Atc.Opc.Ua.CLI.UpdateCheck;
 global using Atc.Opc.Ua.CLI.UpdateCheck.Models;
+global using Atc.Opc.Ua.Options;
 global using Microsoft.Extensions.Time.Testing;
+global using Opc.Ua;

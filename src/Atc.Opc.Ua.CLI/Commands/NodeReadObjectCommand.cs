@@ -2,14 +2,14 @@ namespace Atc.Opc.Ua.CLI.Commands;
 
 internal sealed class NodeReadObjectCommand : AsyncCommand<ReadObjectNodeCommandSettings>
 {
-    private readonly IOpcUaClient opcUaClient;
+    private readonly OpcUaClientFactory clientFactory;
     private readonly ILogger<NodeReadObjectCommand> logger;
 
     public NodeReadObjectCommand(
-        IOpcUaClient opcUaClient,
+        OpcUaClientFactory clientFactory,
         ILogger<NodeReadObjectCommand> logger)
     {
-        this.opcUaClient = opcUaClient ?? throw new ArgumentNullException(nameof(opcUaClient));
+        this.clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -37,12 +37,12 @@ internal sealed class NodeReadObjectCommand : AsyncCommand<ReadObjectNodeCommand
         var nodeVariableReadDepth = settings.NodeVariableReadDepth;
 
         return await OpcUaCommandRunner.RunAsync(
-            opcUaClient,
+            clientFactory,
             settings,
             logger,
-            async ct =>
+            async (client, ct) =>
             {
-                var nodeObject = await opcUaClient.ReadNodeObjectAsync(
+                var nodeObject = await client.ReadNodeObjectAsync(
                                      nodeId,
                                      includeObjects,
                                      includeVariables,

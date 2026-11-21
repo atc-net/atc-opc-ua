@@ -17,7 +17,7 @@ public static class Program
 
         var serviceCollection = ServiceCollectionFactory.Create(consoleLoggerConfiguration);
 
-        serviceCollection.AddTransient<IOpcUaClient, OpcUaClient>();
+        serviceCollection.AddSingleton<OpcUaClientFactory>();
         serviceCollection.AddTransient<IOpcUaScanner, OpcUaScanner>();
         serviceCollection.AddTransient<IOpcUaNodeBrowser, OpcUaNodeBrowser>();
 

@@ -14,8 +14,22 @@ public class OpcUaBaseCommandSettings : BaseCommandSettings
     [Description("OPC UA Password")]
     public FlagValue<string>? Password { get; init; }
 
+    [CommandOption("--auto-accept")]
+    [Description("Accept a server certificate that isn't trusted yet. Only that problem is accepted: an expired certificate or one with too small a key is still refused.")]
+    public bool AutoAccept { get; init; }
+
+    [CommandOption("--certificate-validation <MODE>")]
+    [Description("How the server's certificate is checked: AcceptAny (accept without checking), Audit (accept, but warn when Validate would refuse) or Validate.")]
+    [DefaultValue(ServerCertificateValidation.Validate)]
+    public ServerCertificateValidation CertificateValidation { get; init; } = ServerCertificateValidation.Validate;
+
     public override ValidationResult Validate()
     {
+        if (!Enum.IsDefined(CertificateValidation))
+        {
+            return ValidationResult.Error("CertificateValidation must be AcceptAny, Audit or Validate.");
+        }
+
         if (string.IsNullOrWhiteSpace(ServerUrl) ||
             !ServerUrl.StartsWith("opc.tcp://", StringComparison.OrdinalIgnoreCase))
         {

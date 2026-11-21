@@ -2,14 +2,14 @@ namespace Atc.Opc.Ua.CLI.Commands;
 
 internal sealed class ExecuteMethodCommand : AsyncCommand<ExecuteMethodCommandSettings>
 {
-    private readonly IOpcUaClient opcUaClient;
+    private readonly OpcUaClientFactory clientFactory;
     private readonly ILogger<ExecuteMethodCommand> logger;
 
     public ExecuteMethodCommand(
-        IOpcUaClient opcUaClient,
+        OpcUaClientFactory clientFactory,
         ILogger<ExecuteMethodCommand> logger)
     {
-        this.opcUaClient = opcUaClient ?? throw new ArgumentNullException(nameof(opcUaClient));
+        this.clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -30,12 +30,12 @@ internal sealed class ExecuteMethodCommand : AsyncCommand<ExecuteMethodCommandSe
         await ConsoleHelper.WriteHeaderAsync(cancellationToken);
 
         return await OpcUaCommandRunner.RunAsync(
-            opcUaClient,
+            clientFactory,
             settings,
             logger,
-            async ct =>
+            async (client, ct) =>
             {
-                var executionResults = await opcUaClient.ExecuteMethodAsync(
+                var executionResults = await client.ExecuteMethodAsync(
                     settings.ParentNodeId,
                     settings.MethodNodeId,
                     MapSettingsToMethodExecutionParameters(settings),
