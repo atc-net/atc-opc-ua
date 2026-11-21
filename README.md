@@ -19,6 +19,8 @@ A .NET library and CLI tool for OPC UA: connect to servers, read and write nodes
   - [Subscriptions](#subscriptions)
     - [How subscriptions work](#how-subscriptions-work)
   - [Configuring security](#configuring-security)
+  - [Trusting a server](#trusting-a-server)
+    - [Moving to Validate](#moving-to-validate)
   - [Configuring client options](#configuring-client-options)
   - [Keep-alive and reconnect](#keep-alive-and-reconnect)
   - [Best practices](#best-practices)
@@ -30,6 +32,7 @@ A .NET library and CLI tool for OPC UA: connect to servers, read and write nodes
   - [Installation](#installation)
   - [Update](#update)
   - [Usage](#usage)
+  - [Server certificates in the CLI](#server-certificates-in-the-cli)
   - [Scanning from the CLI](#scanning-from-the-cli)
   - [Reading enum DataType definitions](#reading-enum-datatype-definitions)
 - [Upgrading to 4.0](#upgrading-to-40)
@@ -39,6 +42,7 @@ A .NET library and CLI tool for OPC UA: connect to servers, read and write nodes
 # Features
 
 - 🔌 **Connect** anonymously or with a username and password, with a self-signed or your own application certificate.
+- 🔐 **Check the server's certificate**, with an audit mode that logs what would fail before you enforce it.
 - 🔄 **Keep-alive and reconnect** in the background when the connection is lost.
 - 📖 **Read** variables, objects with their children, and enum DataType definitions.
 - ✍️ **Write** variables and **call methods**.
@@ -127,7 +131,8 @@ A failed call throws. A read returns `null` only when the node doesn't exist.
 |---|---|
 | The server reports an error, e.g. a wrong password or a rejected write | `ServiceResultException` from the OPC UA stack. Its `StatusCode` is the server's, e.g. `BadUserAccessDenied`. |
 | The call needs a connection, and the client isn't connected | `InvalidOperationException` |
-| A node id is missing or invalid, or the node is of another class than the call reads, e.g. an Object read as a Variable | `ArgumentException` |
+| A node id is missing or invalid, the node is of another class than the call reads, e.g. an Object read as a Variable, or a method argument can't be converted to its data type | `ArgumentException` |
+| The client refuses the server's certificate when connecting | `ServiceResultException` with the certificate's problem, e.g. `BadCertificateUntrusted`. See [Trusting a server](#trusting-a-server). |
 | Your `CancellationToken` was cancelled | `OperationCanceledException`, with the stack's exception (`BadRequestInterrupted`) as `InnerException` |
 
 ```csharp
@@ -201,6 +206,12 @@ var results = await client.ExecuteMethodAsync(
     ],
     cancellationToken);
 ```
+
+Each method argument is text with its data type: `Boolean`, `SByte`, `Byte`, `Int16`, `UInt16`, `Int32`, `UInt32`, `Int64`, `UInt64`, `Float`, `Double`, `String`, `DateTime` or `Guid`. Numbers use a `.` as decimal point. A date and time without a time zone is read as UTC, and one with an offset is converted to UTC.
+
+An argument that can't be converted, or whose data type isn't in this list, throws an `ArgumentException` that names it, e.g. `Method argument 2 ('abc') isn't a valid Int32.`, before anything is sent to the server.
+
+The result has one entry for each output argument, in the method's order. An output without a value has the data type `None` and an empty value.
 
 ## Reading enum DataTypes
 
@@ -426,6 +437,7 @@ The values below are the defaults, except `SubjectName`, which defaults to somet
       "StorePath": "trusted"
     },
     "AddAppCertToTrustedStore": true,
+    "ServerCertificateValidation": "Validate",
     "AutoAcceptUntrustedCertificates": false,
     "MinimumCertificateKeySize": 1024,
     "RejectSha1SignedCertificates": true,
@@ -444,6 +456,18 @@ services
 services.AddTransient<IOpcUaClient, OpcUaClient>();
 ```
 
+These `OpcUaSecurityOptions` decide whether the client accepts a server's certificate; see [Trusting a server](#trusting-a-server):
+
+| Setting | Default | What it does |
+|---|---|---|
+| `ServerCertificateValidation` | `Validate` | `Validate`: a certificate with a problem is refused. `Audit`: it's accepted, and logged as a warning when `Validate` would refuse it. `AcceptAny`: it's accepted without checking. |
+| `AutoAcceptUntrustedCertificates` | `false` | Accepts a certificate whose only problem is that it isn't in `trusted/` yet. An expired certificate, a key that's too small or an unknown CA is still a problem. It applies with every `ServerCertificateValidation` value. |
+| `MinimumCertificateKeySize` | `1024` | The smallest key, in bits, a server's certificate may have. |
+| `RejectSha1SignedCertificates` | `true` | Refuses certificates signed with SHA-1. |
+| `RejectUnknownRevocationStatus` | `true` | A CA-signed certificate needs the CA's revocation list in `issuers/crl/`. |
+
+> `AcceptAny` still encrypts the connection, but the client can't tell the real server from anything in between. Use it only on a network you trust.
+
 Connecting with a username and password:
 
 ```csharp
@@ -453,6 +477,78 @@ await opcUaClient.ConnectAsync(
     password: "mypassword",
     cancellationToken);
 ```
+
+## Trusting a server
+
+On a connection with security, the client and the server check each other's certificate:
+
+```mermaid
+flowchart LR
+    Client["OpcUaClient<br/>its certificate is in own/"] -- "presents its certificate:<br/>the server checks it" --> Server["OPC UA server"]
+    Server -- "presents its certificate:<br/>the client checks it" --> Client
+```
+
+- **The server checks the client's certificate.** That's set up on the server, e.g. by trusting the client's certificate there.
+- **The client checks the server's certificate,** as `OpcUaSecurityOptions` says. That's what this section is about.
+
+**When a certificate is checked.** Only on an endpoint with security. The client uses one when it connects with a username and password, and also without them when the server offers no endpoint without security. An anonymous connection on an endpoint without security exchanges no certificates.
+
+**The folders,** under `PkiRootPath` (default `opc/pki`):
+
+| Folder | What's in it | Who puts it there |
+|---|---|---|
+| `own/` | The client's certificate and private key | The client, on its first start, unless you put your own there |
+| `trusted/certs/` | Server certificates the client trusts | You |
+| `issuers/certs/`, `issuers/crl/` | CA certificates and their revocation lists, for servers whose certificate a CA signed | You |
+| `rejected/certs/` | Server certificates the client refused | The OPC UA stack, when it refuses one |
+
+The folder names are the `StorePath` of `ApplicationCertificate`, `TrustedPeerCertificates`, `TrustedIssuerCertificates` and `RejectedCertificates`.
+
+**How the client judges a server's certificate:**
+
+```mermaid
+flowchart TD
+    A["The server presents its certificate"] --> B{"Does the OPC UA stack<br/>find a problem?"}
+    B -- "No: in trusted/, valid now,<br/>key big enough" --> OK(["Accepted"])
+    B -- "Yes" --> C{"Is the only problem 'not trusted yet',<br/>and AutoAcceptUntrustedCertificates on?"}
+    C -- "Yes" --> OK
+    C -- "No" --> D{"ServerCertificateValidation"}
+    D -- "AcceptAny" --> OK
+    D -- "Audit" --> W(["Accepted, with a warning:<br/>why Validate would refuse it, and the fix"])
+    D -- "Validate" --> R(["Refused: the connection fails,<br/>and the certificate is saved in rejected/certs/"])
+```
+
+The problems the OPC UA stack looks for: the certificate isn't in `trusted/` yet; it has expired or isn't valid yet; its key is smaller than `MinimumCertificateKeySize`, or it's signed with SHA-1 while `RejectSha1SignedCertificates` is on; a CA signed it that isn't in `issuers/`; the CA's revocation list is missing while `RejectUnknownRevocationStatus` is on; it's revoked. A few problems, e.g. a malformed certificate, are refused whatever the settings. The settings are described in [Configuring security](#configuring-security).
+
+**Trusting a refused certificate:**
+
+- **Self-signed**, i.e. its issuer is the server itself, as on most PLCs: copy it from `rejected/certs/` to `trusted/certs/`, and connect again.
+- **Signed by a CA:** put the CA's certificate into `issuers/certs/` and its revocation list into `issuers/crl/`. Copying the server's own certificate to `trusted/` doesn't help.
+
+The CLI's `testconnection` shows which certificate a server presents; see [Server certificates in the CLI](#server-certificates-in-the-cli).
+
+### Moving to Validate
+
+`Validate` is the default. To switch an installation that accepts every certificate without risk:
+
+1. Set `ServerCertificateValidation` to `Audit`. Every certificate is still accepted, and each one that `Validate` would refuse is logged as a warning with the reason and the fix.
+2. Let it run until it has connected to every server, and search the logs for "would have failed".
+3. Apply the fixes the warnings name, then set `Validate`.
+
+Under `Audit`, a certificate isn't saved in `rejected/certs/`, because it's accepted. To get a self-signed server's certificate file, connect once with `Validate`, or export it on the server.
+
+The problems, and what to do:
+
+| Status code | What it means | What to do |
+|---|---|---|
+| `BadCertificateUntrusted` | The certificate isn't in `trusted/` yet | Copy it from `rejected/certs/` to `trusted/certs/`, or turn on `AutoAcceptUntrustedCertificates` |
+| `BadCertificateChainIncomplete` | A CA the client doesn't know signed it | Put the CA's certificate into `issuers/certs/` |
+| `BadCertificateRevocationUnknown` | The CA's revocation list is missing | Put the CA's revocation list into `issuers/crl/` |
+| `BadCertificateTimeInvalid` | It has expired or isn't valid yet | Check the clock, or renew the server's certificate |
+| `BadCertificatePolicyCheckFailed` | Its key is too small, or it's signed with SHA-1 | Renew the server's certificate, or lower `MinimumCertificateKeySize` or turn off `RejectSha1SignedCertificates` |
+| `BadCertificateRevoked` | It's revoked | The server needs a new certificate |
+| `BadCertificateUriInvalid` | Its application URI doesn't match the server's | Renew the server's certificate |
+| `BadCertificateUseNotAllowed` | Its key usage doesn't allow this use | Renew the server's certificate |
 
 ## Configuring client options
 
@@ -688,6 +784,8 @@ USAGE:
 EXAMPLES:
     atc-opc-ua.exe testconnection -s opc.tcp://opcuaserver.com:48010
     atc-opc-ua.exe testconnection -s opc.tcp://opcuaserver.com:48010 -u username -p password
+    atc-opc-ua.exe testconnection -s opc.tcp://opcuaserver.com:48010 -u username -p password --auto-accept
+    atc-opc-ua.exe testconnection -s opc.tcp://opcuaserver.com:48010 -u username -p password --certificate-validation Audit
     atc-opc-ua.exe testconnection -s opc.tcp://opcuaserver.com:48010 --no-update-check
     atc-opc-ua.exe node scan -s opc.tcp://opcuaserver.com:48010 --starting-node-id "ns=2;s=Demo.Dynamic.Scalar" --object-depth 2 --variable-depth 1
     atc-opc-ua.exe method execute -s opc.tcp://opcuaserver.com:48010 --parent-node-id "ns=2;s=Demo.Method" --method-node-id "ns=2;s=Demo.Method.Multiply" --data-types double --data-values 3 --data-types double --data-values 4
@@ -723,6 +821,41 @@ atc-opc-ua node write variable single -s opc.tcp://opcuaserver.com:48010 -n "ns=
 atc-opc-ua node scan -s opc.tcp://opcuaserver.com:48010 --starting-node-id "ns=2;s=Demo.Dynamic.Scalar" --object-depth 2 --variable-depth 1
 atc-opc-ua method execute -s opc.tcp://opcuaserver.com:48010 --parent-node-id "ns=2;s=Demo.Method" --method-node-id "ns=2;s=Demo.Method.Multiply" --data-types double --data-values 3 --data-types double --data-values 4
 ```
+
+## Server certificates in the CLI
+
+The CLI checks a server's certificate as the library does, with `Validate`; see [Trusting a server](#trusting-a-server). Its certificate folders are `opc/pki` in the working directory. Against a server it doesn't trust yet, a connection with a username fails:
+
+```text
+Server certificate 'CN=OpcPlc, O=OPC Foundation' (ABB83659348FCDFAB426EB622CD45BC16290453F) rejected: BadCertificateUntrusted. To trust it, copy it from 'opc/pki/rejected/certs' to 'opc/pki/trusted/certs', or set AutoAcceptUntrustedCertificates.
+Certificate is not trusted.
+The server's certificate isn't trusted. Rerun with --auto-accept to accept it, or trust it as the warning above says.
+```
+
+Every command that connects has two options for it:
+
+- `--auto-accept`: accept a server certificate that isn't trusted yet. Only that problem is accepted: an expired certificate or one with too small a key is still refused.
+- `--certificate-validation <MODE>`: `Validate` (the default), `Audit` (accept, but warn when `Validate` would refuse) or `AcceptAny` (accept without checking).
+
+`testconnection` shows the endpoint it used and the certificate the server presents, here for the OPC PLC simulator in Docker, started with `--defaultuser=user1 --defaultpassword=password1`:
+
+```powershell
+atc-opc-ua testconnection -s opc.tcp://localhost:50001 -u user1 -p password1 --auto-accept
+```
+
+```text
+Endpoint: opc.tcp://localhost:50001/ (SignAndEncrypt, Aes256_Sha256_RsaPss)
+Server certificate:
+  Subject:     CN=OpcPlc, O=OPC Foundation
+  Issuer:      self-signed
+  Thumbprint:  ABB83659348FCDFAB426EB622CD45BC16290453F
+  Valid:       2026-11-20 00:00 UTC to 2027-11-20 00:00 UTC
+  Key:         RSA 2048 bit, signed with sha256RSA
+  URI:         urn:OpcPlc:localhost
+  Host names:  271920340e00
+```
+
+The host name is the container's, because the simulator puts its machine name on its certificate.
 
 ## Scanning from the CLI
 
@@ -761,7 +894,7 @@ The output is a table of the enum's members with their Value, Name, DisplayName 
 
 # Upgrading to 4.0
 
-4.0 requires .NET 10, throws on failures instead of returning tuples, adds subscriptions and address space browsing, and changes how values are formatted and how reconnects are logged. Go through this list when you upgrade from 3.x.
+4.0 requires .NET 10, throws on failures instead of returning tuples, checks server certificates, adds subscriptions and address space browsing, and changes how values are formatted and how reconnects are logged. Go through this list when you upgrade from 3.x.
 
 ## Changes that need code changes
 
@@ -775,6 +908,21 @@ var (succeeded, nodeVariable, errorMessage) = await client.ReadNodeVariableAsync
 
 // 4.0: throws on failure; null when the node doesn't exist
 var nodeVariable = await client.ReadNodeVariableAsync(nodeId, includeSampleValue: true);
+```
+
+**Server certificates are checked.** 3.x accepted every server certificate, whatever `OpcUaSecurityOptions` said. 4.0 checks them (`ServerCertificateValidation` = `Validate`), so a connection with a username to a server whose certificate isn't in `trusted/` fails with `BadCertificateUntrusted`. Choose one:
+
+- Trust the server's certificate; see [Trusting a server](#trusting-a-server).
+- Set `AutoAcceptUntrustedCertificates` to `true`, to accept certificates that aren't trusted yet, but not expired ones.
+- Set `ServerCertificateValidation` to `Audit`, to keep accepting every certificate and log what `Validate` would refuse; see [Moving to Validate](#moving-to-validate).
+- Set `ServerCertificateValidation` to `AcceptAny`, to accept every certificate without checking, as 3.x did.
+
+```json
+{
+  "OpcUaSecurityOptions": {
+    "ServerCertificateValidation": "Audit"
+  }
+}
 ```
 
 **`ScanAsync` returns the tree and the skipped nodes.** `NodeScanResult` is `(Root, SkippedNodeIds)`; `Succeeded` and `ErrorMessage` are gone. When comparing scans, leave the skipped nodes out of the deleted ones, see [Comparing two scans](#comparing-two-scans).
@@ -791,9 +939,15 @@ var nodeVariable = await client.ReadNodeVariableAsync(nodeId, includeSampleValue
 
 **A child node that doesn't exist or may not be read is skipped** with a warning, instead of failing the whole read or scan. Any other failure, e.g. a dropped connection, still fails it.
 
+**A method argument that can't be converted throws.** `ExecuteMethodAsync` throws an `ArgumentException` that names the argument, e.g. `Method argument 2 ('abc') isn't a valid Int32.`, before anything is sent. 3.x left such an argument out and called the method with the rest. Data types that can't be sent as method arguments, e.g. `NodeId`, `ByteString` or `LocalizedText`, throw too; 3.x always left them out. A `DateTime` argument without a time zone is read as UTC. See [Writing nodes and calling methods](#writing-nodes-and-calling-methods).
+
+**Method results keep every output argument.** An output without a value is returned with the data type `None` and an empty value. 3.x left it out, so the outputs after it moved up a position.
+
 **Cancellation throws `OperationCanceledException`.** In 3.x, a cancelled call returned `(false, message)`.
 
 **`WriteNodesAsync` checks every node.** In 3.x, only the first node's result was checked.
+
+**The CLI checks server certificates.** A command with `-u` and `-p` fails against a server whose certificate isn't trusted yet; add `--auto-accept`, or trust the certificate. `testconnection` shows the endpoint and the server's certificate. See [Server certificates in the CLI](#server-certificates-in-the-cli).
 
 **The CLI exits with 1 when a command fails,** e.g. when a node doesn't exist. In 3.x, only a failed connection did that.
 
