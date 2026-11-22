@@ -1,0 +1,1476 @@
+i=1 Boolean
+  scalar opcua Boolean 'Boolean' Primitive Numeric:1 array False / dotnet Primitive Boolean clr 'bool'
+  array  opcua Boolean 'Boolean' Primitive Numeric:1 array True / dotnet Array Boolean[] clr 'bool[]' of (dotnet Primitive Boolean clr 'bool')
+i=2 SByte
+  scalar opcua SByte 'SByte' Primitive Numeric:2 array False / dotnet Primitive SByte clr 'sbyte'
+  array  opcua SByte 'SByte' Primitive Numeric:2 array True / dotnet Array SByte[] clr 'sbyte[]' of (dotnet Primitive SByte clr 'sbyte')
+i=3 Byte
+  scalar opcua Byte 'Byte' Primitive Numeric:3 array False / dotnet Primitive Byte clr 'byte'
+  array  opcua Byte 'Byte' Primitive Numeric:3 array True / dotnet Array Byte[] clr 'byte[]' of (dotnet Primitive Byte clr 'byte')
+i=4 Int16
+  scalar opcua Int16 'Int16' Primitive Numeric:4 array False / dotnet Primitive Int16 clr 'short'
+  array  opcua Int16 'Int16' Primitive Numeric:4 array True / dotnet Array Int16[] clr 'short[]' of (dotnet Primitive Int16 clr 'short')
+i=5 UInt16
+  scalar opcua UInt16 'UInt16' Primitive Numeric:5 array False / dotnet Primitive UInt16 clr 'ushort'
+  array  opcua UInt16 'UInt16' Primitive Numeric:5 array True / dotnet Array UInt16[] clr 'ushort[]' of (dotnet Primitive UInt16 clr 'ushort')
+i=6 Int32
+  scalar opcua Int32 'Int32' Primitive Numeric:6 array False / dotnet Primitive Int32 clr 'int'
+  array  opcua Int32 'Int32' Primitive Numeric:6 array True / dotnet Array Int32[] clr 'int[]' of (dotnet Primitive Int32 clr 'int')
+i=7 UInt32
+  scalar opcua UInt32 'UInt32' Primitive Numeric:7 array False / dotnet Primitive UInt32 clr 'uint'
+  array  opcua UInt32 'UInt32' Primitive Numeric:7 array True / dotnet Array UInt32[] clr 'uint[]' of (dotnet Primitive UInt32 clr 'uint')
+i=8 Int64
+  scalar opcua Int64 'Int64' Primitive Numeric:8 array False / dotnet Primitive Int64 clr 'long'
+  array  opcua Int64 'Int64' Primitive Numeric:8 array True / dotnet Array Int64[] clr 'long[]' of (dotnet Primitive Int64 clr 'long')
+i=9 UInt64
+  scalar opcua UInt64 'UInt64' Primitive Numeric:9 array False / dotnet Primitive UInt64 clr 'ulong'
+  array  opcua UInt64 'UInt64' Primitive Numeric:9 array True / dotnet Array UInt64[] clr 'ulong[]' of (dotnet Primitive UInt64 clr 'ulong')
+i=10 Float
+  scalar opcua Float 'Float' Primitive Numeric:10 array False / dotnet Primitive Float clr 'float'
+  array  opcua Float 'Float' Primitive Numeric:10 array True / dotnet Array Float[] clr 'float[]' of (dotnet Primitive Float clr 'float')
+i=11 Double
+  scalar opcua Double 'Double' Primitive Numeric:11 array False / dotnet Primitive Double clr 'double'
+  array  opcua Double 'Double' Primitive Numeric:11 array True / dotnet Array Double[] clr 'double[]' of (dotnet Primitive Double clr 'double')
+i=12 String
+  scalar opcua String 'String' Primitive Numeric:12 array False / dotnet Primitive String clr 'string'
+  array  opcua String 'String' Primitive Numeric:12 array True / dotnet Array String[] clr 'string[]' of (dotnet Primitive String clr 'string')
+i=13 DateTime
+  scalar opcua DateTime 'DateTime' Primitive Numeric:13 array False / dotnet Primitive DateTime clr 'DateTime'
+  array  opcua DateTime 'DateTime' Primitive Numeric:13 array True / dotnet Array DateTime[] clr 'DateTime[]' of (dotnet Primitive DateTime clr 'DateTime')
+i=14 Guid
+  scalar opcua Guid 'Guid' Primitive Numeric:14 array False / dotnet Primitive Guid clr 'Uuid'
+  array  opcua Guid 'Guid' Primitive Numeric:14 array True / dotnet Array Guid[] clr 'Uuid[]' of (dotnet Primitive Guid clr 'Uuid')
+i=15 ByteString
+  scalar opcua ByteString 'ByteString' Primitive Numeric:15 array False / dotnet Primitive ByteString clr 'byte[]'
+  array  opcua ByteString 'ByteString' Primitive Numeric:15 array True / dotnet Array ByteString[] clr 'byte[][]' of (dotnet Primitive ByteString clr 'byte[]')
+i=16 XmlElement
+  scalar opcua XmlElement 'XmlElement' Primitive Numeric:16 array False / dotnet Primitive XmlElement clr 'XmlElement'
+  array  opcua XmlElement 'XmlElement' Primitive Numeric:16 array True / dotnet Array XmlElement[] clr 'XmlElement[]' of (dotnet Primitive XmlElement clr 'XmlElement')
+i=17 NodeId
+  scalar opcua NodeId 'NodeId' Primitive Numeric:17 array False / dotnet Primitive NodeId clr 'NodeId'
+  array  opcua NodeId 'NodeId' Primitive Numeric:17 array True / dotnet Array NodeId[] clr 'NodeId[]' of (dotnet Primitive NodeId clr 'NodeId')
+i=18 ExpandedNodeId
+  scalar opcua ExpandedNodeId 'ExpandedNodeId' Primitive Numeric:18 array False / dotnet Primitive ExpandedNodeId clr 'ExpandedNodeId'
+  array  opcua ExpandedNodeId 'ExpandedNodeId' Primitive Numeric:18 array True / dotnet Array ExpandedNodeId[] clr 'ExpandedNodeId[]' of (dotnet Primitive ExpandedNodeId clr 'ExpandedNodeId')
+i=19 StatusCode
+  scalar opcua StatusCode 'StatusCode' Primitive Numeric:19 array False / dotnet Primitive StatusCode clr 'StatusCode'
+  array  opcua StatusCode 'StatusCode' Primitive Numeric:19 array True / dotnet Array StatusCode[] clr 'StatusCode[]' of (dotnet Primitive StatusCode clr 'StatusCode')
+i=20 QualifiedName
+  scalar opcua QualifiedName 'QualifiedName' Primitive Numeric:20 array False / dotnet Primitive QualifiedName clr 'QualifiedName'
+  array  opcua QualifiedName 'QualifiedName' Primitive Numeric:20 array True / dotnet Array QualifiedName[] clr 'QualifiedName[]' of (dotnet Primitive QualifiedName clr 'QualifiedName')
+i=21 LocalizedText
+  scalar opcua LocalizedText 'LocalizedText' Primitive Numeric:21 array False / dotnet Primitive LocalizedText clr 'LocalizedText'
+  array  opcua LocalizedText 'LocalizedText' Primitive Numeric:21 array True / dotnet Array LocalizedText[] clr 'LocalizedText[]' of (dotnet Primitive LocalizedText clr 'LocalizedText')
+i=22 Structure
+  scalar opcua ExtensionObject 'ExtensionObject' Primitive Numeric:22 array False / dotnet Primitive ExtensionObject clr 'ExtensionObject'
+  array  opcua ExtensionObject 'ExtensionObject' Primitive Numeric:22 array True / dotnet Array ExtensionObject[] clr 'ExtensionObject[]' of (dotnet Primitive ExtensionObject clr 'ExtensionObject')
+i=23 DataValue
+  scalar opcua DataValue 'DataValue' Primitive Numeric:23 array False / dotnet Primitive DataValue clr 'DataValue'
+  array  opcua DataValue 'DataValue' Primitive Numeric:23 array True / dotnet Array DataValue[] clr 'DataValue[]' of (dotnet Primitive DataValue clr 'DataValue')
+i=24 BaseDataType
+  scalar opcua Variant 'Variant' Primitive Numeric:24 array False / dotnet Primitive Variant clr 'Variant'
+  array  opcua Variant 'Variant' Primitive Numeric:24 array True / dotnet Array Variant[] clr 'Variant[]' of (dotnet Primitive Variant clr 'Variant')
+i=25 DiagnosticInfo
+  scalar opcua DiagnosticInfo 'DiagnosticInfo' Primitive Numeric:25 array False / dotnet Primitive DiagnosticInfo clr 'DiagnosticInfo'
+  array  opcua DiagnosticInfo 'DiagnosticInfo' Primitive Numeric:25 array True / dotnet Array DiagnosticInfo[] clr 'DiagnosticInfo[]' of (dotnet Primitive DiagnosticInfo clr 'DiagnosticInfo')
+i=26 Number
+  scalar opcua Number 'Number' Structure Numeric:26 array False / dotnet Complex Number clr 'object'
+  array  opcua Number 'Number' Structure Numeric:26 array True / dotnet Array Number[] clr 'object[]' of (dotnet Complex Number clr 'object')
+i=27 Integer
+  scalar opcua Integer 'Integer' Structure Numeric:27 array False / dotnet Complex Integer clr 'object'
+  array  opcua Integer 'Integer' Structure Numeric:27 array True / dotnet Array Integer[] clr 'object[]' of (dotnet Complex Integer clr 'object')
+i=28 UInteger
+  scalar opcua UInteger 'UInteger' Structure Numeric:28 array False / dotnet Complex UInteger clr 'object'
+  array  opcua UInteger 'UInteger' Structure Numeric:28 array True / dotnet Array UInteger[] clr 'object[]' of (dotnet Complex UInteger clr 'object')
+i=29 Enumeration
+  scalar opcua Enumeration 'Enumeration' Primitive Numeric:29 array False / dotnet Primitive Enumeration clr 'int'
+  array  opcua Enumeration 'Enumeration' Primitive Numeric:29 array True / dotnet Array Enumeration[] clr 'int[]' of (dotnet Primitive Enumeration clr 'int')
+i=30 Image
+  scalar opcua ByteString 'ByteString' Primitive Numeric:30 array False / dotnet Primitive ByteString clr 'byte[]'
+  array  opcua ByteString 'ByteString' Primitive Numeric:30 array True / dotnet Array ByteString[] clr 'byte[][]' of (dotnet Primitive ByteString clr 'byte[]')
+i=50 Decimal
+  scalar opcua Decimal 'Decimal' Structure Numeric:50 array False / dotnet Complex Decimal clr 'object'
+  array  opcua Decimal 'Decimal' Structure Numeric:50 array True / dotnet Array Decimal[] clr 'object[]' of (dotnet Complex Decimal clr 'object')
+i=94 PermissionType
+  scalar opcua PermissionType 'PermissionType' Enum Numeric:94 array False / dotnet Enum PermissionType clr 'int' members 0=Browse, 1=ReadRolePermissions, 2=WriteAttribute, 3=WriteRolePermissions, 4=WriteHistorizing, 5=Read, 6=Write, 7=ReadHistory, 8=InsertHistory, 9=ModifyHistory, 10=DeleteHistory, 11=ReceiveEvents, 12=Call, 13=AddReference, 14=RemoveReference, 15=DeleteNode, 16=AddNode
+  array  opcua PermissionType 'PermissionType' Enum Numeric:94 array True / dotnet Array PermissionType[] clr 'int[]' of (dotnet Enum PermissionType clr 'int' members 0=Browse, 1=ReadRolePermissions, 2=WriteAttribute, 3=WriteRolePermissions, 4=WriteHistorizing, 5=Read, 6=Write, 7=ReadHistory, 8=InsertHistory, 9=ModifyHistory, 10=DeleteHistory, 11=ReceiveEvents, 12=Call, 13=AddReference, 14=RemoveReference, 15=DeleteNode, 16=AddNode)
+i=95 AccessRestrictionType
+  scalar opcua AccessRestrictionType 'AccessRestrictionType' Enum Numeric:95 array False / dotnet Enum AccessRestrictionType clr 'int' members 0=SigningRequired, 1=EncryptionRequired, 2=SessionRequired, 3=ApplyRestrictionsToBrowse
+  array  opcua AccessRestrictionType 'AccessRestrictionType' Enum Numeric:95 array True / dotnet Array AccessRestrictionType[] clr 'int[]' of (dotnet Enum AccessRestrictionType clr 'int' members 0=SigningRequired, 1=EncryptionRequired, 2=SessionRequired, 3=ApplyRestrictionsToBrowse)
+i=96 RolePermissionType
+  scalar opcua RolePermissionType 'RolePermissionType' Structure Numeric:96 array False / dotnet Complex RolePermissionType clr 'object'
+  array  opcua RolePermissionType 'RolePermissionType' Structure Numeric:96 array True / dotnet Array RolePermissionType[] clr 'object[]' of (dotnet Complex RolePermissionType clr 'object')
+i=97 DataTypeDefinition
+  scalar opcua DataTypeDefinition 'DataTypeDefinition' Structure Numeric:97 array False / dotnet Complex DataTypeDefinition clr 'object'
+  array  opcua DataTypeDefinition 'DataTypeDefinition' Structure Numeric:97 array True / dotnet Array DataTypeDefinition[] clr 'object[]' of (dotnet Complex DataTypeDefinition clr 'object')
+i=98 StructureType
+  scalar opcua StructureType 'StructureType' Enum Numeric:98 array False / dotnet Enum StructureType clr 'int' members 0=Structure, 1=StructureWithOptionalFields, 2=Union, 3=StructureWithSubtypedValues, 4=UnionWithSubtypedValues
+  array  opcua StructureType 'StructureType' Enum Numeric:98 array True / dotnet Array StructureType[] clr 'int[]' of (dotnet Enum StructureType clr 'int' members 0=Structure, 1=StructureWithOptionalFields, 2=Union, 3=StructureWithSubtypedValues, 4=UnionWithSubtypedValues)
+i=99 StructureDefinition
+  scalar opcua StructureDefinition 'StructureDefinition' Structure Numeric:99 array False / dotnet Complex StructureDefinition clr 'object'
+  array  opcua StructureDefinition 'StructureDefinition' Structure Numeric:99 array True / dotnet Array StructureDefinition[] clr 'object[]' of (dotnet Complex StructureDefinition clr 'object')
+i=100 EnumDefinition
+  scalar opcua EnumDefinition 'EnumDefinition' Structure Numeric:100 array False / dotnet Complex EnumDefinition clr 'object'
+  array  opcua EnumDefinition 'EnumDefinition' Structure Numeric:100 array True / dotnet Array EnumDefinition[] clr 'object[]' of (dotnet Complex EnumDefinition clr 'object')
+i=101 StructureField
+  scalar opcua StructureField 'StructureField' Structure Numeric:101 array False / dotnet Complex StructureField clr 'object'
+  array  opcua StructureField 'StructureField' Structure Numeric:101 array True / dotnet Array StructureField[] clr 'object[]' of (dotnet Complex StructureField clr 'object')
+i=102 EnumField
+  scalar opcua EnumField 'EnumField' Structure Numeric:102 array False / dotnet Complex EnumField clr 'object'
+  array  opcua EnumField 'EnumField' Structure Numeric:102 array True / dotnet Array EnumField[] clr 'object[]' of (dotnet Complex EnumField clr 'object')
+i=120 NamingRuleType
+  scalar opcua NamingRuleType 'NamingRuleType' Enum Numeric:120 array False / dotnet Enum NamingRuleType clr 'int' members 1=Mandatory, 2=Optional, 3=Constraint
+  array  opcua NamingRuleType 'NamingRuleType' Enum Numeric:120 array True / dotnet Array NamingRuleType[] clr 'int[]' of (dotnet Enum NamingRuleType clr 'int' members 1=Mandatory, 2=Optional, 3=Constraint)
+i=256 IdType
+  scalar opcua IdType 'IdType' Enum Numeric:256 array False / dotnet Enum IdType clr 'int' members 0=Numeric, 1=String, 2=Guid, 3=Opaque
+  array  opcua IdType 'IdType' Enum Numeric:256 array True / dotnet Array IdType[] clr 'int[]' of (dotnet Enum IdType clr 'int' members 0=Numeric, 1=String, 2=Guid, 3=Opaque)
+i=257 NodeClass
+  scalar opcua NodeClass 'NodeClass' Enum Numeric:257 array False / dotnet Enum NodeClass clr 'int' members 0=Unspecified, 1=Object, 2=Variable, 4=Method, 8=ObjectType, 16=VariableType, 32=ReferenceType, 64=DataType, 128=View
+  array  opcua NodeClass 'NodeClass' Enum Numeric:257 array True / dotnet Array NodeClass[] clr 'int[]' of (dotnet Enum NodeClass clr 'int' members 0=Unspecified, 1=Object, 2=Variable, 4=Method, 8=ObjectType, 16=VariableType, 32=ReferenceType, 64=DataType, 128=View)
+i=258 Node
+  scalar opcua i=258 'i=258' Unknown Unknown: array False / dotnet Unknown i=258 clr 'object'
+  array  opcua i=258 'i=258' Unknown Unknown: array True / dotnet Array i=258[] clr 'object[]' of (dotnet Unknown i=258 clr 'object')
+i=261 ObjectNode
+  scalar opcua i=261 'i=261' Unknown Unknown: array False / dotnet Unknown i=261 clr 'object'
+  array  opcua i=261 'i=261' Unknown Unknown: array True / dotnet Array i=261[] clr 'object[]' of (dotnet Unknown i=261 clr 'object')
+i=264 ObjectTypeNode
+  scalar opcua i=264 'i=264' Unknown Unknown: array False / dotnet Unknown i=264 clr 'object'
+  array  opcua i=264 'i=264' Unknown Unknown: array True / dotnet Array i=264[] clr 'object[]' of (dotnet Unknown i=264 clr 'object')
+i=267 VariableNode
+  scalar opcua i=267 'i=267' Unknown Unknown: array False / dotnet Unknown i=267 clr 'object'
+  array  opcua i=267 'i=267' Unknown Unknown: array True / dotnet Array i=267[] clr 'object[]' of (dotnet Unknown i=267 clr 'object')
+i=270 VariableTypeNode
+  scalar opcua i=270 'i=270' Unknown Unknown: array False / dotnet Unknown i=270 clr 'object'
+  array  opcua i=270 'i=270' Unknown Unknown: array True / dotnet Array i=270[] clr 'object[]' of (dotnet Unknown i=270 clr 'object')
+i=273 ReferenceTypeNode
+  scalar opcua i=273 'i=273' Unknown Unknown: array False / dotnet Unknown i=273 clr 'object'
+  array  opcua i=273 'i=273' Unknown Unknown: array True / dotnet Array i=273[] clr 'object[]' of (dotnet Unknown i=273 clr 'object')
+i=276 MethodNode
+  scalar opcua i=276 'i=276' Unknown Unknown: array False / dotnet Unknown i=276 clr 'object'
+  array  opcua i=276 'i=276' Unknown Unknown: array True / dotnet Array i=276[] clr 'object[]' of (dotnet Unknown i=276 clr 'object')
+i=279 ViewNode
+  scalar opcua i=279 'i=279' Unknown Unknown: array False / dotnet Unknown i=279 clr 'object'
+  array  opcua i=279 'i=279' Unknown Unknown: array True / dotnet Array i=279[] clr 'object[]' of (dotnet Unknown i=279 clr 'object')
+i=282 DataTypeNode
+  scalar opcua i=282 'i=282' Unknown Unknown: array False / dotnet Unknown i=282 clr 'object'
+  array  opcua i=282 'i=282' Unknown Unknown: array True / dotnet Array i=282[] clr 'object[]' of (dotnet Unknown i=282 clr 'object')
+i=285 ReferenceNode
+  scalar opcua i=285 'i=285' Unknown Unknown: array False / dotnet Unknown i=285 clr 'object'
+  array  opcua i=285 'i=285' Unknown Unknown: array True / dotnet Array i=285[] clr 'object[]' of (dotnet Unknown i=285 clr 'object')
+i=288 IntegerId
+  scalar opcua UInt32 'UInt32' Primitive Numeric:288 array False / dotnet Primitive UInt32 clr 'uint'
+  array  opcua UInt32 'UInt32' Primitive Numeric:288 array True / dotnet Array UInt32[] clr 'uint[]' of (dotnet Primitive UInt32 clr 'uint')
+i=289 Counter
+  scalar opcua UInt32 'UInt32' Primitive Numeric:289 array False / dotnet Primitive UInt32 clr 'uint'
+  array  opcua UInt32 'UInt32' Primitive Numeric:289 array True / dotnet Array UInt32[] clr 'uint[]' of (dotnet Primitive UInt32 clr 'uint')
+i=290 Duration
+  scalar opcua Double 'Double' Primitive Numeric:290 array False / dotnet Primitive Double clr 'double'
+  array  opcua Double 'Double' Primitive Numeric:290 array True / dotnet Array Double[] clr 'double[]' of (dotnet Primitive Double clr 'double')
+i=291 NumericRange
+  scalar opcua String 'String' Primitive Numeric:291 array False / dotnet Primitive String clr 'string'
+  array  opcua String 'String' Primitive Numeric:291 array True / dotnet Array String[] clr 'string[]' of (dotnet Primitive String clr 'string')
+i=294 UtcTime
+  scalar opcua DateTime 'DateTime' Primitive Numeric:294 array False / dotnet Primitive DateTime clr 'DateTime'
+  array  opcua DateTime 'DateTime' Primitive Numeric:294 array True / dotnet Array DateTime[] clr 'DateTime[]' of (dotnet Primitive DateTime clr 'DateTime')
+i=295 LocaleId
+  scalar opcua String 'String' Primitive Numeric:295 array False / dotnet Primitive String clr 'string'
+  array  opcua String 'String' Primitive Numeric:295 array True / dotnet Array String[] clr 'string[]' of (dotnet Primitive String clr 'string')
+i=296 Argument
+  scalar opcua Argument 'Argument' Structure Numeric:296 array False / dotnet Complex Argument clr 'object'
+  array  opcua Argument 'Argument' Structure Numeric:296 array True / dotnet Array Argument[] clr 'object[]' of (dotnet Complex Argument clr 'object')
+i=299 StatusResult
+  scalar opcua StatusResult 'StatusResult' Structure Numeric:299 array False / dotnet Complex StatusResult clr 'object'
+  array  opcua StatusResult 'StatusResult' Structure Numeric:299 array True / dotnet Array StatusResult[] clr 'object[]' of (dotnet Complex StatusResult clr 'object')
+i=302 MessageSecurityMode
+  scalar opcua MessageSecurityMode 'MessageSecurityMode' Enum Numeric:302 array False / dotnet Enum MessageSecurityMode clr 'int' members 0=Invalid, 1=None, 2=Sign, 3=SignAndEncrypt
+  array  opcua MessageSecurityMode 'MessageSecurityMode' Enum Numeric:302 array True / dotnet Array MessageSecurityMode[] clr 'int[]' of (dotnet Enum MessageSecurityMode clr 'int' members 0=Invalid, 1=None, 2=Sign, 3=SignAndEncrypt)
+i=303 UserTokenType
+  scalar opcua UserTokenType 'UserTokenType' Enum Numeric:303 array False / dotnet Enum UserTokenType clr 'int' members 0=Anonymous, 1=UserName, 2=Certificate, 3=IssuedToken
+  array  opcua UserTokenType 'UserTokenType' Enum Numeric:303 array True / dotnet Array UserTokenType[] clr 'int[]' of (dotnet Enum UserTokenType clr 'int' members 0=Anonymous, 1=UserName, 2=Certificate, 3=IssuedToken)
+i=304 UserTokenPolicy
+  scalar opcua UserTokenPolicy 'UserTokenPolicy' Structure Numeric:304 array False / dotnet Complex UserTokenPolicy clr 'object'
+  array  opcua UserTokenPolicy 'UserTokenPolicy' Structure Numeric:304 array True / dotnet Array UserTokenPolicy[] clr 'object[]' of (dotnet Complex UserTokenPolicy clr 'object')
+i=307 ApplicationType
+  scalar opcua ApplicationType 'ApplicationType' Enum Numeric:307 array False / dotnet Enum ApplicationType clr 'int' members 0=Server, 1=Client, 2=ClientAndServer, 3=DiscoveryServer
+  array  opcua ApplicationType 'ApplicationType' Enum Numeric:307 array True / dotnet Array ApplicationType[] clr 'int[]' of (dotnet Enum ApplicationType clr 'int' members 0=Server, 1=Client, 2=ClientAndServer, 3=DiscoveryServer)
+i=308 ApplicationDescription
+  scalar opcua ApplicationDescription 'ApplicationDescription' Structure Numeric:308 array False / dotnet Complex ApplicationDescription clr 'object'
+  array  opcua ApplicationDescription 'ApplicationDescription' Structure Numeric:308 array True / dotnet Array ApplicationDescription[] clr 'object[]' of (dotnet Complex ApplicationDescription clr 'object')
+i=311 ApplicationInstanceCertificate
+  scalar opcua ByteString 'ByteString' Primitive Numeric:311 array False / dotnet Primitive ByteString clr 'byte[]'
+  array  opcua ByteString 'ByteString' Primitive Numeric:311 array True / dotnet Array ByteString[] clr 'byte[][]' of (dotnet Primitive ByteString clr 'byte[]')
+i=312 EndpointDescription
+  scalar opcua EndpointDescription 'EndpointDescription' Structure Numeric:312 array False / dotnet Complex EndpointDescription clr 'object'
+  array  opcua EndpointDescription 'EndpointDescription' Structure Numeric:312 array True / dotnet Array EndpointDescription[] clr 'object[]' of (dotnet Complex EndpointDescription clr 'object')
+i=315 SecurityTokenRequestType
+  scalar opcua SecurityTokenRequestType 'SecurityTokenRequestType' Enum Numeric:315 array False / dotnet Enum SecurityTokenRequestType clr 'int' members 0=Issue, 1=Renew
+  array  opcua SecurityTokenRequestType 'SecurityTokenRequestType' Enum Numeric:315 array True / dotnet Array SecurityTokenRequestType[] clr 'int[]' of (dotnet Enum SecurityTokenRequestType clr 'int' members 0=Issue, 1=Renew)
+i=316 UserIdentityToken
+  scalar opcua UserIdentityToken 'UserIdentityToken' Structure Numeric:316 array False / dotnet Complex UserIdentityToken clr 'object'
+  array  opcua UserIdentityToken 'UserIdentityToken' Structure Numeric:316 array True / dotnet Array UserIdentityToken[] clr 'object[]' of (dotnet Complex UserIdentityToken clr 'object')
+i=319 AnonymousIdentityToken
+  scalar opcua AnonymousIdentityToken 'AnonymousIdentityToken' Structure Numeric:319 array False / dotnet Complex AnonymousIdentityToken clr 'object'
+  array  opcua AnonymousIdentityToken 'AnonymousIdentityToken' Structure Numeric:319 array True / dotnet Array AnonymousIdentityToken[] clr 'object[]' of (dotnet Complex AnonymousIdentityToken clr 'object')
+i=322 UserNameIdentityToken
+  scalar opcua UserNameIdentityToken 'UserNameIdentityToken' Structure Numeric:322 array False / dotnet Complex UserNameIdentityToken clr 'object'
+  array  opcua UserNameIdentityToken 'UserNameIdentityToken' Structure Numeric:322 array True / dotnet Array UserNameIdentityToken[] clr 'object[]' of (dotnet Complex UserNameIdentityToken clr 'object')
+i=325 X509IdentityToken
+  scalar opcua X509IdentityToken 'X509IdentityToken' Structure Numeric:325 array False / dotnet Complex X509IdentityToken clr 'object'
+  array  opcua X509IdentityToken 'X509IdentityToken' Structure Numeric:325 array True / dotnet Array X509IdentityToken[] clr 'object[]' of (dotnet Complex X509IdentityToken clr 'object')
+i=331 EndpointConfiguration
+  scalar opcua EndpointConfiguration 'EndpointConfiguration' Structure Numeric:331 array False / dotnet Complex EndpointConfiguration clr 'object'
+  array  opcua EndpointConfiguration 'EndpointConfiguration' Structure Numeric:331 array True / dotnet Array EndpointConfiguration[] clr 'object[]' of (dotnet Complex EndpointConfiguration clr 'object')
+i=338 BuildInfo
+  scalar opcua BuildInfo 'BuildInfo' Structure Numeric:338 array False / dotnet Complex BuildInfo clr 'object'
+  array  opcua BuildInfo 'BuildInfo' Structure Numeric:338 array True / dotnet Array BuildInfo[] clr 'object[]' of (dotnet Complex BuildInfo clr 'object')
+i=344 SignedSoftwareCertificate
+  scalar opcua SignedSoftwareCertificate 'SignedSoftwareCertificate' Structure Numeric:344 array False / dotnet Complex SignedSoftwareCertificate clr 'object'
+  array  opcua SignedSoftwareCertificate 'SignedSoftwareCertificate' Structure Numeric:344 array True / dotnet Array SignedSoftwareCertificate[] clr 'object[]' of (dotnet Complex SignedSoftwareCertificate clr 'object')
+i=347 AttributeWriteMask
+  scalar opcua AttributeWriteMask 'AttributeWriteMask' Enum Numeric:347 array False / dotnet Enum AttributeWriteMask clr 'int' members 0=AccessLevel, 1=ArrayDimensions, 2=BrowseName, 3=ContainsNoLoops, 4=DataType, 5=Description, 6=DisplayName, 7=EventNotifier, 8=Executable, 9=Historizing, 10=InverseName, 11=IsAbstract, 12=MinimumSamplingInterval, 13=NodeClass, 14=NodeId, 15=Symmetric, 16=UserAccessLevel, 17=UserExecutable, 18=UserWriteMask, 19=ValueRank, 20=WriteMask, 21=ValueForVariableType, 22=DataTypeDefinition, 23=RolePermissions, 24=AccessRestrictions, 25=AccessLevelEx
+  array  opcua AttributeWriteMask 'AttributeWriteMask' Enum Numeric:347 array True / dotnet Array AttributeWriteMask[] clr 'int[]' of (dotnet Enum AttributeWriteMask clr 'int' members 0=AccessLevel, 1=ArrayDimensions, 2=BrowseName, 3=ContainsNoLoops, 4=DataType, 5=Description, 6=DisplayName, 7=EventNotifier, 8=Executable, 9=Historizing, 10=InverseName, 11=IsAbstract, 12=MinimumSamplingInterval, 13=NodeClass, 14=NodeId, 15=Symmetric, 16=UserAccessLevel, 17=UserExecutable, 18=UserWriteMask, 19=ValueRank, 20=WriteMask, 21=ValueForVariableType, 22=DataTypeDefinition, 23=RolePermissions, 24=AccessRestrictions, 25=AccessLevelEx)
+i=348 NodeAttributesMask
+  scalar opcua NodeAttributesMask 'NodeAttributesMask' Enum Numeric:348 array False / dotnet Enum NodeAttributesMask clr 'int' members 0=None, 1=AccessLevel, 2=ArrayDimensions, 4=BrowseName, 8=ContainsNoLoops, 16=DataType, 32=Description, 64=DisplayName, 128=EventNotifier, 256=Executable, 512=Historizing, 1024=InverseName, 2048=IsAbstract, 4096=MinimumSamplingInterval, 8192=NodeClass, 16384=NodeId, 32768=Symmetric, 65536=UserAccessLevel, 131072=UserExecutable, 262144=UserWriteMask, 524288=ValueRank, 1048576=WriteMask, 2097152=Value, 4194304=DataTypeDefinition, 8388608=RolePermissions, 16777216=AccessRestrictions, 33554431=All, 26501220=BaseNode, 26501348=Object, 26503268=ObjectType, 26571383=Variable, 28600438=VariableType, 26632548=Method, 26537060=ReferenceType, 26501356=View
+  array  opcua NodeAttributesMask 'NodeAttributesMask' Enum Numeric:348 array True / dotnet Array NodeAttributesMask[] clr 'int[]' of (dotnet Enum NodeAttributesMask clr 'int' members 0=None, 1=AccessLevel, 2=ArrayDimensions, 4=BrowseName, 8=ContainsNoLoops, 16=DataType, 32=Description, 64=DisplayName, 128=EventNotifier, 256=Executable, 512=Historizing, 1024=InverseName, 2048=IsAbstract, 4096=MinimumSamplingInterval, 8192=NodeClass, 16384=NodeId, 32768=Symmetric, 65536=UserAccessLevel, 131072=UserExecutable, 262144=UserWriteMask, 524288=ValueRank, 1048576=WriteMask, 2097152=Value, 4194304=DataTypeDefinition, 8388608=RolePermissions, 16777216=AccessRestrictions, 33554431=All, 26501220=BaseNode, 26501348=Object, 26503268=ObjectType, 26571383=Variable, 28600438=VariableType, 26632548=Method, 26537060=ReferenceType, 26501356=View)
+i=349 NodeAttributes
+  scalar opcua i=349 'i=349' Unknown Unknown: array False / dotnet Unknown i=349 clr 'object'
+  array  opcua i=349 'i=349' Unknown Unknown: array True / dotnet Array i=349[] clr 'object[]' of (dotnet Unknown i=349 clr 'object')
+i=352 ObjectAttributes
+  scalar opcua i=352 'i=352' Unknown Unknown: array False / dotnet Unknown i=352 clr 'object'
+  array  opcua i=352 'i=352' Unknown Unknown: array True / dotnet Array i=352[] clr 'object[]' of (dotnet Unknown i=352 clr 'object')
+i=355 VariableAttributes
+  scalar opcua i=355 'i=355' Unknown Unknown: array False / dotnet Unknown i=355 clr 'object'
+  array  opcua i=355 'i=355' Unknown Unknown: array True / dotnet Array i=355[] clr 'object[]' of (dotnet Unknown i=355 clr 'object')
+i=358 MethodAttributes
+  scalar opcua i=358 'i=358' Unknown Unknown: array False / dotnet Unknown i=358 clr 'object'
+  array  opcua i=358 'i=358' Unknown Unknown: array True / dotnet Array i=358[] clr 'object[]' of (dotnet Unknown i=358 clr 'object')
+i=361 ObjectTypeAttributes
+  scalar opcua i=361 'i=361' Unknown Unknown: array False / dotnet Unknown i=361 clr 'object'
+  array  opcua i=361 'i=361' Unknown Unknown: array True / dotnet Array i=361[] clr 'object[]' of (dotnet Unknown i=361 clr 'object')
+i=364 VariableTypeAttributes
+  scalar opcua i=364 'i=364' Unknown Unknown: array False / dotnet Unknown i=364 clr 'object'
+  array  opcua i=364 'i=364' Unknown Unknown: array True / dotnet Array i=364[] clr 'object[]' of (dotnet Unknown i=364 clr 'object')
+i=367 ReferenceTypeAttributes
+  scalar opcua i=367 'i=367' Unknown Unknown: array False / dotnet Unknown i=367 clr 'object'
+  array  opcua i=367 'i=367' Unknown Unknown: array True / dotnet Array i=367[] clr 'object[]' of (dotnet Unknown i=367 clr 'object')
+i=370 DataTypeAttributes
+  scalar opcua i=370 'i=370' Unknown Unknown: array False / dotnet Unknown i=370 clr 'object'
+  array  opcua i=370 'i=370' Unknown Unknown: array True / dotnet Array i=370[] clr 'object[]' of (dotnet Unknown i=370 clr 'object')
+i=373 ViewAttributes
+  scalar opcua i=373 'i=373' Unknown Unknown: array False / dotnet Unknown i=373 clr 'object'
+  array  opcua i=373 'i=373' Unknown Unknown: array True / dotnet Array i=373[] clr 'object[]' of (dotnet Unknown i=373 clr 'object')
+i=376 AddNodesItem
+  scalar opcua AddNodesItem 'AddNodesItem' Structure Numeric:376 array False / dotnet Complex AddNodesItem clr 'object'
+  array  opcua AddNodesItem 'AddNodesItem' Structure Numeric:376 array True / dotnet Array AddNodesItem[] clr 'object[]' of (dotnet Complex AddNodesItem clr 'object')
+i=379 AddReferencesItem
+  scalar opcua AddReferencesItem 'AddReferencesItem' Structure Numeric:379 array False / dotnet Complex AddReferencesItem clr 'object'
+  array  opcua AddReferencesItem 'AddReferencesItem' Structure Numeric:379 array True / dotnet Array AddReferencesItem[] clr 'object[]' of (dotnet Complex AddReferencesItem clr 'object')
+i=382 DeleteNodesItem
+  scalar opcua DeleteNodesItem 'DeleteNodesItem' Structure Numeric:382 array False / dotnet Complex DeleteNodesItem clr 'object'
+  array  opcua DeleteNodesItem 'DeleteNodesItem' Structure Numeric:382 array True / dotnet Array DeleteNodesItem[] clr 'object[]' of (dotnet Complex DeleteNodesItem clr 'object')
+i=385 DeleteReferencesItem
+  scalar opcua DeleteReferencesItem 'DeleteReferencesItem' Structure Numeric:385 array False / dotnet Complex DeleteReferencesItem clr 'object'
+  array  opcua DeleteReferencesItem 'DeleteReferencesItem' Structure Numeric:385 array True / dotnet Array DeleteReferencesItem[] clr 'object[]' of (dotnet Complex DeleteReferencesItem clr 'object')
+i=388 SessionAuthenticationToken
+  scalar opcua NodeId 'NodeId' Primitive Numeric:388 array False / dotnet Primitive NodeId clr 'NodeId'
+  array  opcua NodeId 'NodeId' Primitive Numeric:388 array True / dotnet Array NodeId[] clr 'NodeId[]' of (dotnet Primitive NodeId clr 'NodeId')
+i=389 RequestHeader
+  scalar opcua i=389 'i=389' Unknown Unknown: array False / dotnet Unknown i=389 clr 'object'
+  array  opcua i=389 'i=389' Unknown Unknown: array True / dotnet Array i=389[] clr 'object[]' of (dotnet Unknown i=389 clr 'object')
+i=392 ResponseHeader
+  scalar opcua i=392 'i=392' Unknown Unknown: array False / dotnet Unknown i=392 clr 'object'
+  array  opcua i=392 'i=392' Unknown Unknown: array True / dotnet Array i=392[] clr 'object[]' of (dotnet Unknown i=392 clr 'object')
+i=395 ServiceFault
+  scalar opcua i=395 'i=395' Unknown Unknown: array False / dotnet Unknown i=395 clr 'object'
+  array  opcua i=395 'i=395' Unknown Unknown: array True / dotnet Array i=395[] clr 'object[]' of (dotnet Unknown i=395 clr 'object')
+i=420 FindServersRequest
+  scalar opcua i=420 'i=420' Unknown Unknown: array False / dotnet Unknown i=420 clr 'object'
+  array  opcua i=420 'i=420' Unknown Unknown: array True / dotnet Array i=420[] clr 'object[]' of (dotnet Unknown i=420 clr 'object')
+i=423 FindServersResponse
+  scalar opcua i=423 'i=423' Unknown Unknown: array False / dotnet Unknown i=423 clr 'object'
+  array  opcua i=423 'i=423' Unknown Unknown: array True / dotnet Array i=423[] clr 'object[]' of (dotnet Unknown i=423 clr 'object')
+i=426 GetEndpointsRequest
+  scalar opcua i=426 'i=426' Unknown Unknown: array False / dotnet Unknown i=426 clr 'object'
+  array  opcua i=426 'i=426' Unknown Unknown: array True / dotnet Array i=426[] clr 'object[]' of (dotnet Unknown i=426 clr 'object')
+i=429 GetEndpointsResponse
+  scalar opcua i=429 'i=429' Unknown Unknown: array False / dotnet Unknown i=429 clr 'object'
+  array  opcua i=429 'i=429' Unknown Unknown: array True / dotnet Array i=429[] clr 'object[]' of (dotnet Unknown i=429 clr 'object')
+i=432 RegisteredServer
+  scalar opcua RegisteredServer 'RegisteredServer' Structure Numeric:432 array False / dotnet Complex RegisteredServer clr 'object'
+  array  opcua RegisteredServer 'RegisteredServer' Structure Numeric:432 array True / dotnet Array RegisteredServer[] clr 'object[]' of (dotnet Complex RegisteredServer clr 'object')
+i=435 RegisterServerRequest
+  scalar opcua i=435 'i=435' Unknown Unknown: array False / dotnet Unknown i=435 clr 'object'
+  array  opcua i=435 'i=435' Unknown Unknown: array True / dotnet Array i=435[] clr 'object[]' of (dotnet Unknown i=435 clr 'object')
+i=438 RegisterServerResponse
+  scalar opcua i=438 'i=438' Unknown Unknown: array False / dotnet Unknown i=438 clr 'object'
+  array  opcua i=438 'i=438' Unknown Unknown: array True / dotnet Array i=438[] clr 'object[]' of (dotnet Unknown i=438 clr 'object')
+i=441 ChannelSecurityToken
+  scalar opcua i=441 'i=441' Unknown Unknown: array False / dotnet Unknown i=441 clr 'object'
+  array  opcua i=441 'i=441' Unknown Unknown: array True / dotnet Array i=441[] clr 'object[]' of (dotnet Unknown i=441 clr 'object')
+i=444 OpenSecureChannelRequest
+  scalar opcua i=444 'i=444' Unknown Unknown: array False / dotnet Unknown i=444 clr 'object'
+  array  opcua i=444 'i=444' Unknown Unknown: array True / dotnet Array i=444[] clr 'object[]' of (dotnet Unknown i=444 clr 'object')
+i=447 OpenSecureChannelResponse
+  scalar opcua i=447 'i=447' Unknown Unknown: array False / dotnet Unknown i=447 clr 'object'
+  array  opcua i=447 'i=447' Unknown Unknown: array True / dotnet Array i=447[] clr 'object[]' of (dotnet Unknown i=447 clr 'object')
+i=450 CloseSecureChannelRequest
+  scalar opcua i=450 'i=450' Unknown Unknown: array False / dotnet Unknown i=450 clr 'object'
+  array  opcua i=450 'i=450' Unknown Unknown: array True / dotnet Array i=450[] clr 'object[]' of (dotnet Unknown i=450 clr 'object')
+i=453 CloseSecureChannelResponse
+  scalar opcua i=453 'i=453' Unknown Unknown: array False / dotnet Unknown i=453 clr 'object'
+  array  opcua i=453 'i=453' Unknown Unknown: array True / dotnet Array i=453[] clr 'object[]' of (dotnet Unknown i=453 clr 'object')
+i=456 SignatureData
+  scalar opcua SignatureData 'SignatureData' Structure Numeric:456 array False / dotnet Complex SignatureData clr 'object'
+  array  opcua SignatureData 'SignatureData' Structure Numeric:456 array True / dotnet Array SignatureData[] clr 'object[]' of (dotnet Complex SignatureData clr 'object')
+i=459 CreateSessionRequest
+  scalar opcua i=459 'i=459' Unknown Unknown: array False / dotnet Unknown i=459 clr 'object'
+  array  opcua i=459 'i=459' Unknown Unknown: array True / dotnet Array i=459[] clr 'object[]' of (dotnet Unknown i=459 clr 'object')
+i=462 CreateSessionResponse
+  scalar opcua i=462 'i=462' Unknown Unknown: array False / dotnet Unknown i=462 clr 'object'
+  array  opcua i=462 'i=462' Unknown Unknown: array True / dotnet Array i=462[] clr 'object[]' of (dotnet Unknown i=462 clr 'object')
+i=465 ActivateSessionRequest
+  scalar opcua i=465 'i=465' Unknown Unknown: array False / dotnet Unknown i=465 clr 'object'
+  array  opcua i=465 'i=465' Unknown Unknown: array True / dotnet Array i=465[] clr 'object[]' of (dotnet Unknown i=465 clr 'object')
+i=468 ActivateSessionResponse
+  scalar opcua i=468 'i=468' Unknown Unknown: array False / dotnet Unknown i=468 clr 'object'
+  array  opcua i=468 'i=468' Unknown Unknown: array True / dotnet Array i=468[] clr 'object[]' of (dotnet Unknown i=468 clr 'object')
+i=471 CloseSessionRequest
+  scalar opcua i=471 'i=471' Unknown Unknown: array False / dotnet Unknown i=471 clr 'object'
+  array  opcua i=471 'i=471' Unknown Unknown: array True / dotnet Array i=471[] clr 'object[]' of (dotnet Unknown i=471 clr 'object')
+i=474 CloseSessionResponse
+  scalar opcua i=474 'i=474' Unknown Unknown: array False / dotnet Unknown i=474 clr 'object'
+  array  opcua i=474 'i=474' Unknown Unknown: array True / dotnet Array i=474[] clr 'object[]' of (dotnet Unknown i=474 clr 'object')
+i=477 CancelRequest
+  scalar opcua i=477 'i=477' Unknown Unknown: array False / dotnet Unknown i=477 clr 'object'
+  array  opcua i=477 'i=477' Unknown Unknown: array True / dotnet Array i=477[] clr 'object[]' of (dotnet Unknown i=477 clr 'object')
+i=480 CancelResponse
+  scalar opcua i=480 'i=480' Unknown Unknown: array False / dotnet Unknown i=480 clr 'object'
+  array  opcua i=480 'i=480' Unknown Unknown: array True / dotnet Array i=480[] clr 'object[]' of (dotnet Unknown i=480 clr 'object')
+i=483 AddNodesResult
+  scalar opcua i=483 'i=483' Unknown Unknown: array False / dotnet Unknown i=483 clr 'object'
+  array  opcua i=483 'i=483' Unknown Unknown: array True / dotnet Array i=483[] clr 'object[]' of (dotnet Unknown i=483 clr 'object')
+i=486 AddNodesRequest
+  scalar opcua i=486 'i=486' Unknown Unknown: array False / dotnet Unknown i=486 clr 'object'
+  array  opcua i=486 'i=486' Unknown Unknown: array True / dotnet Array i=486[] clr 'object[]' of (dotnet Unknown i=486 clr 'object')
+i=489 AddNodesResponse
+  scalar opcua i=489 'i=489' Unknown Unknown: array False / dotnet Unknown i=489 clr 'object'
+  array  opcua i=489 'i=489' Unknown Unknown: array True / dotnet Array i=489[] clr 'object[]' of (dotnet Unknown i=489 clr 'object')
+i=492 AddReferencesRequest
+  scalar opcua i=492 'i=492' Unknown Unknown: array False / dotnet Unknown i=492 clr 'object'
+  array  opcua i=492 'i=492' Unknown Unknown: array True / dotnet Array i=492[] clr 'object[]' of (dotnet Unknown i=492 clr 'object')
+i=495 AddReferencesResponse
+  scalar opcua i=495 'i=495' Unknown Unknown: array False / dotnet Unknown i=495 clr 'object'
+  array  opcua i=495 'i=495' Unknown Unknown: array True / dotnet Array i=495[] clr 'object[]' of (dotnet Unknown i=495 clr 'object')
+i=498 DeleteNodesRequest
+  scalar opcua i=498 'i=498' Unknown Unknown: array False / dotnet Unknown i=498 clr 'object'
+  array  opcua i=498 'i=498' Unknown Unknown: array True / dotnet Array i=498[] clr 'object[]' of (dotnet Unknown i=498 clr 'object')
+i=501 DeleteNodesResponse
+  scalar opcua i=501 'i=501' Unknown Unknown: array False / dotnet Unknown i=501 clr 'object'
+  array  opcua i=501 'i=501' Unknown Unknown: array True / dotnet Array i=501[] clr 'object[]' of (dotnet Unknown i=501 clr 'object')
+i=504 DeleteReferencesRequest
+  scalar opcua i=504 'i=504' Unknown Unknown: array False / dotnet Unknown i=504 clr 'object'
+  array  opcua i=504 'i=504' Unknown Unknown: array True / dotnet Array i=504[] clr 'object[]' of (dotnet Unknown i=504 clr 'object')
+i=507 DeleteReferencesResponse
+  scalar opcua i=507 'i=507' Unknown Unknown: array False / dotnet Unknown i=507 clr 'object'
+  array  opcua i=507 'i=507' Unknown Unknown: array True / dotnet Array i=507[] clr 'object[]' of (dotnet Unknown i=507 clr 'object')
+i=510 BrowseDirection
+  scalar opcua i=510 'i=510' Unknown Unknown: array False / dotnet Unknown i=510 clr 'object'
+  array  opcua i=510 'i=510' Unknown Unknown: array True / dotnet Array i=510[] clr 'object[]' of (dotnet Unknown i=510 clr 'object')
+i=511 ViewDescription
+  scalar opcua i=511 'i=511' Unknown Unknown: array False / dotnet Unknown i=511 clr 'object'
+  array  opcua i=511 'i=511' Unknown Unknown: array True / dotnet Array i=511[] clr 'object[]' of (dotnet Unknown i=511 clr 'object')
+i=514 BrowseDescription
+  scalar opcua i=514 'i=514' Unknown Unknown: array False / dotnet Unknown i=514 clr 'object'
+  array  opcua i=514 'i=514' Unknown Unknown: array True / dotnet Array i=514[] clr 'object[]' of (dotnet Unknown i=514 clr 'object')
+i=517 BrowseResultMask
+  scalar opcua i=517 'i=517' Unknown Unknown: array False / dotnet Unknown i=517 clr 'object'
+  array  opcua i=517 'i=517' Unknown Unknown: array True / dotnet Array i=517[] clr 'object[]' of (dotnet Unknown i=517 clr 'object')
+i=518 ReferenceDescription
+  scalar opcua i=518 'i=518' Unknown Unknown: array False / dotnet Unknown i=518 clr 'object'
+  array  opcua i=518 'i=518' Unknown Unknown: array True / dotnet Array i=518[] clr 'object[]' of (dotnet Unknown i=518 clr 'object')
+i=521 ContinuationPoint
+  scalar opcua ByteString 'ByteString' Primitive Numeric:521 array False / dotnet Primitive ByteString clr 'byte[]'
+  array  opcua ByteString 'ByteString' Primitive Numeric:521 array True / dotnet Array ByteString[] clr 'byte[][]' of (dotnet Primitive ByteString clr 'byte[]')
+i=522 BrowseResult
+  scalar opcua i=522 'i=522' Unknown Unknown: array False / dotnet Unknown i=522 clr 'object'
+  array  opcua i=522 'i=522' Unknown Unknown: array True / dotnet Array i=522[] clr 'object[]' of (dotnet Unknown i=522 clr 'object')
+i=525 BrowseRequest
+  scalar opcua i=525 'i=525' Unknown Unknown: array False / dotnet Unknown i=525 clr 'object'
+  array  opcua i=525 'i=525' Unknown Unknown: array True / dotnet Array i=525[] clr 'object[]' of (dotnet Unknown i=525 clr 'object')
+i=528 BrowseResponse
+  scalar opcua i=528 'i=528' Unknown Unknown: array False / dotnet Unknown i=528 clr 'object'
+  array  opcua i=528 'i=528' Unknown Unknown: array True / dotnet Array i=528[] clr 'object[]' of (dotnet Unknown i=528 clr 'object')
+i=531 BrowseNextRequest
+  scalar opcua i=531 'i=531' Unknown Unknown: array False / dotnet Unknown i=531 clr 'object'
+  array  opcua i=531 'i=531' Unknown Unknown: array True / dotnet Array i=531[] clr 'object[]' of (dotnet Unknown i=531 clr 'object')
+i=534 BrowseNextResponse
+  scalar opcua i=534 'i=534' Unknown Unknown: array False / dotnet Unknown i=534 clr 'object'
+  array  opcua i=534 'i=534' Unknown Unknown: array True / dotnet Array i=534[] clr 'object[]' of (dotnet Unknown i=534 clr 'object')
+i=537 RelativePathElement
+  scalar opcua RelativePathElement 'RelativePathElement' Structure Numeric:537 array False / dotnet Complex RelativePathElement clr 'object'
+  array  opcua RelativePathElement 'RelativePathElement' Structure Numeric:537 array True / dotnet Array RelativePathElement[] clr 'object[]' of (dotnet Complex RelativePathElement clr 'object')
+i=540 RelativePath
+  scalar opcua RelativePath 'RelativePath' Structure Numeric:540 array False / dotnet Complex RelativePath clr 'object'
+  array  opcua RelativePath 'RelativePath' Structure Numeric:540 array True / dotnet Array RelativePath[] clr 'object[]' of (dotnet Complex RelativePath clr 'object')
+i=543 BrowsePath
+  scalar opcua i=543 'i=543' Unknown Unknown: array False / dotnet Unknown i=543 clr 'object'
+  array  opcua i=543 'i=543' Unknown Unknown: array True / dotnet Array i=543[] clr 'object[]' of (dotnet Unknown i=543 clr 'object')
+i=546 BrowsePathTarget
+  scalar opcua i=546 'i=546' Unknown Unknown: array False / dotnet Unknown i=546 clr 'object'
+  array  opcua i=546 'i=546' Unknown Unknown: array True / dotnet Array i=546[] clr 'object[]' of (dotnet Unknown i=546 clr 'object')
+i=549 BrowsePathResult
+  scalar opcua i=549 'i=549' Unknown Unknown: array False / dotnet Unknown i=549 clr 'object'
+  array  opcua i=549 'i=549' Unknown Unknown: array True / dotnet Array i=549[] clr 'object[]' of (dotnet Unknown i=549 clr 'object')
+i=552 TranslateBrowsePathsToNodeIdsRequest
+  scalar opcua i=552 'i=552' Unknown Unknown: array False / dotnet Unknown i=552 clr 'object'
+  array  opcua i=552 'i=552' Unknown Unknown: array True / dotnet Array i=552[] clr 'object[]' of (dotnet Unknown i=552 clr 'object')
+i=555 TranslateBrowsePathsToNodeIdsResponse
+  scalar opcua i=555 'i=555' Unknown Unknown: array False / dotnet Unknown i=555 clr 'object'
+  array  opcua i=555 'i=555' Unknown Unknown: array True / dotnet Array i=555[] clr 'object[]' of (dotnet Unknown i=555 clr 'object')
+i=558 RegisterNodesRequest
+  scalar opcua i=558 'i=558' Unknown Unknown: array False / dotnet Unknown i=558 clr 'object'
+  array  opcua i=558 'i=558' Unknown Unknown: array True / dotnet Array i=558[] clr 'object[]' of (dotnet Unknown i=558 clr 'object')
+i=561 RegisterNodesResponse
+  scalar opcua i=561 'i=561' Unknown Unknown: array False / dotnet Unknown i=561 clr 'object'
+  array  opcua i=561 'i=561' Unknown Unknown: array True / dotnet Array i=561[] clr 'object[]' of (dotnet Unknown i=561 clr 'object')
+i=564 UnregisterNodesRequest
+  scalar opcua i=564 'i=564' Unknown Unknown: array False / dotnet Unknown i=564 clr 'object'
+  array  opcua i=564 'i=564' Unknown Unknown: array True / dotnet Array i=564[] clr 'object[]' of (dotnet Unknown i=564 clr 'object')
+i=567 UnregisterNodesResponse
+  scalar opcua i=567 'i=567' Unknown Unknown: array False / dotnet Unknown i=567 clr 'object'
+  array  opcua i=567 'i=567' Unknown Unknown: array True / dotnet Array i=567[] clr 'object[]' of (dotnet Unknown i=567 clr 'object')
+i=570 QueryDataDescription
+  scalar opcua i=570 'i=570' Unknown Unknown: array False / dotnet Unknown i=570 clr 'object'
+  array  opcua i=570 'i=570' Unknown Unknown: array True / dotnet Array i=570[] clr 'object[]' of (dotnet Unknown i=570 clr 'object')
+i=573 NodeTypeDescription
+  scalar opcua i=573 'i=573' Unknown Unknown: array False / dotnet Unknown i=573 clr 'object'
+  array  opcua i=573 'i=573' Unknown Unknown: array True / dotnet Array i=573[] clr 'object[]' of (dotnet Unknown i=573 clr 'object')
+i=576 FilterOperator
+  scalar opcua FilterOperator 'FilterOperator' Enum Numeric:576 array False / dotnet Enum FilterOperator clr 'int' members 0=Equals, 1=IsNull, 2=GreaterThan, 3=LessThan, 4=GreaterThanOrEqual, 5=LessThanOrEqual, 6=Like, 7=Not, 8=Between, 9=InList, 10=And, 11=Or, 12=Cast, 13=InView, 14=OfType, 15=RelatedTo, 16=BitwiseAnd, 17=BitwiseOr
+  array  opcua FilterOperator 'FilterOperator' Enum Numeric:576 array True / dotnet Array FilterOperator[] clr 'int[]' of (dotnet Enum FilterOperator clr 'int' members 0=Equals, 1=IsNull, 2=GreaterThan, 3=LessThan, 4=GreaterThanOrEqual, 5=LessThanOrEqual, 6=Like, 7=Not, 8=Between, 9=InList, 10=And, 11=Or, 12=Cast, 13=InView, 14=OfType, 15=RelatedTo, 16=BitwiseAnd, 17=BitwiseOr)
+i=577 QueryDataSet
+  scalar opcua i=577 'i=577' Unknown Unknown: array False / dotnet Unknown i=577 clr 'object'
+  array  opcua i=577 'i=577' Unknown Unknown: array True / dotnet Array i=577[] clr 'object[]' of (dotnet Unknown i=577 clr 'object')
+i=580 NodeReference
+  scalar opcua i=580 'i=580' Unknown Unknown: array False / dotnet Unknown i=580 clr 'object'
+  array  opcua i=580 'i=580' Unknown Unknown: array True / dotnet Array i=580[] clr 'object[]' of (dotnet Unknown i=580 clr 'object')
+i=583 ContentFilterElement
+  scalar opcua ContentFilterElement 'ContentFilterElement' Structure Numeric:583 array False / dotnet Complex ContentFilterElement clr 'object'
+  array  opcua ContentFilterElement 'ContentFilterElement' Structure Numeric:583 array True / dotnet Array ContentFilterElement[] clr 'object[]' of (dotnet Complex ContentFilterElement clr 'object')
+i=586 ContentFilter
+  scalar opcua ContentFilter 'ContentFilter' Structure Numeric:586 array False / dotnet Complex ContentFilter clr 'object'
+  array  opcua ContentFilter 'ContentFilter' Structure Numeric:586 array True / dotnet Array ContentFilter[] clr 'object[]' of (dotnet Complex ContentFilter clr 'object')
+i=589 FilterOperand
+  scalar opcua FilterOperand 'FilterOperand' Structure Numeric:589 array False / dotnet Complex FilterOperand clr 'object'
+  array  opcua FilterOperand 'FilterOperand' Structure Numeric:589 array True / dotnet Array FilterOperand[] clr 'object[]' of (dotnet Complex FilterOperand clr 'object')
+i=592 ElementOperand
+  scalar opcua ElementOperand 'ElementOperand' Structure Numeric:592 array False / dotnet Complex ElementOperand clr 'object'
+  array  opcua ElementOperand 'ElementOperand' Structure Numeric:592 array True / dotnet Array ElementOperand[] clr 'object[]' of (dotnet Complex ElementOperand clr 'object')
+i=595 LiteralOperand
+  scalar opcua LiteralOperand 'LiteralOperand' Structure Numeric:595 array False / dotnet Complex LiteralOperand clr 'object'
+  array  opcua LiteralOperand 'LiteralOperand' Structure Numeric:595 array True / dotnet Array LiteralOperand[] clr 'object[]' of (dotnet Complex LiteralOperand clr 'object')
+i=598 AttributeOperand
+  scalar opcua AttributeOperand 'AttributeOperand' Structure Numeric:598 array False / dotnet Complex AttributeOperand clr 'object'
+  array  opcua AttributeOperand 'AttributeOperand' Structure Numeric:598 array True / dotnet Array AttributeOperand[] clr 'object[]' of (dotnet Complex AttributeOperand clr 'object')
+i=601 SimpleAttributeOperand
+  scalar opcua SimpleAttributeOperand 'SimpleAttributeOperand' Structure Numeric:601 array False / dotnet Complex SimpleAttributeOperand clr 'object'
+  array  opcua SimpleAttributeOperand 'SimpleAttributeOperand' Structure Numeric:601 array True / dotnet Array SimpleAttributeOperand[] clr 'object[]' of (dotnet Complex SimpleAttributeOperand clr 'object')
+i=604 ContentFilterElementResult
+  scalar opcua i=604 'i=604' Unknown Unknown: array False / dotnet Unknown i=604 clr 'object'
+  array  opcua i=604 'i=604' Unknown Unknown: array True / dotnet Array i=604[] clr 'object[]' of (dotnet Unknown i=604 clr 'object')
+i=607 ContentFilterResult
+  scalar opcua i=607 'i=607' Unknown Unknown: array False / dotnet Unknown i=607 clr 'object'
+  array  opcua i=607 'i=607' Unknown Unknown: array True / dotnet Array i=607[] clr 'object[]' of (dotnet Unknown i=607 clr 'object')
+i=610 ParsingResult
+  scalar opcua i=610 'i=610' Unknown Unknown: array False / dotnet Unknown i=610 clr 'object'
+  array  opcua i=610 'i=610' Unknown Unknown: array True / dotnet Array i=610[] clr 'object[]' of (dotnet Unknown i=610 clr 'object')
+i=613 QueryFirstRequest
+  scalar opcua i=613 'i=613' Unknown Unknown: array False / dotnet Unknown i=613 clr 'object'
+  array  opcua i=613 'i=613' Unknown Unknown: array True / dotnet Array i=613[] clr 'object[]' of (dotnet Unknown i=613 clr 'object')
+i=616 QueryFirstResponse
+  scalar opcua i=616 'i=616' Unknown Unknown: array False / dotnet Unknown i=616 clr 'object'
+  array  opcua i=616 'i=616' Unknown Unknown: array True / dotnet Array i=616[] clr 'object[]' of (dotnet Unknown i=616 clr 'object')
+i=619 QueryNextRequest
+  scalar opcua i=619 'i=619' Unknown Unknown: array False / dotnet Unknown i=619 clr 'object'
+  array  opcua i=619 'i=619' Unknown Unknown: array True / dotnet Array i=619[] clr 'object[]' of (dotnet Unknown i=619 clr 'object')
+i=622 QueryNextResponse
+  scalar opcua i=622 'i=622' Unknown Unknown: array False / dotnet Unknown i=622 clr 'object'
+  array  opcua i=622 'i=622' Unknown Unknown: array True / dotnet Array i=622[] clr 'object[]' of (dotnet Unknown i=622 clr 'object')
+i=625 TimestampsToReturn
+  scalar opcua i=625 'i=625' Unknown Unknown: array False / dotnet Unknown i=625 clr 'object'
+  array  opcua i=625 'i=625' Unknown Unknown: array True / dotnet Array i=625[] clr 'object[]' of (dotnet Unknown i=625 clr 'object')
+i=626 ReadValueId
+  scalar opcua i=626 'i=626' Unknown Unknown: array False / dotnet Unknown i=626 clr 'object'
+  array  opcua i=626 'i=626' Unknown Unknown: array True / dotnet Array i=626[] clr 'object[]' of (dotnet Unknown i=626 clr 'object')
+i=629 ReadRequest
+  scalar opcua i=629 'i=629' Unknown Unknown: array False / dotnet Unknown i=629 clr 'object'
+  array  opcua i=629 'i=629' Unknown Unknown: array True / dotnet Array i=629[] clr 'object[]' of (dotnet Unknown i=629 clr 'object')
+i=632 ReadResponse
+  scalar opcua i=632 'i=632' Unknown Unknown: array False / dotnet Unknown i=632 clr 'object'
+  array  opcua i=632 'i=632' Unknown Unknown: array True / dotnet Array i=632[] clr 'object[]' of (dotnet Unknown i=632 clr 'object')
+i=635 HistoryReadValueId
+  scalar opcua i=635 'i=635' Unknown Unknown: array False / dotnet Unknown i=635 clr 'object'
+  array  opcua i=635 'i=635' Unknown Unknown: array True / dotnet Array i=635[] clr 'object[]' of (dotnet Unknown i=635 clr 'object')
+i=638 HistoryReadResult
+  scalar opcua i=638 'i=638' Unknown Unknown: array False / dotnet Unknown i=638 clr 'object'
+  array  opcua i=638 'i=638' Unknown Unknown: array True / dotnet Array i=638[] clr 'object[]' of (dotnet Unknown i=638 clr 'object')
+i=641 HistoryReadDetails
+  scalar opcua i=641 'i=641' Unknown Unknown: array False / dotnet Unknown i=641 clr 'object'
+  array  opcua i=641 'i=641' Unknown Unknown: array True / dotnet Array i=641[] clr 'object[]' of (dotnet Unknown i=641 clr 'object')
+i=644 ReadEventDetails
+  scalar opcua i=644 'i=644' Unknown Unknown: array False / dotnet Unknown i=644 clr 'object'
+  array  opcua i=644 'i=644' Unknown Unknown: array True / dotnet Array i=644[] clr 'object[]' of (dotnet Unknown i=644 clr 'object')
+i=647 ReadRawModifiedDetails
+  scalar opcua i=647 'i=647' Unknown Unknown: array False / dotnet Unknown i=647 clr 'object'
+  array  opcua i=647 'i=647' Unknown Unknown: array True / dotnet Array i=647[] clr 'object[]' of (dotnet Unknown i=647 clr 'object')
+i=650 ReadProcessedDetails
+  scalar opcua i=650 'i=650' Unknown Unknown: array False / dotnet Unknown i=650 clr 'object'
+  array  opcua i=650 'i=650' Unknown Unknown: array True / dotnet Array i=650[] clr 'object[]' of (dotnet Unknown i=650 clr 'object')
+i=653 ReadAtTimeDetails
+  scalar opcua i=653 'i=653' Unknown Unknown: array False / dotnet Unknown i=653 clr 'object'
+  array  opcua i=653 'i=653' Unknown Unknown: array True / dotnet Array i=653[] clr 'object[]' of (dotnet Unknown i=653 clr 'object')
+i=656 HistoryData
+  scalar opcua i=656 'i=656' Unknown Unknown: array False / dotnet Unknown i=656 clr 'object'
+  array  opcua i=656 'i=656' Unknown Unknown: array True / dotnet Array i=656[] clr 'object[]' of (dotnet Unknown i=656 clr 'object')
+i=659 HistoryEvent
+  scalar opcua HistoryEvent 'HistoryEvent' Structure Numeric:659 array False / dotnet Complex HistoryEvent clr 'object'
+  array  opcua HistoryEvent 'HistoryEvent' Structure Numeric:659 array True / dotnet Array HistoryEvent[] clr 'object[]' of (dotnet Complex HistoryEvent clr 'object')
+i=662 HistoryReadRequest
+  scalar opcua i=662 'i=662' Unknown Unknown: array False / dotnet Unknown i=662 clr 'object'
+  array  opcua i=662 'i=662' Unknown Unknown: array True / dotnet Array i=662[] clr 'object[]' of (dotnet Unknown i=662 clr 'object')
+i=665 HistoryReadResponse
+  scalar opcua i=665 'i=665' Unknown Unknown: array False / dotnet Unknown i=665 clr 'object'
+  array  opcua i=665 'i=665' Unknown Unknown: array True / dotnet Array i=665[] clr 'object[]' of (dotnet Unknown i=665 clr 'object')
+i=668 WriteValue
+  scalar opcua i=668 'i=668' Unknown Unknown: array False / dotnet Unknown i=668 clr 'object'
+  array  opcua i=668 'i=668' Unknown Unknown: array True / dotnet Array i=668[] clr 'object[]' of (dotnet Unknown i=668 clr 'object')
+i=671 WriteRequest
+  scalar opcua i=671 'i=671' Unknown Unknown: array False / dotnet Unknown i=671 clr 'object'
+  array  opcua i=671 'i=671' Unknown Unknown: array True / dotnet Array i=671[] clr 'object[]' of (dotnet Unknown i=671 clr 'object')
+i=674 WriteResponse
+  scalar opcua i=674 'i=674' Unknown Unknown: array False / dotnet Unknown i=674 clr 'object'
+  array  opcua i=674 'i=674' Unknown Unknown: array True / dotnet Array i=674[] clr 'object[]' of (dotnet Unknown i=674 clr 'object')
+i=677 HistoryUpdateDetails
+  scalar opcua i=677 'i=677' Unknown Unknown: array False / dotnet Unknown i=677 clr 'object'
+  array  opcua i=677 'i=677' Unknown Unknown: array True / dotnet Array i=677[] clr 'object[]' of (dotnet Unknown i=677 clr 'object')
+i=680 UpdateDataDetails
+  scalar opcua i=680 'i=680' Unknown Unknown: array False / dotnet Unknown i=680 clr 'object'
+  array  opcua i=680 'i=680' Unknown Unknown: array True / dotnet Array i=680[] clr 'object[]' of (dotnet Unknown i=680 clr 'object')
+i=683 UpdateEventDetails
+  scalar opcua i=683 'i=683' Unknown Unknown: array False / dotnet Unknown i=683 clr 'object'
+  array  opcua i=683 'i=683' Unknown Unknown: array True / dotnet Array i=683[] clr 'object[]' of (dotnet Unknown i=683 clr 'object')
+i=686 DeleteRawModifiedDetails
+  scalar opcua i=686 'i=686' Unknown Unknown: array False / dotnet Unknown i=686 clr 'object'
+  array  opcua i=686 'i=686' Unknown Unknown: array True / dotnet Array i=686[] clr 'object[]' of (dotnet Unknown i=686 clr 'object')
+i=689 DeleteAtTimeDetails
+  scalar opcua i=689 'i=689' Unknown Unknown: array False / dotnet Unknown i=689 clr 'object'
+  array  opcua i=689 'i=689' Unknown Unknown: array True / dotnet Array i=689[] clr 'object[]' of (dotnet Unknown i=689 clr 'object')
+i=692 DeleteEventDetails
+  scalar opcua i=692 'i=692' Unknown Unknown: array False / dotnet Unknown i=692 clr 'object'
+  array  opcua i=692 'i=692' Unknown Unknown: array True / dotnet Array i=692[] clr 'object[]' of (dotnet Unknown i=692 clr 'object')
+i=695 HistoryUpdateResult
+  scalar opcua i=695 'i=695' Unknown Unknown: array False / dotnet Unknown i=695 clr 'object'
+  array  opcua i=695 'i=695' Unknown Unknown: array True / dotnet Array i=695[] clr 'object[]' of (dotnet Unknown i=695 clr 'object')
+i=698 HistoryUpdateRequest
+  scalar opcua i=698 'i=698' Unknown Unknown: array False / dotnet Unknown i=698 clr 'object'
+  array  opcua i=698 'i=698' Unknown Unknown: array True / dotnet Array i=698[] clr 'object[]' of (dotnet Unknown i=698 clr 'object')
+i=701 HistoryUpdateResponse
+  scalar opcua i=701 'i=701' Unknown Unknown: array False / dotnet Unknown i=701 clr 'object'
+  array  opcua i=701 'i=701' Unknown Unknown: array True / dotnet Array i=701[] clr 'object[]' of (dotnet Unknown i=701 clr 'object')
+i=704 CallMethodRequest
+  scalar opcua i=704 'i=704' Unknown Unknown: array False / dotnet Unknown i=704 clr 'object'
+  array  opcua i=704 'i=704' Unknown Unknown: array True / dotnet Array i=704[] clr 'object[]' of (dotnet Unknown i=704 clr 'object')
+i=707 CallMethodResult
+  scalar opcua i=707 'i=707' Unknown Unknown: array False / dotnet Unknown i=707 clr 'object'
+  array  opcua i=707 'i=707' Unknown Unknown: array True / dotnet Array i=707[] clr 'object[]' of (dotnet Unknown i=707 clr 'object')
+i=710 CallRequest
+  scalar opcua i=710 'i=710' Unknown Unknown: array False / dotnet Unknown i=710 clr 'object'
+  array  opcua i=710 'i=710' Unknown Unknown: array True / dotnet Array i=710[] clr 'object[]' of (dotnet Unknown i=710 clr 'object')
+i=713 CallResponse
+  scalar opcua i=713 'i=713' Unknown Unknown: array False / dotnet Unknown i=713 clr 'object'
+  array  opcua i=713 'i=713' Unknown Unknown: array True / dotnet Array i=713[] clr 'object[]' of (dotnet Unknown i=713 clr 'object')
+i=716 MonitoringMode
+  scalar opcua i=716 'i=716' Unknown Unknown: array False / dotnet Unknown i=716 clr 'object'
+  array  opcua i=716 'i=716' Unknown Unknown: array True / dotnet Array i=716[] clr 'object[]' of (dotnet Unknown i=716 clr 'object')
+i=717 DataChangeTrigger
+  scalar opcua i=717 'i=717' Unknown Unknown: array False / dotnet Unknown i=717 clr 'object'
+  array  opcua i=717 'i=717' Unknown Unknown: array True / dotnet Array i=717[] clr 'object[]' of (dotnet Unknown i=717 clr 'object')
+i=718 DeadbandType
+  scalar opcua i=718 'i=718' Unknown Unknown: array False / dotnet Unknown i=718 clr 'object'
+  array  opcua i=718 'i=718' Unknown Unknown: array True / dotnet Array i=718[] clr 'object[]' of (dotnet Unknown i=718 clr 'object')
+i=719 MonitoringFilter
+  scalar opcua MonitoringFilter 'MonitoringFilter' Structure Numeric:719 array False / dotnet Complex MonitoringFilter clr 'object'
+  array  opcua MonitoringFilter 'MonitoringFilter' Structure Numeric:719 array True / dotnet Array MonitoringFilter[] clr 'object[]' of (dotnet Complex MonitoringFilter clr 'object')
+i=722 DataChangeFilter
+  scalar opcua i=722 'i=722' Unknown Unknown: array False / dotnet Unknown i=722 clr 'object'
+  array  opcua i=722 'i=722' Unknown Unknown: array True / dotnet Array i=722[] clr 'object[]' of (dotnet Unknown i=722 clr 'object')
+i=725 EventFilter
+  scalar opcua EventFilter 'EventFilter' Structure Numeric:725 array False / dotnet Complex EventFilter clr 'object'
+  array  opcua EventFilter 'EventFilter' Structure Numeric:725 array True / dotnet Array EventFilter[] clr 'object[]' of (dotnet Complex EventFilter clr 'object')
+i=728 AggregateFilter
+  scalar opcua i=728 'i=728' Unknown Unknown: array False / dotnet Unknown i=728 clr 'object'
+  array  opcua i=728 'i=728' Unknown Unknown: array True / dotnet Array i=728[] clr 'object[]' of (dotnet Unknown i=728 clr 'object')
+i=731 MonitoringFilterResult
+  scalar opcua i=731 'i=731' Unknown Unknown: array False / dotnet Unknown i=731 clr 'object'
+  array  opcua i=731 'i=731' Unknown Unknown: array True / dotnet Array i=731[] clr 'object[]' of (dotnet Unknown i=731 clr 'object')
+i=734 EventFilterResult
+  scalar opcua i=734 'i=734' Unknown Unknown: array False / dotnet Unknown i=734 clr 'object'
+  array  opcua i=734 'i=734' Unknown Unknown: array True / dotnet Array i=734[] clr 'object[]' of (dotnet Unknown i=734 clr 'object')
+i=737 AggregateFilterResult
+  scalar opcua i=737 'i=737' Unknown Unknown: array False / dotnet Unknown i=737 clr 'object'
+  array  opcua i=737 'i=737' Unknown Unknown: array True / dotnet Array i=737[] clr 'object[]' of (dotnet Unknown i=737 clr 'object')
+i=740 MonitoringParameters
+  scalar opcua i=740 'i=740' Unknown Unknown: array False / dotnet Unknown i=740 clr 'object'
+  array  opcua i=740 'i=740' Unknown Unknown: array True / dotnet Array i=740[] clr 'object[]' of (dotnet Unknown i=740 clr 'object')
+i=743 MonitoredItemCreateRequest
+  scalar opcua i=743 'i=743' Unknown Unknown: array False / dotnet Unknown i=743 clr 'object'
+  array  opcua i=743 'i=743' Unknown Unknown: array True / dotnet Array i=743[] clr 'object[]' of (dotnet Unknown i=743 clr 'object')
+i=746 MonitoredItemCreateResult
+  scalar opcua i=746 'i=746' Unknown Unknown: array False / dotnet Unknown i=746 clr 'object'
+  array  opcua i=746 'i=746' Unknown Unknown: array True / dotnet Array i=746[] clr 'object[]' of (dotnet Unknown i=746 clr 'object')
+i=749 CreateMonitoredItemsRequest
+  scalar opcua i=749 'i=749' Unknown Unknown: array False / dotnet Unknown i=749 clr 'object'
+  array  opcua i=749 'i=749' Unknown Unknown: array True / dotnet Array i=749[] clr 'object[]' of (dotnet Unknown i=749 clr 'object')
+i=752 CreateMonitoredItemsResponse
+  scalar opcua i=752 'i=752' Unknown Unknown: array False / dotnet Unknown i=752 clr 'object'
+  array  opcua i=752 'i=752' Unknown Unknown: array True / dotnet Array i=752[] clr 'object[]' of (dotnet Unknown i=752 clr 'object')
+i=755 MonitoredItemModifyRequest
+  scalar opcua i=755 'i=755' Unknown Unknown: array False / dotnet Unknown i=755 clr 'object'
+  array  opcua i=755 'i=755' Unknown Unknown: array True / dotnet Array i=755[] clr 'object[]' of (dotnet Unknown i=755 clr 'object')
+i=758 MonitoredItemModifyResult
+  scalar opcua i=758 'i=758' Unknown Unknown: array False / dotnet Unknown i=758 clr 'object'
+  array  opcua i=758 'i=758' Unknown Unknown: array True / dotnet Array i=758[] clr 'object[]' of (dotnet Unknown i=758 clr 'object')
+i=761 ModifyMonitoredItemsRequest
+  scalar opcua i=761 'i=761' Unknown Unknown: array False / dotnet Unknown i=761 clr 'object'
+  array  opcua i=761 'i=761' Unknown Unknown: array True / dotnet Array i=761[] clr 'object[]' of (dotnet Unknown i=761 clr 'object')
+i=764 ModifyMonitoredItemsResponse
+  scalar opcua i=764 'i=764' Unknown Unknown: array False / dotnet Unknown i=764 clr 'object'
+  array  opcua i=764 'i=764' Unknown Unknown: array True / dotnet Array i=764[] clr 'object[]' of (dotnet Unknown i=764 clr 'object')
+i=767 SetMonitoringModeRequest
+  scalar opcua i=767 'i=767' Unknown Unknown: array False / dotnet Unknown i=767 clr 'object'
+  array  opcua i=767 'i=767' Unknown Unknown: array True / dotnet Array i=767[] clr 'object[]' of (dotnet Unknown i=767 clr 'object')
+i=770 SetMonitoringModeResponse
+  scalar opcua i=770 'i=770' Unknown Unknown: array False / dotnet Unknown i=770 clr 'object'
+  array  opcua i=770 'i=770' Unknown Unknown: array True / dotnet Array i=770[] clr 'object[]' of (dotnet Unknown i=770 clr 'object')
+i=773 SetTriggeringRequest
+  scalar opcua i=773 'i=773' Unknown Unknown: array False / dotnet Unknown i=773 clr 'object'
+  array  opcua i=773 'i=773' Unknown Unknown: array True / dotnet Array i=773[] clr 'object[]' of (dotnet Unknown i=773 clr 'object')
+i=776 SetTriggeringResponse
+  scalar opcua i=776 'i=776' Unknown Unknown: array False / dotnet Unknown i=776 clr 'object'
+  array  opcua i=776 'i=776' Unknown Unknown: array True / dotnet Array i=776[] clr 'object[]' of (dotnet Unknown i=776 clr 'object')
+i=779 DeleteMonitoredItemsRequest
+  scalar opcua i=779 'i=779' Unknown Unknown: array False / dotnet Unknown i=779 clr 'object'
+  array  opcua i=779 'i=779' Unknown Unknown: array True / dotnet Array i=779[] clr 'object[]' of (dotnet Unknown i=779 clr 'object')
+i=782 DeleteMonitoredItemsResponse
+  scalar opcua i=782 'i=782' Unknown Unknown: array False / dotnet Unknown i=782 clr 'object'
+  array  opcua i=782 'i=782' Unknown Unknown: array True / dotnet Array i=782[] clr 'object[]' of (dotnet Unknown i=782 clr 'object')
+i=785 CreateSubscriptionRequest
+  scalar opcua i=785 'i=785' Unknown Unknown: array False / dotnet Unknown i=785 clr 'object'
+  array  opcua i=785 'i=785' Unknown Unknown: array True / dotnet Array i=785[] clr 'object[]' of (dotnet Unknown i=785 clr 'object')
+i=788 CreateSubscriptionResponse
+  scalar opcua i=788 'i=788' Unknown Unknown: array False / dotnet Unknown i=788 clr 'object'
+  array  opcua i=788 'i=788' Unknown Unknown: array True / dotnet Array i=788[] clr 'object[]' of (dotnet Unknown i=788 clr 'object')
+i=791 ModifySubscriptionRequest
+  scalar opcua i=791 'i=791' Unknown Unknown: array False / dotnet Unknown i=791 clr 'object'
+  array  opcua i=791 'i=791' Unknown Unknown: array True / dotnet Array i=791[] clr 'object[]' of (dotnet Unknown i=791 clr 'object')
+i=794 ModifySubscriptionResponse
+  scalar opcua i=794 'i=794' Unknown Unknown: array False / dotnet Unknown i=794 clr 'object'
+  array  opcua i=794 'i=794' Unknown Unknown: array True / dotnet Array i=794[] clr 'object[]' of (dotnet Unknown i=794 clr 'object')
+i=797 SetPublishingModeRequest
+  scalar opcua i=797 'i=797' Unknown Unknown: array False / dotnet Unknown i=797 clr 'object'
+  array  opcua i=797 'i=797' Unknown Unknown: array True / dotnet Array i=797[] clr 'object[]' of (dotnet Unknown i=797 clr 'object')
+i=800 SetPublishingModeResponse
+  scalar opcua i=800 'i=800' Unknown Unknown: array False / dotnet Unknown i=800 clr 'object'
+  array  opcua i=800 'i=800' Unknown Unknown: array True / dotnet Array i=800[] clr 'object[]' of (dotnet Unknown i=800 clr 'object')
+i=803 NotificationMessage
+  scalar opcua i=803 'i=803' Unknown Unknown: array False / dotnet Unknown i=803 clr 'object'
+  array  opcua i=803 'i=803' Unknown Unknown: array True / dotnet Array i=803[] clr 'object[]' of (dotnet Unknown i=803 clr 'object')
+i=806 MonitoredItemNotification
+  scalar opcua i=806 'i=806' Unknown Unknown: array False / dotnet Unknown i=806 clr 'object'
+  array  opcua i=806 'i=806' Unknown Unknown: array True / dotnet Array i=806[] clr 'object[]' of (dotnet Unknown i=806 clr 'object')
+i=809 DataChangeNotification
+  scalar opcua i=809 'i=809' Unknown Unknown: array False / dotnet Unknown i=809 clr 'object'
+  array  opcua i=809 'i=809' Unknown Unknown: array True / dotnet Array i=809[] clr 'object[]' of (dotnet Unknown i=809 clr 'object')
+i=818 StatusChangeNotification
+  scalar opcua i=818 'i=818' Unknown Unknown: array False / dotnet Unknown i=818 clr 'object'
+  array  opcua i=818 'i=818' Unknown Unknown: array True / dotnet Array i=818[] clr 'object[]' of (dotnet Unknown i=818 clr 'object')
+i=821 SubscriptionAcknowledgement
+  scalar opcua i=821 'i=821' Unknown Unknown: array False / dotnet Unknown i=821 clr 'object'
+  array  opcua i=821 'i=821' Unknown Unknown: array True / dotnet Array i=821[] clr 'object[]' of (dotnet Unknown i=821 clr 'object')
+i=824 PublishRequest
+  scalar opcua i=824 'i=824' Unknown Unknown: array False / dotnet Unknown i=824 clr 'object'
+  array  opcua i=824 'i=824' Unknown Unknown: array True / dotnet Array i=824[] clr 'object[]' of (dotnet Unknown i=824 clr 'object')
+i=827 PublishResponse
+  scalar opcua i=827 'i=827' Unknown Unknown: array False / dotnet Unknown i=827 clr 'object'
+  array  opcua i=827 'i=827' Unknown Unknown: array True / dotnet Array i=827[] clr 'object[]' of (dotnet Unknown i=827 clr 'object')
+i=830 RepublishRequest
+  scalar opcua i=830 'i=830' Unknown Unknown: array False / dotnet Unknown i=830 clr 'object'
+  array  opcua i=830 'i=830' Unknown Unknown: array True / dotnet Array i=830[] clr 'object[]' of (dotnet Unknown i=830 clr 'object')
+i=833 RepublishResponse
+  scalar opcua i=833 'i=833' Unknown Unknown: array False / dotnet Unknown i=833 clr 'object'
+  array  opcua i=833 'i=833' Unknown Unknown: array True / dotnet Array i=833[] clr 'object[]' of (dotnet Unknown i=833 clr 'object')
+i=836 TransferResult
+  scalar opcua i=836 'i=836' Unknown Unknown: array False / dotnet Unknown i=836 clr 'object'
+  array  opcua i=836 'i=836' Unknown Unknown: array True / dotnet Array i=836[] clr 'object[]' of (dotnet Unknown i=836 clr 'object')
+i=839 TransferSubscriptionsRequest
+  scalar opcua i=839 'i=839' Unknown Unknown: array False / dotnet Unknown i=839 clr 'object'
+  array  opcua i=839 'i=839' Unknown Unknown: array True / dotnet Array i=839[] clr 'object[]' of (dotnet Unknown i=839 clr 'object')
+i=842 TransferSubscriptionsResponse
+  scalar opcua i=842 'i=842' Unknown Unknown: array False / dotnet Unknown i=842 clr 'object'
+  array  opcua i=842 'i=842' Unknown Unknown: array True / dotnet Array i=842[] clr 'object[]' of (dotnet Unknown i=842 clr 'object')
+i=845 DeleteSubscriptionsRequest
+  scalar opcua i=845 'i=845' Unknown Unknown: array False / dotnet Unknown i=845 clr 'object'
+  array  opcua i=845 'i=845' Unknown Unknown: array True / dotnet Array i=845[] clr 'object[]' of (dotnet Unknown i=845 clr 'object')
+i=848 DeleteSubscriptionsResponse
+  scalar opcua i=848 'i=848' Unknown Unknown: array False / dotnet Unknown i=848 clr 'object'
+  array  opcua i=848 'i=848' Unknown Unknown: array True / dotnet Array i=848[] clr 'object[]' of (dotnet Unknown i=848 clr 'object')
+i=851 RedundancySupport
+  scalar opcua RedundancySupport 'RedundancySupport' Enum Numeric:851 array False / dotnet Enum RedundancySupport clr 'int' members 0=None, 1=Cold, 2=Warm, 3=Hot, 4=Transparent, 5=HotAndMirrored
+  array  opcua RedundancySupport 'RedundancySupport' Enum Numeric:851 array True / dotnet Array RedundancySupport[] clr 'int[]' of (dotnet Enum RedundancySupport clr 'int' members 0=None, 1=Cold, 2=Warm, 3=Hot, 4=Transparent, 5=HotAndMirrored)
+i=852 ServerState
+  scalar opcua ServerState 'ServerState' Enum Numeric:852 array False / dotnet Enum ServerState clr 'int' members 0=Running, 1=Failed, 2=NoConfiguration, 3=Suspended, 4=Shutdown, 5=Test, 6=CommunicationFault, 7=Unknown
+  array  opcua ServerState 'ServerState' Enum Numeric:852 array True / dotnet Array ServerState[] clr 'int[]' of (dotnet Enum ServerState clr 'int' members 0=Running, 1=Failed, 2=NoConfiguration, 3=Suspended, 4=Shutdown, 5=Test, 6=CommunicationFault, 7=Unknown)
+i=853 RedundantServerDataType
+  scalar opcua RedundantServerDataType 'RedundantServerDataType' Structure Numeric:853 array False / dotnet Complex RedundantServerDataType clr 'object'
+  array  opcua RedundantServerDataType 'RedundantServerDataType' Structure Numeric:853 array True / dotnet Array RedundantServerDataType[] clr 'object[]' of (dotnet Complex RedundantServerDataType clr 'object')
+i=856 SamplingIntervalDiagnosticsDataType
+  scalar opcua SamplingIntervalDiagnosticsDataType 'SamplingIntervalDiagnosticsDataType' Structure Numeric:856 array False / dotnet Complex SamplingIntervalDiagnosticsDataType clr 'object'
+  array  opcua SamplingIntervalDiagnosticsDataType 'SamplingIntervalDiagnosticsDataType' Structure Numeric:856 array True / dotnet Array SamplingIntervalDiagnosticsDataType[] clr 'object[]' of (dotnet Complex SamplingIntervalDiagnosticsDataType clr 'object')
+i=859 ServerDiagnosticsSummaryDataType
+  scalar opcua ServerDiagnosticsSummaryDataType 'ServerDiagnosticsSummaryDataType' Structure Numeric:859 array False / dotnet Complex ServerDiagnosticsSummaryDataType clr 'object'
+  array  opcua ServerDiagnosticsSummaryDataType 'ServerDiagnosticsSummaryDataType' Structure Numeric:859 array True / dotnet Array ServerDiagnosticsSummaryDataType[] clr 'object[]' of (dotnet Complex ServerDiagnosticsSummaryDataType clr 'object')
+i=862 ServerStatusDataType
+  scalar opcua ServerStatusDataType 'ServerStatusDataType' Structure Numeric:862 array False / dotnet Complex ServerStatusDataType clr 'object'
+  array  opcua ServerStatusDataType 'ServerStatusDataType' Structure Numeric:862 array True / dotnet Array ServerStatusDataType[] clr 'object[]' of (dotnet Complex ServerStatusDataType clr 'object')
+i=865 SessionDiagnosticsDataType
+  scalar opcua SessionDiagnosticsDataType 'SessionDiagnosticsDataType' Structure Numeric:865 array False / dotnet Complex SessionDiagnosticsDataType clr 'object'
+  array  opcua SessionDiagnosticsDataType 'SessionDiagnosticsDataType' Structure Numeric:865 array True / dotnet Array SessionDiagnosticsDataType[] clr 'object[]' of (dotnet Complex SessionDiagnosticsDataType clr 'object')
+i=868 SessionSecurityDiagnosticsDataType
+  scalar opcua SessionSecurityDiagnosticsDataType 'SessionSecurityDiagnosticsDataType' Structure Numeric:868 array False / dotnet Complex SessionSecurityDiagnosticsDataType clr 'object'
+  array  opcua SessionSecurityDiagnosticsDataType 'SessionSecurityDiagnosticsDataType' Structure Numeric:868 array True / dotnet Array SessionSecurityDiagnosticsDataType[] clr 'object[]' of (dotnet Complex SessionSecurityDiagnosticsDataType clr 'object')
+i=871 ServiceCounterDataType
+  scalar opcua ServiceCounterDataType 'ServiceCounterDataType' Structure Numeric:871 array False / dotnet Complex ServiceCounterDataType clr 'object'
+  array  opcua ServiceCounterDataType 'ServiceCounterDataType' Structure Numeric:871 array True / dotnet Array ServiceCounterDataType[] clr 'object[]' of (dotnet Complex ServiceCounterDataType clr 'object')
+i=874 SubscriptionDiagnosticsDataType
+  scalar opcua SubscriptionDiagnosticsDataType 'SubscriptionDiagnosticsDataType' Structure Numeric:874 array False / dotnet Complex SubscriptionDiagnosticsDataType clr 'object'
+  array  opcua SubscriptionDiagnosticsDataType 'SubscriptionDiagnosticsDataType' Structure Numeric:874 array True / dotnet Array SubscriptionDiagnosticsDataType[] clr 'object[]' of (dotnet Complex SubscriptionDiagnosticsDataType clr 'object')
+i=877 ModelChangeStructureDataType
+  scalar opcua ModelChangeStructureDataType 'ModelChangeStructureDataType' Structure Numeric:877 array False / dotnet Complex ModelChangeStructureDataType clr 'object'
+  array  opcua ModelChangeStructureDataType 'ModelChangeStructureDataType' Structure Numeric:877 array True / dotnet Array ModelChangeStructureDataType[] clr 'object[]' of (dotnet Complex ModelChangeStructureDataType clr 'object')
+i=884 Range
+  scalar opcua Range 'Range' Structure Numeric:884 array False / dotnet Complex Range clr 'object'
+  array  opcua Range 'Range' Structure Numeric:884 array True / dotnet Array Range[] clr 'object[]' of (dotnet Complex Range clr 'object')
+i=887 EUInformation
+  scalar opcua EUInformation 'EUInformation' Structure Numeric:887 array False / dotnet Complex EUInformation clr 'object'
+  array  opcua EUInformation 'EUInformation' Structure Numeric:887 array True / dotnet Array EUInformation[] clr 'object[]' of (dotnet Complex EUInformation clr 'object')
+i=890 ExceptionDeviationFormat
+  scalar opcua ExceptionDeviationFormat 'ExceptionDeviationFormat' Enum Numeric:890 array False / dotnet Enum ExceptionDeviationFormat clr 'int' members 0=AbsoluteValue, 1=PercentOfValue, 2=PercentOfRange, 3=PercentOfEURange, 4=Unknown
+  array  opcua ExceptionDeviationFormat 'ExceptionDeviationFormat' Enum Numeric:890 array True / dotnet Array ExceptionDeviationFormat[] clr 'int[]' of (dotnet Enum ExceptionDeviationFormat clr 'int' members 0=AbsoluteValue, 1=PercentOfValue, 2=PercentOfRange, 3=PercentOfEURange, 4=Unknown)
+i=891 Annotation
+  scalar opcua Annotation 'Annotation' Structure Numeric:891 array False / dotnet Complex Annotation clr 'object'
+  array  opcua Annotation 'Annotation' Structure Numeric:891 array True / dotnet Array Annotation[] clr 'object[]' of (dotnet Complex Annotation clr 'object')
+i=894 ProgramDiagnosticDataType
+  scalar opcua ProgramDiagnosticDataType 'ProgramDiagnosticDataType' Structure Numeric:894 array False / dotnet Complex ProgramDiagnosticDataType clr 'object'
+  array  opcua ProgramDiagnosticDataType 'ProgramDiagnosticDataType' Structure Numeric:894 array True / dotnet Array ProgramDiagnosticDataType[] clr 'object[]' of (dotnet Complex ProgramDiagnosticDataType clr 'object')
+i=897 SemanticChangeStructureDataType
+  scalar opcua SemanticChangeStructureDataType 'SemanticChangeStructureDataType' Structure Numeric:897 array False / dotnet Complex SemanticChangeStructureDataType clr 'object'
+  array  opcua SemanticChangeStructureDataType 'SemanticChangeStructureDataType' Structure Numeric:897 array True / dotnet Array SemanticChangeStructureDataType[] clr 'object[]' of (dotnet Complex SemanticChangeStructureDataType clr 'object')
+i=914 EventNotificationList
+  scalar opcua i=914 'i=914' Unknown Unknown: array False / dotnet Unknown i=914 clr 'object'
+  array  opcua i=914 'i=914' Unknown Unknown: array True / dotnet Array i=914[] clr 'object[]' of (dotnet Unknown i=914 clr 'object')
+i=917 EventFieldList
+  scalar opcua i=917 'i=917' Unknown Unknown: array False / dotnet Unknown i=917 clr 'object'
+  array  opcua i=917 'i=917' Unknown Unknown: array True / dotnet Array i=917[] clr 'object[]' of (dotnet Unknown i=917 clr 'object')
+i=920 HistoryEventFieldList
+  scalar opcua HistoryEventFieldList 'HistoryEventFieldList' Structure Numeric:920 array False / dotnet Complex HistoryEventFieldList clr 'object'
+  array  opcua HistoryEventFieldList 'HistoryEventFieldList' Structure Numeric:920 array True / dotnet Array HistoryEventFieldList[] clr 'object[]' of (dotnet Complex HistoryEventFieldList clr 'object')
+i=938 IssuedIdentityToken
+  scalar opcua IssuedIdentityToken 'IssuedIdentityToken' Structure Numeric:938 array False / dotnet Complex IssuedIdentityToken clr 'object'
+  array  opcua IssuedIdentityToken 'IssuedIdentityToken' Structure Numeric:938 array True / dotnet Array IssuedIdentityToken[] clr 'object[]' of (dotnet Complex IssuedIdentityToken clr 'object')
+i=945 NotificationData
+  scalar opcua i=945 'i=945' Unknown Unknown: array False / dotnet Unknown i=945 clr 'object'
+  array  opcua i=945 'i=945' Unknown Unknown: array True / dotnet Array i=945[] clr 'object[]' of (dotnet Unknown i=945 clr 'object')
+i=948 AggregateConfiguration
+  scalar opcua AggregateConfiguration 'AggregateConfiguration' Structure Numeric:948 array False / dotnet Complex AggregateConfiguration clr 'object'
+  array  opcua AggregateConfiguration 'AggregateConfiguration' Structure Numeric:948 array True / dotnet Array AggregateConfiguration[] clr 'object[]' of (dotnet Complex AggregateConfiguration clr 'object')
+i=2000 ImageBMP
+  scalar opcua ByteString 'ByteString' Primitive Numeric:2000 array False / dotnet Primitive ByteString clr 'byte[]'
+  array  opcua ByteString 'ByteString' Primitive Numeric:2000 array True / dotnet Array ByteString[] clr 'byte[][]' of (dotnet Primitive ByteString clr 'byte[]')
+i=2001 ImageGIF
+  scalar opcua ByteString 'ByteString' Primitive Numeric:2001 array False / dotnet Primitive ByteString clr 'byte[]'
+  array  opcua ByteString 'ByteString' Primitive Numeric:2001 array True / dotnet Array ByteString[] clr 'byte[][]' of (dotnet Primitive ByteString clr 'byte[]')
+i=2002 ImageJPG
+  scalar opcua ByteString 'ByteString' Primitive Numeric:2002 array False / dotnet Primitive ByteString clr 'byte[]'
+  array  opcua ByteString 'ByteString' Primitive Numeric:2002 array True / dotnet Array ByteString[] clr 'byte[][]' of (dotnet Primitive ByteString clr 'byte[]')
+i=2003 ImagePNG
+  scalar opcua ByteString 'ByteString' Primitive Numeric:2003 array False / dotnet Primitive ByteString clr 'byte[]'
+  array  opcua ByteString 'ByteString' Primitive Numeric:2003 array True / dotnet Array ByteString[] clr 'byte[][]' of (dotnet Primitive ByteString clr 'byte[]')
+i=7594 EnumValueType
+  scalar opcua EnumValueType 'EnumValueType' Structure Numeric:7594 array False / dotnet Complex EnumValueType clr 'object'
+  array  opcua EnumValueType 'EnumValueType' Structure Numeric:7594 array True / dotnet Array EnumValueType[] clr 'object[]' of (dotnet Complex EnumValueType clr 'object')
+i=8912 TimeZoneDataType
+  scalar opcua TimeZoneDataType 'TimeZoneDataType' Structure Numeric:8912 array False / dotnet Complex TimeZoneDataType clr 'object'
+  array  opcua TimeZoneDataType 'TimeZoneDataType' Structure Numeric:8912 array True / dotnet Array TimeZoneDataType[] clr 'object[]' of (dotnet Complex TimeZoneDataType clr 'object')
+i=11216 ModificationInfo
+  scalar opcua ModificationInfo 'ModificationInfo' Structure Numeric:11216 array False / dotnet Complex ModificationInfo clr 'object'
+  array  opcua ModificationInfo 'ModificationInfo' Structure Numeric:11216 array True / dotnet Array ModificationInfo[] clr 'object[]' of (dotnet Complex ModificationInfo clr 'object')
+i=11217 HistoryModifiedData
+  scalar opcua i=11217 'i=11217' Unknown Unknown: array False / dotnet Unknown i=11217 clr 'object'
+  array  opcua i=11217 'i=11217' Unknown Unknown: array True / dotnet Array i=11217[] clr 'object[]' of (dotnet Unknown i=11217 clr 'object')
+i=11234 HistoryUpdateType
+  scalar opcua HistoryUpdateType 'HistoryUpdateType' Enum Numeric:11234 array False / dotnet Enum HistoryUpdateType clr 'int' members 1=Insert, 2=Replace, 3=Update, 4=Delete
+  array  opcua HistoryUpdateType 'HistoryUpdateType' Enum Numeric:11234 array True / dotnet Array HistoryUpdateType[] clr 'int[]' of (dotnet Enum HistoryUpdateType clr 'int' members 1=Insert, 2=Replace, 3=Update, 4=Delete)
+i=11293 PerformUpdateType
+  scalar opcua PerformUpdateType 'PerformUpdateType' Enum Numeric:11293 array False / dotnet Enum PerformUpdateType clr 'int' members 1=Insert, 2=Replace, 3=Update, 4=Remove
+  array  opcua PerformUpdateType 'PerformUpdateType' Enum Numeric:11293 array True / dotnet Array PerformUpdateType[] clr 'int[]' of (dotnet Enum PerformUpdateType clr 'int' members 1=Insert, 2=Replace, 3=Update, 4=Remove)
+i=11295 UpdateStructureDataDetails
+  scalar opcua i=11295 'i=11295' Unknown Unknown: array False / dotnet Unknown i=11295 clr 'object'
+  array  opcua i=11295 'i=11295' Unknown Unknown: array True / dotnet Array i=11295[] clr 'object[]' of (dotnet Unknown i=11295 clr 'object')
+i=11737 BitFieldMaskDataType
+  scalar opcua UInt64 'UInt64' Primitive Numeric:11737 array False / dotnet Primitive UInt64 clr 'ulong'
+  array  opcua UInt64 'UInt64' Primitive Numeric:11737 array True / dotnet Array UInt64[] clr 'ulong[]' of (dotnet Primitive UInt64 clr 'ulong')
+i=11879 InstanceNode
+  scalar opcua i=11879 'i=11879' Unknown Unknown: array False / dotnet Unknown i=11879 clr 'object'
+  array  opcua i=11879 'i=11879' Unknown Unknown: array True / dotnet Array i=11879[] clr 'object[]' of (dotnet Unknown i=11879 clr 'object')
+i=11880 TypeNode
+  scalar opcua i=11880 'i=11880' Unknown Unknown: array False / dotnet Unknown i=11880 clr 'object'
+  array  opcua i=11880 'i=11880' Unknown Unknown: array True / dotnet Array i=11880[] clr 'object[]' of (dotnet Unknown i=11880 clr 'object')
+i=11939 OpenFileMode
+  scalar opcua OpenFileMode 'OpenFileMode' Enum Numeric:11939 array False / dotnet Enum OpenFileMode clr 'int' members 1=Read, 2=Write, 4=EraseExisting, 8=Append
+  array  opcua OpenFileMode 'OpenFileMode' Enum Numeric:11939 array True / dotnet Array OpenFileMode[] clr 'int[]' of (dotnet Enum OpenFileMode clr 'int' members 1=Read, 2=Write, 4=EraseExisting, 8=Append)
+i=11941 ModelChangeStructureVerbMask
+  scalar opcua i=11941 'i=11941' Unknown Unknown: array False / dotnet Unknown i=11941 clr 'object'
+  array  opcua i=11941 'i=11941' Unknown Unknown: array True / dotnet Array i=11941[] clr 'object[]' of (dotnet Unknown i=11941 clr 'object')
+i=11943 EndpointUrlListDataType
+  scalar opcua EndpointUrlListDataType 'EndpointUrlListDataType' Structure Numeric:11943 array False / dotnet Complex EndpointUrlListDataType clr 'object'
+  array  opcua EndpointUrlListDataType 'EndpointUrlListDataType' Structure Numeric:11943 array True / dotnet Array EndpointUrlListDataType[] clr 'object[]' of (dotnet Complex EndpointUrlListDataType clr 'object')
+i=11944 NetworkGroupDataType
+  scalar opcua NetworkGroupDataType 'NetworkGroupDataType' Structure Numeric:11944 array False / dotnet Complex NetworkGroupDataType clr 'object'
+  array  opcua NetworkGroupDataType 'NetworkGroupDataType' Structure Numeric:11944 array True / dotnet Array NetworkGroupDataType[] clr 'object[]' of (dotnet Complex NetworkGroupDataType clr 'object')
+i=12077 AxisScaleEnumeration
+  scalar opcua AxisScaleEnumeration 'AxisScaleEnumeration' Enum Numeric:12077 array False / dotnet Enum AxisScaleEnumeration clr 'int' members 0=Linear, 1=Log, 2=Ln
+  array  opcua AxisScaleEnumeration 'AxisScaleEnumeration' Enum Numeric:12077 array True / dotnet Array AxisScaleEnumeration[] clr 'int[]' of (dotnet Enum AxisScaleEnumeration clr 'int' members 0=Linear, 1=Log, 2=Ln)
+i=12079 AxisInformation
+  scalar opcua AxisInformation 'AxisInformation' Structure Numeric:12079 array False / dotnet Complex AxisInformation clr 'object'
+  array  opcua AxisInformation 'AxisInformation' Structure Numeric:12079 array True / dotnet Array AxisInformation[] clr 'object[]' of (dotnet Complex AxisInformation clr 'object')
+i=12080 XVType
+  scalar opcua XVType 'XVType' Structure Numeric:12080 array False / dotnet Complex XVType clr 'object'
+  array  opcua XVType 'XVType' Structure Numeric:12080 array True / dotnet Array XVType[] clr 'object[]' of (dotnet Complex XVType clr 'object')
+i=12171 ComplexNumberType
+  scalar opcua ComplexNumberType 'ComplexNumberType' Structure Numeric:12171 array False / dotnet Complex ComplexNumberType clr 'object'
+  array  opcua ComplexNumberType 'ComplexNumberType' Structure Numeric:12171 array True / dotnet Array ComplexNumberType[] clr 'object[]' of (dotnet Complex ComplexNumberType clr 'object')
+i=12172 DoubleComplexNumberType
+  scalar opcua DoubleComplexNumberType 'DoubleComplexNumberType' Structure Numeric:12172 array False / dotnet Complex DoubleComplexNumberType clr 'object'
+  array  opcua DoubleComplexNumberType 'DoubleComplexNumberType' Structure Numeric:12172 array True / dotnet Array DoubleComplexNumberType[] clr 'object[]' of (dotnet Complex DoubleComplexNumberType clr 'object')
+i=12189 ServerOnNetwork
+  scalar opcua ServerOnNetwork 'ServerOnNetwork' Structure Numeric:12189 array False / dotnet Complex ServerOnNetwork clr 'object'
+  array  opcua ServerOnNetwork 'ServerOnNetwork' Structure Numeric:12189 array True / dotnet Array ServerOnNetwork[] clr 'object[]' of (dotnet Complex ServerOnNetwork clr 'object')
+i=12190 FindServersOnNetworkRequest
+  scalar opcua i=12190 'i=12190' Unknown Unknown: array False / dotnet Unknown i=12190 clr 'object'
+  array  opcua i=12190 'i=12190' Unknown Unknown: array True / dotnet Array i=12190[] clr 'object[]' of (dotnet Unknown i=12190 clr 'object')
+i=12191 FindServersOnNetworkResponse
+  scalar opcua i=12191 'i=12191' Unknown Unknown: array False / dotnet Unknown i=12191 clr 'object'
+  array  opcua i=12191 'i=12191' Unknown Unknown: array True / dotnet Array i=12191[] clr 'object[]' of (dotnet Unknown i=12191 clr 'object')
+i=12193 RegisterServer2Request
+  scalar opcua i=12193 'i=12193' Unknown Unknown: array False / dotnet Unknown i=12193 clr 'object'
+  array  opcua i=12193 'i=12193' Unknown Unknown: array True / dotnet Array i=12193[] clr 'object[]' of (dotnet Unknown i=12193 clr 'object')
+i=12194 RegisterServer2Response
+  scalar opcua i=12194 'i=12194' Unknown Unknown: array False / dotnet Unknown i=12194 clr 'object'
+  array  opcua i=12194 'i=12194' Unknown Unknown: array True / dotnet Array i=12194[] clr 'object[]' of (dotnet Unknown i=12194 clr 'object')
+i=12552 TrustListMasks
+  scalar opcua TrustListMasks 'TrustListMasks' Enum Numeric:12552 array False / dotnet Enum TrustListMasks clr 'int' members 0=None, 1=TrustedCertificates, 2=TrustedCrls, 4=IssuerCertificates, 8=IssuerCrls, 15=All
+  array  opcua TrustListMasks 'TrustListMasks' Enum Numeric:12552 array True / dotnet Array TrustListMasks[] clr 'int[]' of (dotnet Enum TrustListMasks clr 'int' members 0=None, 1=TrustedCertificates, 2=TrustedCrls, 4=IssuerCertificates, 8=IssuerCrls, 15=All)
+i=12554 TrustListDataType
+  scalar opcua TrustListDataType 'TrustListDataType' Structure Numeric:12554 array False / dotnet Complex TrustListDataType clr 'object'
+  array  opcua TrustListDataType 'TrustListDataType' Structure Numeric:12554 array True / dotnet Array TrustListDataType[] clr 'object[]' of (dotnet Complex TrustListDataType clr 'object')
+i=12755 OptionSet
+  scalar opcua OptionSet 'OptionSet' Structure Numeric:12755 array False / dotnet Complex OptionSet clr 'object'
+  array  opcua OptionSet 'OptionSet' Structure Numeric:12755 array True / dotnet Array OptionSet[] clr 'object[]' of (dotnet Complex OptionSet clr 'object')
+i=12756 Union
+  scalar opcua Union 'Union' Structure Numeric:12756 array False / dotnet Complex Union clr 'object'
+  array  opcua Union 'Union' Structure Numeric:12756 array True / dotnet Array Union[] clr 'object[]' of (dotnet Complex Union clr 'object')
+i=12877 NormalizedString
+  scalar opcua String 'String' Primitive Numeric:12877 array False / dotnet Primitive String clr 'string'
+  array  opcua String 'String' Primitive Numeric:12877 array True / dotnet Array String[] clr 'string[]' of (dotnet Primitive String clr 'string')
+i=12878 DecimalString
+  scalar opcua String 'String' Primitive Numeric:12878 array False / dotnet Primitive String clr 'string'
+  array  opcua String 'String' Primitive Numeric:12878 array True / dotnet Array String[] clr 'string[]' of (dotnet Primitive String clr 'string')
+i=12879 DurationString
+  scalar opcua String 'String' Primitive Numeric:12879 array False / dotnet Primitive String clr 'string'
+  array  opcua String 'String' Primitive Numeric:12879 array True / dotnet Array String[] clr 'string[]' of (dotnet Primitive String clr 'string')
+i=12880 TimeString
+  scalar opcua String 'String' Primitive Numeric:12880 array False / dotnet Primitive String clr 'string'
+  array  opcua String 'String' Primitive Numeric:12880 array True / dotnet Array String[] clr 'string[]' of (dotnet Primitive String clr 'string')
+i=12881 DateString
+  scalar opcua String 'String' Primitive Numeric:12881 array False / dotnet Primitive String clr 'string'
+  array  opcua String 'String' Primitive Numeric:12881 array True / dotnet Array String[] clr 'string[]' of (dotnet Primitive String clr 'string')
+i=12890 DiscoveryConfiguration
+  scalar opcua DiscoveryConfiguration 'DiscoveryConfiguration' Structure Numeric:12890 array False / dotnet Complex DiscoveryConfiguration clr 'object'
+  array  opcua DiscoveryConfiguration 'DiscoveryConfiguration' Structure Numeric:12890 array True / dotnet Array DiscoveryConfiguration[] clr 'object[]' of (dotnet Complex DiscoveryConfiguration clr 'object')
+i=12891 MdnsDiscoveryConfiguration
+  scalar opcua MdnsDiscoveryConfiguration 'MdnsDiscoveryConfiguration' Structure Numeric:12891 array False / dotnet Complex MdnsDiscoveryConfiguration clr 'object'
+  array  opcua MdnsDiscoveryConfiguration 'MdnsDiscoveryConfiguration' Structure Numeric:12891 array True / dotnet Array MdnsDiscoveryConfiguration[] clr 'object[]' of (dotnet Complex MdnsDiscoveryConfiguration clr 'object')
+i=14273 PublishedVariableDataType
+  scalar opcua PublishedVariableDataType 'PublishedVariableDataType' Structure Numeric:14273 array False / dotnet Complex PublishedVariableDataType clr 'object'
+  array  opcua PublishedVariableDataType 'PublishedVariableDataType' Structure Numeric:14273 array True / dotnet Array PublishedVariableDataType[] clr 'object[]' of (dotnet Complex PublishedVariableDataType clr 'object')
+i=14523 DataSetMetaDataType
+  scalar opcua DataSetMetaDataType 'DataSetMetaDataType' Structure Numeric:14523 array False / dotnet Complex DataSetMetaDataType clr 'object'
+  array  opcua DataSetMetaDataType 'DataSetMetaDataType' Structure Numeric:14523 array True / dotnet Array DataSetMetaDataType[] clr 'object[]' of (dotnet Complex DataSetMetaDataType clr 'object')
+i=14524 FieldMetaData
+  scalar opcua FieldMetaData 'FieldMetaData' Structure Numeric:14524 array False / dotnet Complex FieldMetaData clr 'object'
+  array  opcua FieldMetaData 'FieldMetaData' Structure Numeric:14524 array True / dotnet Array FieldMetaData[] clr 'object[]' of (dotnet Complex FieldMetaData clr 'object')
+i=14525 DataTypeDescription
+  scalar opcua DataTypeDescription 'DataTypeDescription' Structure Numeric:14525 array False / dotnet Complex DataTypeDescription clr 'object'
+  array  opcua DataTypeDescription 'DataTypeDescription' Structure Numeric:14525 array True / dotnet Array DataTypeDescription[] clr 'object[]' of (dotnet Complex DataTypeDescription clr 'object')
+i=14533 KeyValuePair
+  scalar opcua KeyValuePair 'KeyValuePair' Structure Numeric:14533 array False / dotnet Complex KeyValuePair clr 'object'
+  array  opcua KeyValuePair 'KeyValuePair' Structure Numeric:14533 array True / dotnet Array KeyValuePair[] clr 'object[]' of (dotnet Complex KeyValuePair clr 'object')
+i=14593 ConfigurationVersionDataType
+  scalar opcua ConfigurationVersionDataType 'ConfigurationVersionDataType' Structure Numeric:14593 array False / dotnet Complex ConfigurationVersionDataType clr 'object'
+  array  opcua ConfigurationVersionDataType 'ConfigurationVersionDataType' Structure Numeric:14593 array True / dotnet Array ConfigurationVersionDataType[] clr 'object[]' of (dotnet Complex ConfigurationVersionDataType clr 'object')
+i=14647 PubSubState
+  scalar opcua PubSubState 'PubSubState' Enum Numeric:14647 array False / dotnet Enum PubSubState clr 'int' members 0=Disabled, 1=Paused, 2=Operational, 3=Error, 4=PreOperational
+  array  opcua PubSubState 'PubSubState' Enum Numeric:14647 array True / dotnet Array PubSubState[] clr 'int[]' of (dotnet Enum PubSubState clr 'int' members 0=Disabled, 1=Paused, 2=Operational, 3=Error, 4=PreOperational)
+i=14744 FieldTargetDataType
+  scalar opcua FieldTargetDataType 'FieldTargetDataType' Structure Numeric:14744 array False / dotnet Complex FieldTargetDataType clr 'object'
+  array  opcua FieldTargetDataType 'FieldTargetDataType' Structure Numeric:14744 array True / dotnet Array FieldTargetDataType[] clr 'object[]' of (dotnet Complex FieldTargetDataType clr 'object')
+i=15005 SimpleTypeDescription
+  scalar opcua SimpleTypeDescription 'SimpleTypeDescription' Structure Numeric:15005 array False / dotnet Complex SimpleTypeDescription clr 'object'
+  array  opcua SimpleTypeDescription 'SimpleTypeDescription' Structure Numeric:15005 array True / dotnet Array SimpleTypeDescription[] clr 'object[]' of (dotnet Complex SimpleTypeDescription clr 'object')
+i=15006 UABinaryFileDataType
+  scalar opcua UABinaryFileDataType 'UABinaryFileDataType' Structure Numeric:15006 array False / dotnet Complex UABinaryFileDataType clr 'object'
+  array  opcua UABinaryFileDataType 'UABinaryFileDataType' Structure Numeric:15006 array True / dotnet Array UABinaryFileDataType[] clr 'object[]' of (dotnet Complex UABinaryFileDataType clr 'object')
+i=15007 BrokerConnectionTransportDataType
+  scalar opcua BrokerConnectionTransportDataType 'BrokerConnectionTransportDataType' Structure Numeric:15007 array False / dotnet Complex BrokerConnectionTransportDataType clr 'object'
+  array  opcua BrokerConnectionTransportDataType 'BrokerConnectionTransportDataType' Structure Numeric:15007 array True / dotnet Array BrokerConnectionTransportDataType[] clr 'object[]' of (dotnet Complex BrokerConnectionTransportDataType clr 'object')
+i=15008 BrokerTransportQualityOfService
+  scalar opcua BrokerTransportQualityOfService 'BrokerTransportQualityOfService' Enum Numeric:15008 array False / dotnet Enum BrokerTransportQualityOfService clr 'int' members 0=NotSpecified, 1=BestEffort, 2=AtLeastOnce, 3=AtMostOnce, 4=ExactlyOnce
+  array  opcua BrokerTransportQualityOfService 'BrokerTransportQualityOfService' Enum Numeric:15008 array True / dotnet Array BrokerTransportQualityOfService[] clr 'int[]' of (dotnet Enum BrokerTransportQualityOfService clr 'int' members 0=NotSpecified, 1=BestEffort, 2=AtLeastOnce, 3=AtMostOnce, 4=ExactlyOnce)
+i=15031 AccessLevelType
+  scalar opcua AccessLevelType 'AccessLevelType' Enum Numeric:15031 array False / dotnet Enum AccessLevelType clr 'int' members 0=CurrentRead, 1=CurrentWrite, 2=HistoryRead, 3=HistoryWrite, 4=SemanticChange, 5=StatusWrite, 6=TimestampWrite
+  array  opcua AccessLevelType 'AccessLevelType' Enum Numeric:15031 array True / dotnet Array AccessLevelType[] clr 'int[]' of (dotnet Enum AccessLevelType clr 'int' members 0=CurrentRead, 1=CurrentWrite, 2=HistoryRead, 3=HistoryWrite, 4=SemanticChange, 5=StatusWrite, 6=TimestampWrite)
+i=15033 EventNotifierType
+  scalar opcua EventNotifierType 'EventNotifierType' Enum Numeric:15033 array False / dotnet Enum EventNotifierType clr 'int' members 0=SubscribeToEvents, 2=HistoryRead, 3=HistoryWrite
+  array  opcua EventNotifierType 'EventNotifierType' Enum Numeric:15033 array True / dotnet Array EventNotifierType[] clr 'int[]' of (dotnet Enum EventNotifierType clr 'int' members 0=SubscribeToEvents, 2=HistoryRead, 3=HistoryWrite)
+i=15406 AccessLevelExType
+  scalar opcua AccessLevelExType 'AccessLevelExType' Enum Numeric:15406 array False / dotnet Enum AccessLevelExType clr 'int' members 0=CurrentRead, 1=CurrentWrite, 2=HistoryRead, 3=HistoryWrite, 4=SemanticChange, 5=StatusWrite, 6=TimestampWrite, 8=NonatomicRead, 9=NonatomicWrite, 10=WriteFullArrayOnly, 11=NoSubDataTypes, 12=NonVolatile, 13=Constant
+  array  opcua AccessLevelExType 'AccessLevelExType' Enum Numeric:15406 array True / dotnet Array AccessLevelExType[] clr 'int[]' of (dotnet Enum AccessLevelExType clr 'int' members 0=CurrentRead, 1=CurrentWrite, 2=HistoryRead, 3=HistoryWrite, 4=SemanticChange, 5=StatusWrite, 6=TimestampWrite, 8=NonatomicRead, 9=NonatomicWrite, 10=WriteFullArrayOnly, 11=NoSubDataTypes, 12=NonVolatile, 13=Constant)
+i=15434 BaseConfigurationDataType
+  scalar opcua BaseConfigurationDataType 'BaseConfigurationDataType' Structure Numeric:15434 array False / dotnet Complex BaseConfigurationDataType clr 'object'
+  array  opcua BaseConfigurationDataType 'BaseConfigurationDataType' Structure Numeric:15434 array True / dotnet Array BaseConfigurationDataType[] clr 'object[]' of (dotnet Complex BaseConfigurationDataType clr 'object')
+i=15435 BaseConfigurationRecordDataType
+  scalar opcua BaseConfigurationRecordDataType 'BaseConfigurationRecordDataType' Structure Numeric:15435 array False / dotnet Complex BaseConfigurationRecordDataType clr 'object'
+  array  opcua BaseConfigurationRecordDataType 'BaseConfigurationRecordDataType' Structure Numeric:15435 array True / dotnet Array BaseConfigurationRecordDataType[] clr 'object[]' of (dotnet Complex BaseConfigurationRecordDataType clr 'object')
+i=15436 CertificateGroupDataType
+  scalar opcua CertificateGroupDataType 'CertificateGroupDataType' Structure Numeric:15436 array False / dotnet Complex CertificateGroupDataType clr 'object'
+  array  opcua CertificateGroupDataType 'CertificateGroupDataType' Structure Numeric:15436 array True / dotnet Array CertificateGroupDataType[] clr 'object[]' of (dotnet Complex CertificateGroupDataType clr 'object')
+i=15480 WriterGroupDataType
+  scalar opcua WriterGroupDataType 'WriterGroupDataType' Structure Numeric:15480 array False / dotnet Complex WriterGroupDataType clr 'object'
+  array  opcua WriterGroupDataType 'WriterGroupDataType' Structure Numeric:15480 array True / dotnet Array WriterGroupDataType[] clr 'object[]' of (dotnet Complex WriterGroupDataType clr 'object')
+i=15487 StructureDescription
+  scalar opcua StructureDescription 'StructureDescription' Structure Numeric:15487 array False / dotnet Complex StructureDescription clr 'object'
+  array  opcua StructureDescription 'StructureDescription' Structure Numeric:15487 array True / dotnet Array StructureDescription[] clr 'object[]' of (dotnet Complex StructureDescription clr 'object')
+i=15488 EnumDescription
+  scalar opcua EnumDescription 'EnumDescription' Structure Numeric:15488 array False / dotnet Complex EnumDescription clr 'object'
+  array  opcua EnumDescription 'EnumDescription' Structure Numeric:15488 array True / dotnet Array EnumDescription[] clr 'object[]' of (dotnet Complex EnumDescription clr 'object')
+i=15502 NetworkAddressDataType
+  scalar opcua NetworkAddressDataType 'NetworkAddressDataType' Structure Numeric:15502 array False / dotnet Complex NetworkAddressDataType clr 'object'
+  array  opcua NetworkAddressDataType 'NetworkAddressDataType' Structure Numeric:15502 array True / dotnet Array NetworkAddressDataType[] clr 'object[]' of (dotnet Complex NetworkAddressDataType clr 'object')
+i=15510 NetworkAddressUrlDataType
+  scalar opcua NetworkAddressUrlDataType 'NetworkAddressUrlDataType' Structure Numeric:15510 array False / dotnet Complex NetworkAddressUrlDataType clr 'object'
+  array  opcua NetworkAddressUrlDataType 'NetworkAddressUrlDataType' Structure Numeric:15510 array True / dotnet Array NetworkAddressUrlDataType[] clr 'object[]' of (dotnet Complex NetworkAddressUrlDataType clr 'object')
+i=15520 ReaderGroupDataType
+  scalar opcua ReaderGroupDataType 'ReaderGroupDataType' Structure Numeric:15520 array False / dotnet Complex ReaderGroupDataType clr 'object'
+  array  opcua ReaderGroupDataType 'ReaderGroupDataType' Structure Numeric:15520 array True / dotnet Array ReaderGroupDataType[] clr 'object[]' of (dotnet Complex ReaderGroupDataType clr 'object')
+i=15528 EndpointType
+  scalar opcua EndpointType 'EndpointType' Structure Numeric:15528 array False / dotnet Complex EndpointType clr 'object'
+  array  opcua EndpointType 'EndpointType' Structure Numeric:15528 array True / dotnet Array EndpointType[] clr 'object[]' of (dotnet Complex EndpointType clr 'object')
+i=15530 PubSubConfigurationDataType
+  scalar opcua PubSubConfigurationDataType 'PubSubConfigurationDataType' Structure Numeric:15530 array False / dotnet Complex PubSubConfigurationDataType clr 'object'
+  array  opcua PubSubConfigurationDataType 'PubSubConfigurationDataType' Structure Numeric:15530 array True / dotnet Array PubSubConfigurationDataType[] clr 'object[]' of (dotnet Complex PubSubConfigurationDataType clr 'object')
+i=15532 DatagramWriterGroupTransportDataType
+  scalar opcua DatagramWriterGroupTransportDataType 'DatagramWriterGroupTransportDataType' Structure Numeric:15532 array False / dotnet Complex DatagramWriterGroupTransportDataType clr 'object'
+  array  opcua DatagramWriterGroupTransportDataType 'DatagramWriterGroupTransportDataType' Structure Numeric:15532 array True / dotnet Array DatagramWriterGroupTransportDataType[] clr 'object[]' of (dotnet Complex DatagramWriterGroupTransportDataType clr 'object')
+i=15534 DataTypeSchemaHeader
+  scalar opcua DataTypeSchemaHeader 'DataTypeSchemaHeader' Structure Numeric:15534 array False / dotnet Complex DataTypeSchemaHeader clr 'object'
+  array  opcua DataTypeSchemaHeader 'DataTypeSchemaHeader' Structure Numeric:15534 array True / dotnet Array DataTypeSchemaHeader[] clr 'object[]' of (dotnet Complex DataTypeSchemaHeader clr 'object')
+i=15538 ConfigurationUpdateTargetType
+  scalar opcua ConfigurationUpdateTargetType 'ConfigurationUpdateTargetType' Structure Numeric:15538 array False / dotnet Complex ConfigurationUpdateTargetType clr 'object'
+  array  opcua ConfigurationUpdateTargetType 'ConfigurationUpdateTargetType' Structure Numeric:15538 array True / dotnet Array ConfigurationUpdateTargetType[] clr 'object[]' of (dotnet Complex ConfigurationUpdateTargetType clr 'object')
+i=15539 ConfigurationUpdateType
+  scalar opcua ConfigurationUpdateType 'ConfigurationUpdateType' Enum Numeric:15539 array False / dotnet Enum ConfigurationUpdateType clr 'int' members 1=Insert, 2=Replace, 3=InsertOrReplace, 4=Delete
+  array  opcua ConfigurationUpdateType 'ConfigurationUpdateType' Enum Numeric:15539 array True / dotnet Array ConfigurationUpdateType[] clr 'int[]' of (dotnet Enum ConfigurationUpdateType clr 'int' members 1=Insert, 2=Replace, 3=InsertOrReplace, 4=Delete)
+i=15549 ApplicationConfigurationDataType
+  scalar opcua i=15549 'i=15549' Unknown Unknown: array False / dotnet Unknown i=15549 clr 'object'
+  array  opcua i=15549 'i=15549' Unknown Unknown: array True / dotnet Array i=15549[] clr 'object[]' of (dotnet Unknown i=15549 clr 'object')
+i=15556 ApplicationIdentityDataType
+  scalar opcua ApplicationIdentityDataType 'ApplicationIdentityDataType' Structure Numeric:15556 array False / dotnet Complex ApplicationIdentityDataType clr 'object'
+  array  opcua ApplicationIdentityDataType 'ApplicationIdentityDataType' Structure Numeric:15556 array True / dotnet Array ApplicationIdentityDataType[] clr 'object[]' of (dotnet Complex ApplicationIdentityDataType clr 'object')
+i=15557 EndpointDataType
+  scalar opcua EndpointDataType 'EndpointDataType' Structure Numeric:15557 array False / dotnet Complex EndpointDataType clr 'object'
+  array  opcua EndpointDataType 'EndpointDataType' Structure Numeric:15557 array True / dotnet Array EndpointDataType[] clr 'object[]' of (dotnet Complex EndpointDataType clr 'object')
+i=15558 ServerEndpointDataType
+  scalar opcua ServerEndpointDataType 'ServerEndpointDataType' Structure Numeric:15558 array False / dotnet Complex ServerEndpointDataType clr 'object'
+  array  opcua ServerEndpointDataType 'ServerEndpointDataType' Structure Numeric:15558 array True / dotnet Array ServerEndpointDataType[] clr 'object[]' of (dotnet Complex ServerEndpointDataType clr 'object')
+i=15559 SecuritySettingsDataType
+  scalar opcua SecuritySettingsDataType 'SecuritySettingsDataType' Structure Numeric:15559 array False / dotnet Complex SecuritySettingsDataType clr 'object'
+  array  opcua SecuritySettingsDataType 'SecuritySettingsDataType' Structure Numeric:15559 array True / dotnet Array SecuritySettingsDataType[] clr 'object[]' of (dotnet Complex SecuritySettingsDataType clr 'object')
+i=15560 UserTokenSettingsDataType
+  scalar opcua UserTokenSettingsDataType 'UserTokenSettingsDataType' Structure Numeric:15560 array False / dotnet Complex UserTokenSettingsDataType clr 'object'
+  array  opcua UserTokenSettingsDataType 'UserTokenSettingsDataType' Structure Numeric:15560 array True / dotnet Array UserTokenSettingsDataType[] clr 'object[]' of (dotnet Complex UserTokenSettingsDataType clr 'object')
+i=15578 PublishedDataSetDataType
+  scalar opcua PublishedDataSetDataType 'PublishedDataSetDataType' Structure Numeric:15578 array False / dotnet Complex PublishedDataSetDataType clr 'object'
+  array  opcua PublishedDataSetDataType 'PublishedDataSetDataType' Structure Numeric:15578 array True / dotnet Array PublishedDataSetDataType[] clr 'object[]' of (dotnet Complex PublishedDataSetDataType clr 'object')
+i=15580 PublishedDataSetSourceDataType
+  scalar opcua PublishedDataSetSourceDataType 'PublishedDataSetSourceDataType' Structure Numeric:15580 array False / dotnet Complex PublishedDataSetSourceDataType clr 'object'
+  array  opcua PublishedDataSetSourceDataType 'PublishedDataSetSourceDataType' Structure Numeric:15580 array True / dotnet Array PublishedDataSetSourceDataType[] clr 'object[]' of (dotnet Complex PublishedDataSetSourceDataType clr 'object')
+i=15581 PublishedDataItemsDataType
+  scalar opcua PublishedDataItemsDataType 'PublishedDataItemsDataType' Structure Numeric:15581 array False / dotnet Complex PublishedDataItemsDataType clr 'object'
+  array  opcua PublishedDataItemsDataType 'PublishedDataItemsDataType' Structure Numeric:15581 array True / dotnet Array PublishedDataItemsDataType[] clr 'object[]' of (dotnet Complex PublishedDataItemsDataType clr 'object')
+i=15582 PublishedEventsDataType
+  scalar opcua PublishedEventsDataType 'PublishedEventsDataType' Structure Numeric:15582 array False / dotnet Complex PublishedEventsDataType clr 'object'
+  array  opcua PublishedEventsDataType 'PublishedEventsDataType' Structure Numeric:15582 array True / dotnet Array PublishedEventsDataType[] clr 'object[]' of (dotnet Complex PublishedEventsDataType clr 'object')
+i=15583 DataSetFieldContentMask
+  scalar opcua DataSetFieldContentMask 'DataSetFieldContentMask' Enum Numeric:15583 array False / dotnet Enum DataSetFieldContentMask clr 'int' members 0=StatusCode, 1=SourceTimestamp, 2=ServerTimestamp, 3=SourcePicoSeconds, 4=ServerPicoSeconds, 5=RawData
+  array  opcua DataSetFieldContentMask 'DataSetFieldContentMask' Enum Numeric:15583 array True / dotnet Array DataSetFieldContentMask[] clr 'int[]' of (dotnet Enum DataSetFieldContentMask clr 'int' members 0=StatusCode, 1=SourceTimestamp, 2=ServerTimestamp, 3=SourcePicoSeconds, 4=ServerPicoSeconds, 5=RawData)
+i=15597 DataSetWriterDataType
+  scalar opcua DataSetWriterDataType 'DataSetWriterDataType' Structure Numeric:15597 array False / dotnet Complex DataSetWriterDataType clr 'object'
+  array  opcua DataSetWriterDataType 'DataSetWriterDataType' Structure Numeric:15597 array True / dotnet Array DataSetWriterDataType[] clr 'object[]' of (dotnet Complex DataSetWriterDataType clr 'object')
+i=15598 DataSetWriterTransportDataType
+  scalar opcua DataSetWriterTransportDataType 'DataSetWriterTransportDataType' Structure Numeric:15598 array False / dotnet Complex DataSetWriterTransportDataType clr 'object'
+  array  opcua DataSetWriterTransportDataType 'DataSetWriterTransportDataType' Structure Numeric:15598 array True / dotnet Array DataSetWriterTransportDataType[] clr 'object[]' of (dotnet Complex DataSetWriterTransportDataType clr 'object')
+i=15605 DataSetWriterMessageDataType
+  scalar opcua DataSetWriterMessageDataType 'DataSetWriterMessageDataType' Structure Numeric:15605 array False / dotnet Complex DataSetWriterMessageDataType clr 'object'
+  array  opcua DataSetWriterMessageDataType 'DataSetWriterMessageDataType' Structure Numeric:15605 array True / dotnet Array DataSetWriterMessageDataType[] clr 'object[]' of (dotnet Complex DataSetWriterMessageDataType clr 'object')
+i=15609 PubSubGroupDataType
+  scalar opcua PubSubGroupDataType 'PubSubGroupDataType' Structure Numeric:15609 array False / dotnet Complex PubSubGroupDataType clr 'object'
+  array  opcua PubSubGroupDataType 'PubSubGroupDataType' Structure Numeric:15609 array True / dotnet Array PubSubGroupDataType[] clr 'object[]' of (dotnet Complex PubSubGroupDataType clr 'object')
+i=15611 WriterGroupTransportDataType
+  scalar opcua WriterGroupTransportDataType 'WriterGroupTransportDataType' Structure Numeric:15611 array False / dotnet Complex WriterGroupTransportDataType clr 'object'
+  array  opcua WriterGroupTransportDataType 'WriterGroupTransportDataType' Structure Numeric:15611 array True / dotnet Array WriterGroupTransportDataType[] clr 'object[]' of (dotnet Complex WriterGroupTransportDataType clr 'object')
+i=15616 WriterGroupMessageDataType
+  scalar opcua WriterGroupMessageDataType 'WriterGroupMessageDataType' Structure Numeric:15616 array False / dotnet Complex WriterGroupMessageDataType clr 'object'
+  array  opcua WriterGroupMessageDataType 'WriterGroupMessageDataType' Structure Numeric:15616 array True / dotnet Array WriterGroupMessageDataType[] clr 'object[]' of (dotnet Complex WriterGroupMessageDataType clr 'object')
+i=15617 PubSubConnectionDataType
+  scalar opcua PubSubConnectionDataType 'PubSubConnectionDataType' Structure Numeric:15617 array False / dotnet Complex PubSubConnectionDataType clr 'object'
+  array  opcua PubSubConnectionDataType 'PubSubConnectionDataType' Structure Numeric:15617 array True / dotnet Array PubSubConnectionDataType[] clr 'object[]' of (dotnet Complex PubSubConnectionDataType clr 'object')
+i=15618 ConnectionTransportDataType
+  scalar opcua ConnectionTransportDataType 'ConnectionTransportDataType' Structure Numeric:15618 array False / dotnet Complex ConnectionTransportDataType clr 'object'
+  array  opcua ConnectionTransportDataType 'ConnectionTransportDataType' Structure Numeric:15618 array True / dotnet Array ConnectionTransportDataType[] clr 'object[]' of (dotnet Complex ConnectionTransportDataType clr 'object')
+i=15621 ReaderGroupTransportDataType
+  scalar opcua ReaderGroupTransportDataType 'ReaderGroupTransportDataType' Structure Numeric:15621 array False / dotnet Complex ReaderGroupTransportDataType clr 'object'
+  array  opcua ReaderGroupTransportDataType 'ReaderGroupTransportDataType' Structure Numeric:15621 array True / dotnet Array ReaderGroupTransportDataType[] clr 'object[]' of (dotnet Complex ReaderGroupTransportDataType clr 'object')
+i=15622 ReaderGroupMessageDataType
+  scalar opcua ReaderGroupMessageDataType 'ReaderGroupMessageDataType' Structure Numeric:15622 array False / dotnet Complex ReaderGroupMessageDataType clr 'object'
+  array  opcua ReaderGroupMessageDataType 'ReaderGroupMessageDataType' Structure Numeric:15622 array True / dotnet Array ReaderGroupMessageDataType[] clr 'object[]' of (dotnet Complex ReaderGroupMessageDataType clr 'object')
+i=15623 DataSetReaderDataType
+  scalar opcua DataSetReaderDataType 'DataSetReaderDataType' Structure Numeric:15623 array False / dotnet Complex DataSetReaderDataType clr 'object'
+  array  opcua DataSetReaderDataType 'DataSetReaderDataType' Structure Numeric:15623 array True / dotnet Array DataSetReaderDataType[] clr 'object[]' of (dotnet Complex DataSetReaderDataType clr 'object')
+i=15628 DataSetReaderTransportDataType
+  scalar opcua DataSetReaderTransportDataType 'DataSetReaderTransportDataType' Structure Numeric:15628 array False / dotnet Complex DataSetReaderTransportDataType clr 'object'
+  array  opcua DataSetReaderTransportDataType 'DataSetReaderTransportDataType' Structure Numeric:15628 array True / dotnet Array DataSetReaderTransportDataType[] clr 'object[]' of (dotnet Complex DataSetReaderTransportDataType clr 'object')
+i=15629 DataSetReaderMessageDataType
+  scalar opcua DataSetReaderMessageDataType 'DataSetReaderMessageDataType' Structure Numeric:15629 array False / dotnet Complex DataSetReaderMessageDataType clr 'object'
+  array  opcua DataSetReaderMessageDataType 'DataSetReaderMessageDataType' Structure Numeric:15629 array True / dotnet Array DataSetReaderMessageDataType[] clr 'object[]' of (dotnet Complex DataSetReaderMessageDataType clr 'object')
+i=15630 SubscribedDataSetDataType
+  scalar opcua SubscribedDataSetDataType 'SubscribedDataSetDataType' Structure Numeric:15630 array False / dotnet Complex SubscribedDataSetDataType clr 'object'
+  array  opcua SubscribedDataSetDataType 'SubscribedDataSetDataType' Structure Numeric:15630 array True / dotnet Array SubscribedDataSetDataType[] clr 'object[]' of (dotnet Complex SubscribedDataSetDataType clr 'object')
+i=15631 TargetVariablesDataType
+  scalar opcua TargetVariablesDataType 'TargetVariablesDataType' Structure Numeric:15631 array False / dotnet Complex TargetVariablesDataType clr 'object'
+  array  opcua TargetVariablesDataType 'TargetVariablesDataType' Structure Numeric:15631 array True / dotnet Array TargetVariablesDataType[] clr 'object[]' of (dotnet Complex TargetVariablesDataType clr 'object')
+i=15632 IdentityCriteriaType
+  scalar opcua IdentityCriteriaType 'IdentityCriteriaType' Enum Numeric:15632 array False / dotnet Enum IdentityCriteriaType clr 'int' members 1=UserName, 2=Thumbprint, 3=Role, 4=GroupId, 5=Anonymous, 6=AuthenticatedUser, 7=Application, 8=X509Subject, 9=TrustedApplication
+  array  opcua IdentityCriteriaType 'IdentityCriteriaType' Enum Numeric:15632 array True / dotnet Array IdentityCriteriaType[] clr 'int[]' of (dotnet Enum IdentityCriteriaType clr 'int' members 1=UserName, 2=Thumbprint, 3=Role, 4=GroupId, 5=Anonymous, 6=AuthenticatedUser, 7=Application, 8=X509Subject, 9=TrustedApplication)
+i=15634 IdentityMappingRuleType
+  scalar opcua IdentityMappingRuleType 'IdentityMappingRuleType' Structure Numeric:15634 array False / dotnet Complex IdentityMappingRuleType clr 'object'
+  array  opcua IdentityMappingRuleType 'IdentityMappingRuleType' Structure Numeric:15634 array True / dotnet Array IdentityMappingRuleType[] clr 'object[]' of (dotnet Complex IdentityMappingRuleType clr 'object')
+i=15635 SubscribedDataSetMirrorDataType
+  scalar opcua SubscribedDataSetMirrorDataType 'SubscribedDataSetMirrorDataType' Structure Numeric:15635 array False / dotnet Complex SubscribedDataSetMirrorDataType clr 'object'
+  array  opcua SubscribedDataSetMirrorDataType 'SubscribedDataSetMirrorDataType' Structure Numeric:15635 array True / dotnet Array SubscribedDataSetMirrorDataType[] clr 'object[]' of (dotnet Complex SubscribedDataSetMirrorDataType clr 'object')
+i=15642 UadpNetworkMessageContentMask
+  scalar opcua UadpNetworkMessageContentMask 'UadpNetworkMessageContentMask' Enum Numeric:15642 array False / dotnet Enum UadpNetworkMessageContentMask clr 'int' members 0=PublisherId, 1=GroupHeader, 2=WriterGroupId, 3=GroupVersion, 4=NetworkMessageNumber, 5=SequenceNumber, 6=PayloadHeader, 7=Timestamp, 8=PicoSeconds, 9=DataSetClassId, 10=PromotedFields
+  array  opcua UadpNetworkMessageContentMask 'UadpNetworkMessageContentMask' Enum Numeric:15642 array True / dotnet Array UadpNetworkMessageContentMask[] clr 'int[]' of (dotnet Enum UadpNetworkMessageContentMask clr 'int' members 0=PublisherId, 1=GroupHeader, 2=WriterGroupId, 3=GroupVersion, 4=NetworkMessageNumber, 5=SequenceNumber, 6=PayloadHeader, 7=Timestamp, 8=PicoSeconds, 9=DataSetClassId, 10=PromotedFields)
+i=15645 UadpWriterGroupMessageDataType
+  scalar opcua UadpWriterGroupMessageDataType 'UadpWriterGroupMessageDataType' Structure Numeric:15645 array False / dotnet Complex UadpWriterGroupMessageDataType clr 'object'
+  array  opcua UadpWriterGroupMessageDataType 'UadpWriterGroupMessageDataType' Structure Numeric:15645 array True / dotnet Array UadpWriterGroupMessageDataType[] clr 'object[]' of (dotnet Complex UadpWriterGroupMessageDataType clr 'object')
+i=15646 UadpDataSetMessageContentMask
+  scalar opcua UadpDataSetMessageContentMask 'UadpDataSetMessageContentMask' Enum Numeric:15646 array False / dotnet Enum UadpDataSetMessageContentMask clr 'int' members 0=Timestamp, 1=PicoSeconds, 2=Status, 3=MajorVersion, 4=MinorVersion, 5=SequenceNumber
+  array  opcua UadpDataSetMessageContentMask 'UadpDataSetMessageContentMask' Enum Numeric:15646 array True / dotnet Array UadpDataSetMessageContentMask[] clr 'int[]' of (dotnet Enum UadpDataSetMessageContentMask clr 'int' members 0=Timestamp, 1=PicoSeconds, 2=Status, 3=MajorVersion, 4=MinorVersion, 5=SequenceNumber)
+i=15652 UadpDataSetWriterMessageDataType
+  scalar opcua UadpDataSetWriterMessageDataType 'UadpDataSetWriterMessageDataType' Structure Numeric:15652 array False / dotnet Complex UadpDataSetWriterMessageDataType clr 'object'
+  array  opcua UadpDataSetWriterMessageDataType 'UadpDataSetWriterMessageDataType' Structure Numeric:15652 array True / dotnet Array UadpDataSetWriterMessageDataType[] clr 'object[]' of (dotnet Complex UadpDataSetWriterMessageDataType clr 'object')
+i=15653 UadpDataSetReaderMessageDataType
+  scalar opcua UadpDataSetReaderMessageDataType 'UadpDataSetReaderMessageDataType' Structure Numeric:15653 array False / dotnet Complex UadpDataSetReaderMessageDataType clr 'object'
+  array  opcua UadpDataSetReaderMessageDataType 'UadpDataSetReaderMessageDataType' Structure Numeric:15653 array True / dotnet Array UadpDataSetReaderMessageDataType[] clr 'object[]' of (dotnet Complex UadpDataSetReaderMessageDataType clr 'object')
+i=15654 JsonNetworkMessageContentMask
+  scalar opcua JsonNetworkMessageContentMask 'JsonNetworkMessageContentMask' Enum Numeric:15654 array False / dotnet Enum JsonNetworkMessageContentMask clr 'int' members 0=NetworkMessageHeader, 1=DataSetMessageHeader, 2=SingleDataSetMessage, 3=PublisherId, 4=DataSetClassId, 5=ReplyTo, 6=WriterGroupName
+  array  opcua JsonNetworkMessageContentMask 'JsonNetworkMessageContentMask' Enum Numeric:15654 array True / dotnet Array JsonNetworkMessageContentMask[] clr 'int[]' of (dotnet Enum JsonNetworkMessageContentMask clr 'int' members 0=NetworkMessageHeader, 1=DataSetMessageHeader, 2=SingleDataSetMessage, 3=PublisherId, 4=DataSetClassId, 5=ReplyTo, 6=WriterGroupName)
+i=15657 JsonWriterGroupMessageDataType
+  scalar opcua JsonWriterGroupMessageDataType 'JsonWriterGroupMessageDataType' Structure Numeric:15657 array False / dotnet Complex JsonWriterGroupMessageDataType clr 'object'
+  array  opcua JsonWriterGroupMessageDataType 'JsonWriterGroupMessageDataType' Structure Numeric:15657 array True / dotnet Array JsonWriterGroupMessageDataType[] clr 'object[]' of (dotnet Complex JsonWriterGroupMessageDataType clr 'object')
+i=15658 JsonDataSetMessageContentMask
+  scalar opcua JsonDataSetMessageContentMask 'JsonDataSetMessageContentMask' Enum Numeric:15658 array False / dotnet Enum JsonDataSetMessageContentMask clr 'int' members 0=DataSetWriterId, 1=MetaDataVersion, 2=SequenceNumber, 3=Timestamp, 4=Status, 5=MessageType, 6=DataSetWriterName, 7=FieldEncoding1, 8=PublisherId, 9=WriterGroupName, 10=MinorVersion, 11=FieldEncoding2
+  array  opcua JsonDataSetMessageContentMask 'JsonDataSetMessageContentMask' Enum Numeric:15658 array True / dotnet Array JsonDataSetMessageContentMask[] clr 'int[]' of (dotnet Enum JsonDataSetMessageContentMask clr 'int' members 0=DataSetWriterId, 1=MetaDataVersion, 2=SequenceNumber, 3=Timestamp, 4=Status, 5=MessageType, 6=DataSetWriterName, 7=FieldEncoding1, 8=PublisherId, 9=WriterGroupName, 10=MinorVersion, 11=FieldEncoding2)
+i=15664 JsonDataSetWriterMessageDataType
+  scalar opcua JsonDataSetWriterMessageDataType 'JsonDataSetWriterMessageDataType' Structure Numeric:15664 array False / dotnet Complex JsonDataSetWriterMessageDataType clr 'object'
+  array  opcua JsonDataSetWriterMessageDataType 'JsonDataSetWriterMessageDataType' Structure Numeric:15664 array True / dotnet Array JsonDataSetWriterMessageDataType[] clr 'object[]' of (dotnet Complex JsonDataSetWriterMessageDataType clr 'object')
+i=15665 JsonDataSetReaderMessageDataType
+  scalar opcua JsonDataSetReaderMessageDataType 'JsonDataSetReaderMessageDataType' Structure Numeric:15665 array False / dotnet Complex JsonDataSetReaderMessageDataType clr 'object'
+  array  opcua JsonDataSetReaderMessageDataType 'JsonDataSetReaderMessageDataType' Structure Numeric:15665 array True / dotnet Array JsonDataSetReaderMessageDataType[] clr 'object[]' of (dotnet Complex JsonDataSetReaderMessageDataType clr 'object')
+i=15667 BrokerWriterGroupTransportDataType
+  scalar opcua BrokerWriterGroupTransportDataType 'BrokerWriterGroupTransportDataType' Structure Numeric:15667 array False / dotnet Complex BrokerWriterGroupTransportDataType clr 'object'
+  array  opcua BrokerWriterGroupTransportDataType 'BrokerWriterGroupTransportDataType' Structure Numeric:15667 array True / dotnet Array BrokerWriterGroupTransportDataType[] clr 'object[]' of (dotnet Complex BrokerWriterGroupTransportDataType clr 'object')
+i=15669 BrokerDataSetWriterTransportDataType
+  scalar opcua BrokerDataSetWriterTransportDataType 'BrokerDataSetWriterTransportDataType' Structure Numeric:15669 array False / dotnet Complex BrokerDataSetWriterTransportDataType clr 'object'
+  array  opcua BrokerDataSetWriterTransportDataType 'BrokerDataSetWriterTransportDataType' Structure Numeric:15669 array True / dotnet Array BrokerDataSetWriterTransportDataType[] clr 'object[]' of (dotnet Complex BrokerDataSetWriterTransportDataType clr 'object')
+i=15670 BrokerDataSetReaderTransportDataType
+  scalar opcua BrokerDataSetReaderTransportDataType 'BrokerDataSetReaderTransportDataType' Structure Numeric:15670 array False / dotnet Complex BrokerDataSetReaderTransportDataType clr 'object'
+  array  opcua BrokerDataSetReaderTransportDataType 'BrokerDataSetReaderTransportDataType' Structure Numeric:15670 array True / dotnet Array BrokerDataSetReaderTransportDataType[] clr 'object[]' of (dotnet Complex BrokerDataSetReaderTransportDataType clr 'object')
+i=15874 OverrideValueHandling
+  scalar opcua OverrideValueHandling 'OverrideValueHandling' Enum Numeric:15874 array False / dotnet Enum OverrideValueHandling clr 'int' members 0=Disabled, 1=LastUsableValue, 2=OverrideValue
+  array  opcua OverrideValueHandling 'OverrideValueHandling' Enum Numeric:15874 array True / dotnet Array OverrideValueHandling[] clr 'int[]' of (dotnet Enum OverrideValueHandling clr 'int' members 0=Disabled, 1=LastUsableValue, 2=OverrideValue)
+i=15901 SessionlessInvokeRequestType
+  scalar opcua i=15901 'i=15901' Unknown Unknown: array False / dotnet Unknown i=15901 clr 'object'
+  array  opcua i=15901 'i=15901' Unknown Unknown: array True / dotnet Array i=15901[] clr 'object[]' of (dotnet Unknown i=15901 clr 'object')
+i=15904 DataSetFieldFlags
+  scalar opcua DataSetFieldFlags 'DataSetFieldFlags' Enum Numeric:15904 array False / dotnet Enum DataSetFieldFlags clr 'int' members 0=PromotedField
+  array  opcua DataSetFieldFlags 'DataSetFieldFlags' Enum Numeric:15904 array True / dotnet Array DataSetFieldFlags[] clr 'int[]' of (dotnet Enum DataSetFieldFlags clr 'int' members 0=PromotedField)
+i=16307 AudioDataType
+  scalar opcua ByteString 'ByteString' Primitive Numeric:16307 array False / dotnet Primitive ByteString clr 'byte[]'
+  array  opcua ByteString 'ByteString' Primitive Numeric:16307 array True / dotnet Array ByteString[] clr 'byte[][]' of (dotnet Primitive ByteString clr 'byte[]')
+i=16313 AdditionalParametersType
+  scalar opcua AdditionalParametersType 'AdditionalParametersType' Structure Numeric:16313 array False / dotnet Complex AdditionalParametersType clr 'object'
+  array  opcua AdditionalParametersType 'AdditionalParametersType' Structure Numeric:16313 array True / dotnet Array AdditionalParametersType[] clr 'object[]' of (dotnet Complex AdditionalParametersType clr 'object')
+i=17467 DatagramConnectionTransportDataType
+  scalar opcua DatagramConnectionTransportDataType 'DatagramConnectionTransportDataType' Structure Numeric:17467 array False / dotnet Complex DatagramConnectionTransportDataType clr 'object'
+  array  opcua DatagramConnectionTransportDataType 'DatagramConnectionTransportDataType' Structure Numeric:17467 array True / dotnet Array DatagramConnectionTransportDataType[] clr 'object[]' of (dotnet Complex DatagramConnectionTransportDataType clr 'object')
+i=17545 RsaEncryptedSecret
+  scalar opcua i=17545 'i=17545' Unknown Unknown: array False / dotnet Unknown i=17545 clr 'object'
+  array  opcua i=17545 'i=17545' Unknown Unknown: array True / dotnet Array i=17545[] clr 'object[]' of (dotnet Unknown i=17545 clr 'object')
+i=17546 EccEncryptedSecret
+  scalar opcua i=17546 'i=17546' Unknown Unknown: array False / dotnet Unknown i=17546 clr 'object'
+  array  opcua i=17546 'i=17546' Unknown Unknown: array True / dotnet Array i=17546[] clr 'object[]' of (dotnet Unknown i=17546 clr 'object')
+i=17548 EphemeralKeyType
+  scalar opcua EphemeralKeyType 'EphemeralKeyType' Structure Numeric:17548 array False / dotnet Complex EphemeralKeyType clr 'object'
+  array  opcua EphemeralKeyType 'EphemeralKeyType' Structure Numeric:17548 array True / dotnet Array EphemeralKeyType[] clr 'object[]' of (dotnet Complex EphemeralKeyType clr 'object')
+i=17588 Index
+  scalar opcua UInt32 'UInt32' Primitive Numeric:17588 array False / dotnet Primitive UInt32 clr 'uint'
+  array  opcua UInt32 'UInt32' Primitive Numeric:17588 array True / dotnet Array UInt32[] clr 'uint[]' of (dotnet Primitive UInt32 clr 'uint')
+i=17606 GenericAttributeValue
+  scalar opcua i=17606 'i=17606' Unknown Unknown: array False / dotnet Unknown i=17606 clr 'object'
+  array  opcua i=17606 'i=17606' Unknown Unknown: array True / dotnet Array i=17606[] clr 'object[]' of (dotnet Unknown i=17606 clr 'object')
+i=17607 GenericAttributes
+  scalar opcua i=17607 'i=17607' Unknown Unknown: array False / dotnet Unknown i=17607 clr 'object'
+  array  opcua i=17607 'i=17607' Unknown Unknown: array True / dotnet Array i=17607[] clr 'object[]' of (dotnet Unknown i=17607 clr 'object')
+i=17861 DecimalDataType
+  scalar opcua i=17861 'i=17861' Unknown Unknown: array False / dotnet Unknown i=17861 clr 'object'
+  array  opcua i=17861 'i=17861' Unknown Unknown: array True / dotnet Array i=17861[] clr 'object[]' of (dotnet Unknown i=17861 clr 'object')
+i=18593 ActionTargetDataType
+  scalar opcua ActionTargetDataType 'ActionTargetDataType' Structure Numeric:18593 array False / dotnet Complex ActionTargetDataType clr 'object'
+  array  opcua ActionTargetDataType 'ActionTargetDataType' Structure Numeric:18593 array True / dotnet Array ActionTargetDataType[] clr 'object[]' of (dotnet Complex ActionTargetDataType clr 'object')
+i=18594 PublishedActionDataType
+  scalar opcua PublishedActionDataType 'PublishedActionDataType' Structure Numeric:18594 array False / dotnet Complex PublishedActionDataType clr 'object'
+  array  opcua PublishedActionDataType 'PublishedActionDataType' Structure Numeric:18594 array True / dotnet Array PublishedActionDataType[] clr 'object[]' of (dotnet Complex PublishedActionDataType clr 'object')
+i=18595 ActionState
+  scalar opcua ActionState 'ActionState' Enum Numeric:18595 array False / dotnet Enum ActionState clr 'int' members 0=Idle, 1=Executing, 2=Done
+  array  opcua ActionState 'ActionState' Enum Numeric:18595 array True / dotnet Array ActionState[] clr 'int[]' of (dotnet Enum ActionState clr 'int' members 0=Idle, 1=Executing, 2=Done)
+i=18597 ActionMethodDataType
+  scalar opcua ActionMethodDataType 'ActionMethodDataType' Structure Numeric:18597 array False / dotnet Complex ActionMethodDataType clr 'object'
+  array  opcua ActionMethodDataType 'ActionMethodDataType' Structure Numeric:18597 array True / dotnet Array ActionMethodDataType[] clr 'object[]' of (dotnet Complex ActionMethodDataType clr 'object')
+i=18646 SortOrderType
+  scalar opcua i=18646 'i=18646' Unknown Unknown: array False / dotnet Unknown i=18646 clr 'object'
+  array  opcua i=18646 'i=18646' Unknown Unknown: array True / dotnet Array i=18646[] clr 'object[]' of (dotnet Unknown i=18646 clr 'object')
+i=18648 SortRuleElement
+  scalar opcua i=18648 'i=18648' Unknown Unknown: array False / dotnet Unknown i=18648 clr 'object'
+  array  opcua i=18648 'i=18648' Unknown Unknown: array True / dotnet Array i=18648[] clr 'object[]' of (dotnet Unknown i=18648 clr 'object')
+i=18649 ReadEventDetailsSorted
+  scalar opcua i=18649 'i=18649' Unknown Unknown: array False / dotnet Unknown i=18649 clr 'object'
+  array  opcua i=18649 'i=18649' Unknown Unknown: array True / dotnet Array i=18649[] clr 'object[]' of (dotnet Unknown i=18649 clr 'object')
+i=18793 PublishedActionMethodDataType
+  scalar opcua PublishedActionMethodDataType 'PublishedActionMethodDataType' Structure Numeric:18793 array False / dotnet Complex PublishedActionMethodDataType clr 'object'
+  array  opcua PublishedActionMethodDataType 'PublishedActionMethodDataType' Structure Numeric:18793 array True / dotnet Array PublishedActionMethodDataType[] clr 'object[]' of (dotnet Complex PublishedActionMethodDataType clr 'object')
+i=18794 DtlsPubSubConnectionDataType
+  scalar opcua DtlsPubSubConnectionDataType 'DtlsPubSubConnectionDataType' Structure Numeric:18794 array False / dotnet Complex DtlsPubSubConnectionDataType clr 'object'
+  array  opcua DtlsPubSubConnectionDataType 'DtlsPubSubConnectionDataType' Structure Numeric:18794 array True / dotnet Array DtlsPubSubConnectionDataType[] clr 'object[]' of (dotnet Complex DtlsPubSubConnectionDataType clr 'object')
+i=18806 RationalNumber
+  scalar opcua RationalNumber 'RationalNumber' Structure Numeric:18806 array False / dotnet Complex RationalNumber clr 'object'
+  array  opcua RationalNumber 'RationalNumber' Structure Numeric:18806 array True / dotnet Array RationalNumber[] clr 'object[]' of (dotnet Complex RationalNumber clr 'object')
+i=18807 Vector
+  scalar opcua Vector 'Vector' Structure Numeric:18807 array False / dotnet Complex Vector clr 'object'
+  array  opcua Vector 'Vector' Structure Numeric:18807 array True / dotnet Array Vector[] clr 'object[]' of (dotnet Complex Vector clr 'object')
+i=18808 ThreeDVector
+  scalar opcua 3DVector '3DVector' Structure Numeric:18808 array False / dotnet Complex 3DVector clr 'object'
+  array  opcua 3DVector '3DVector' Structure Numeric:18808 array True / dotnet Array 3DVector[] clr 'object[]' of (dotnet Complex 3DVector clr 'object')
+i=18809 CartesianCoordinates
+  scalar opcua CartesianCoordinates 'CartesianCoordinates' Structure Numeric:18809 array False / dotnet Complex CartesianCoordinates clr 'object'
+  array  opcua CartesianCoordinates 'CartesianCoordinates' Structure Numeric:18809 array True / dotnet Array CartesianCoordinates[] clr 'object[]' of (dotnet Complex CartesianCoordinates clr 'object')
+i=18810 ThreeDCartesianCoordinates
+  scalar opcua 3DCartesianCoordinates '3DCartesianCoordinates' Structure Numeric:18810 array False / dotnet Complex 3DCartesianCoordinates clr 'object'
+  array  opcua 3DCartesianCoordinates '3DCartesianCoordinates' Structure Numeric:18810 array True / dotnet Array 3DCartesianCoordinates[] clr 'object[]' of (dotnet Complex 3DCartesianCoordinates clr 'object')
+i=18811 Orientation
+  scalar opcua Orientation 'Orientation' Structure Numeric:18811 array False / dotnet Complex Orientation clr 'object'
+  array  opcua Orientation 'Orientation' Structure Numeric:18811 array True / dotnet Array Orientation[] clr 'object[]' of (dotnet Complex Orientation clr 'object')
+i=18812 ThreeDOrientation
+  scalar opcua 3DOrientation '3DOrientation' Structure Numeric:18812 array False / dotnet Complex 3DOrientation clr 'object'
+  array  opcua 3DOrientation '3DOrientation' Structure Numeric:18812 array True / dotnet Array 3DOrientation[] clr 'object[]' of (dotnet Complex 3DOrientation clr 'object')
+i=18813 Frame
+  scalar opcua Frame 'Frame' Structure Numeric:18813 array False / dotnet Complex Frame clr 'object'
+  array  opcua Frame 'Frame' Structure Numeric:18813 array True / dotnet Array Frame[] clr 'object[]' of (dotnet Complex Frame clr 'object')
+i=18814 ThreeDFrame
+  scalar opcua 3DFrame '3DFrame' Structure Numeric:18814 array False / dotnet Complex 3DFrame clr 'object'
+  array  opcua 3DFrame '3DFrame' Structure Numeric:18814 array True / dotnet Array 3DFrame[] clr 'object[]' of (dotnet Complex 3DFrame clr 'object')
+i=18947 ChassisIdSubtype
+  scalar opcua ChassisIdSubtype 'ChassisIdSubtype' Enum Numeric:18947 array False / dotnet Enum ChassisIdSubtype clr 'int' members 1=ChassisComponent, 2=InterfaceAlias, 3=PortComponent, 4=MacAddress, 5=NetworkAddress, 6=InterfaceName, 7=Local
+  array  opcua ChassisIdSubtype 'ChassisIdSubtype' Enum Numeric:18947 array True / dotnet Array ChassisIdSubtype[] clr 'int[]' of (dotnet Enum ChassisIdSubtype clr 'int' members 1=ChassisComponent, 2=InterfaceAlias, 3=PortComponent, 4=MacAddress, 5=NetworkAddress, 6=InterfaceName, 7=Local)
+i=18949 PortIdSubtype
+  scalar opcua PortIdSubtype 'PortIdSubtype' Enum Numeric:18949 array False / dotnet Enum PortIdSubtype clr 'int' members 1=InterfaceAlias, 2=PortComponent, 3=MacAddress, 4=NetworkAddress, 5=InterfaceName, 6=AgentCircuitId, 7=Local
+  array  opcua PortIdSubtype 'PortIdSubtype' Enum Numeric:18949 array True / dotnet Array PortIdSubtype[] clr 'int[]' of (dotnet Enum PortIdSubtype clr 'int' members 1=InterfaceAlias, 2=PortComponent, 3=MacAddress, 4=NetworkAddress, 5=InterfaceName, 6=AgentCircuitId, 7=Local)
+i=18951 ManAddrIfSubtype
+  scalar opcua ManAddrIfSubtype 'ManAddrIfSubtype' Enum Numeric:18951 array False / dotnet Enum ManAddrIfSubtype clr 'int' members 0=None, 1=Unknown, 2=PortRef, 3=SystemPortNumber
+  array  opcua ManAddrIfSubtype 'ManAddrIfSubtype' Enum Numeric:18951 array True / dotnet Array ManAddrIfSubtype[] clr 'int[]' of (dotnet Enum ManAddrIfSubtype clr 'int' members 0=None, 1=Unknown, 2=PortRef, 3=SystemPortNumber)
+i=18953 LldpManagementAddressTxPortType
+  scalar opcua LldpManagementAddressTxPortType 'LldpManagementAddressTxPortType' Structure Numeric:18953 array False / dotnet Complex LldpManagementAddressTxPortType clr 'object'
+  array  opcua LldpManagementAddressTxPortType 'LldpManagementAddressTxPortType' Structure Numeric:18953 array True / dotnet Array LldpManagementAddressTxPortType[] clr 'object[]' of (dotnet Complex LldpManagementAddressTxPortType clr 'object')
+i=18954 LldpManagementAddressType
+  scalar opcua LldpManagementAddressType 'LldpManagementAddressType' Structure Numeric:18954 array False / dotnet Complex LldpManagementAddressType clr 'object'
+  array  opcua LldpManagementAddressType 'LldpManagementAddressType' Structure Numeric:18954 array True / dotnet Array LldpManagementAddressType[] clr 'object[]' of (dotnet Complex LldpManagementAddressType clr 'object')
+i=18955 LldpTlvType
+  scalar opcua LldpTlvType 'LldpTlvType' Structure Numeric:18955 array False / dotnet Complex LldpTlvType clr 'object'
+  array  opcua LldpTlvType 'LldpTlvType' Structure Numeric:18955 array True / dotnet Array LldpTlvType[] clr 'object[]' of (dotnet Complex LldpTlvType clr 'object')
+i=18956 LldpSystemCapabilitiesMap
+  scalar opcua LldpSystemCapabilitiesMap 'LldpSystemCapabilitiesMap' Enum Numeric:18956 array False / dotnet Enum LldpSystemCapabilitiesMap clr 'int' members 0=Other, 1=Repeater, 2=Bridge, 3=WlanAccessPoint, 4=Router, 5=Telephone, 6=DocsisCableDevice, 7=StationOnly, 8=CvlanComponent, 9=SvlanComponent, 10=TwoPortMacRelay
+  array  opcua LldpSystemCapabilitiesMap 'LldpSystemCapabilitiesMap' Enum Numeric:18956 array True / dotnet Array LldpSystemCapabilitiesMap[] clr 'int[]' of (dotnet Enum LldpSystemCapabilitiesMap clr 'int' members 0=Other, 1=Repeater, 2=Bridge, 3=WlanAccessPoint, 4=Router, 5=Telephone, 6=DocsisCableDevice, 7=StationOnly, 8=CvlanComponent, 9=SvlanComponent, 10=TwoPortMacRelay)
+i=19311 JsonNetworkMessage
+  scalar opcua i=19311 'i=19311' Unknown Unknown: array False / dotnet Unknown i=19311 clr 'object'
+  array  opcua i=19311 'i=19311' Unknown Unknown: array True / dotnet Array i=19311[] clr 'object[]' of (dotnet Unknown i=19311 clr 'object')
+i=19312 JsonDataSetMessage
+  scalar opcua i=19312 'i=19312' Unknown Unknown: array False / dotnet Unknown i=19312 clr 'object'
+  array  opcua i=19312 'i=19312' Unknown Unknown: array True / dotnet Array i=19312[] clr 'object[]' of (dotnet Unknown i=19312 clr 'object')
+i=19313 JsonDataSetMetaDataMessage
+  scalar opcua i=19313 'i=19313' Unknown Unknown: array False / dotnet Unknown i=19313 clr 'object'
+  array  opcua i=19313 'i=19313' Unknown Unknown: array True / dotnet Array i=19313[] clr 'object[]' of (dotnet Unknown i=19313 clr 'object')
+i=19314 JsonApplicationDescriptionMessage
+  scalar opcua i=19314 'i=19314' Unknown Unknown: array False / dotnet Unknown i=19314 clr 'object'
+  array  opcua i=19314 'i=19314' Unknown Unknown: array True / dotnet Array i=19314[] clr 'object[]' of (dotnet Unknown i=19314 clr 'object')
+i=19315 JsonServerEndpointsMessage
+  scalar opcua i=19315 'i=19315' Unknown Unknown: array False / dotnet Unknown i=19315 clr 'object'
+  array  opcua i=19315 'i=19315' Unknown Unknown: array True / dotnet Array i=19315[] clr 'object[]' of (dotnet Unknown i=19315 clr 'object')
+i=19316 JsonStatusMessage
+  scalar opcua i=19316 'i=19316' Unknown Unknown: array False / dotnet Unknown i=19316 clr 'object'
+  array  opcua i=19316 'i=19316' Unknown Unknown: array True / dotnet Array i=19316[] clr 'object[]' of (dotnet Unknown i=19316 clr 'object')
+i=19317 JsonPubSubConnectionMessage
+  scalar opcua i=19317 'i=19317' Unknown Unknown: array False / dotnet Unknown i=19317 clr 'object'
+  array  opcua i=19317 'i=19317' Unknown Unknown: array True / dotnet Array i=19317[] clr 'object[]' of (dotnet Unknown i=19317 clr 'object')
+i=19318 JsonActionMetaDataMessage
+  scalar opcua i=19318 'i=19318' Unknown Unknown: array False / dotnet Unknown i=19318 clr 'object'
+  array  opcua i=19318 'i=19318' Unknown Unknown: array True / dotnet Array i=19318[] clr 'object[]' of (dotnet Unknown i=19318 clr 'object')
+i=19319 JsonActionResponderMessage
+  scalar opcua i=19319 'i=19319' Unknown Unknown: array False / dotnet Unknown i=19319 clr 'object'
+  array  opcua i=19319 'i=19319' Unknown Unknown: array True / dotnet Array i=19319[] clr 'object[]' of (dotnet Unknown i=19319 clr 'object')
+i=19320 JsonActionNetworkMessage
+  scalar opcua i=19320 'i=19320' Unknown Unknown: array False / dotnet Unknown i=19320 clr 'object'
+  array  opcua i=19320 'i=19320' Unknown Unknown: array True / dotnet Array i=19320[] clr 'object[]' of (dotnet Unknown i=19320 clr 'object')
+i=19321 JsonActionRequestMessage
+  scalar opcua i=19321 'i=19321' Unknown Unknown: array False / dotnet Unknown i=19321 clr 'object'
+  array  opcua i=19321 'i=19321' Unknown Unknown: array True / dotnet Array i=19321[] clr 'object[]' of (dotnet Unknown i=19321 clr 'object')
+i=19322 JsonActionResponseMessage
+  scalar opcua i=19322 'i=19322' Unknown Unknown: array False / dotnet Unknown i=19322 clr 'object'
+  array  opcua i=19322 'i=19322' Unknown Unknown: array True / dotnet Array i=19322[] clr 'object[]' of (dotnet Unknown i=19322 clr 'object')
+i=19361 LogRecord
+  scalar opcua LogRecord 'LogRecord' Structure Numeric:19361 array False / dotnet Complex LogRecord clr 'object'
+  array  opcua LogRecord 'LogRecord' Structure Numeric:19361 array True / dotnet Array LogRecord[] clr 'object[]' of (dotnet Complex LogRecord clr 'object')
+i=19445 AuthorizationServiceConfigurationDataType
+  scalar opcua i=19445 'i=19445' Unknown Unknown: array False / dotnet Unknown i=19445 clr 'object'
+  array  opcua i=19445 'i=19445' Unknown Unknown: array True / dotnet Array i=19445[] clr 'object[]' of (dotnet Unknown i=19445 clr 'object')
+i=19723 DiagnosticsLevel
+  scalar opcua DiagnosticsLevel 'DiagnosticsLevel' Enum Numeric:19723 array False / dotnet Enum DiagnosticsLevel clr 'int' members 0=Basic, 1=Advanced, 2=Info, 3=Log, 4=Debug
+  array  opcua DiagnosticsLevel 'DiagnosticsLevel' Enum Numeric:19723 array True / dotnet Array DiagnosticsLevel[] clr 'int[]' of (dotnet Enum DiagnosticsLevel clr 'int' members 0=Basic, 1=Advanced, 2=Info, 3=Log, 4=Debug)
+i=19730 PubSubDiagnosticsCounterClassification
+  scalar opcua PubSubDiagnosticsCounterClassification 'PubSubDiagnosticsCounterClassification' Enum Numeric:19730 array False / dotnet Enum PubSubDiagnosticsCounterClassification clr 'int' members 0=Information, 1=Error
+  array  opcua PubSubDiagnosticsCounterClassification 'PubSubDiagnosticsCounterClassification' Enum Numeric:19730 array True / dotnet Array PubSubDiagnosticsCounterClassification[] clr 'int[]' of (dotnet Enum PubSubDiagnosticsCounterClassification clr 'int' members 0=Information, 1=Error)
+i=19745 LogRecordsDataType
+  scalar opcua LogRecordsDataType 'LogRecordsDataType' Structure Numeric:19745 array False / dotnet Complex LogRecordsDataType clr 'object'
+  array  opcua LogRecordsDataType 'LogRecordsDataType' Structure Numeric:19745 array True / dotnet Array LogRecordsDataType[] clr 'object[]' of (dotnet Complex LogRecordsDataType clr 'object')
+i=19746 SpanContextDataType
+  scalar opcua SpanContextDataType 'SpanContextDataType' Structure Numeric:19746 array False / dotnet Complex SpanContextDataType clr 'object'
+  array  opcua SpanContextDataType 'SpanContextDataType' Structure Numeric:19746 array True / dotnet Array SpanContextDataType[] clr 'object[]' of (dotnet Complex SpanContextDataType clr 'object')
+i=19747 TraceContextDataType
+  scalar opcua TraceContextDataType 'TraceContextDataType' Structure Numeric:19747 array False / dotnet Complex TraceContextDataType clr 'object'
+  array  opcua TraceContextDataType 'TraceContextDataType' Structure Numeric:19747 array True / dotnet Array TraceContextDataType[] clr 'object[]' of (dotnet Complex TraceContextDataType clr 'object')
+i=19748 NameValuePair
+  scalar opcua NameValuePair 'NameValuePair' Structure Numeric:19748 array False / dotnet Complex NameValuePair clr 'object'
+  array  opcua NameValuePair 'NameValuePair' Structure Numeric:19748 array True / dotnet Array NameValuePair[] clr 'object[]' of (dotnet Complex NameValuePair clr 'object')
+i=19749 LogRecordMask
+  scalar opcua LogRecordMask 'LogRecordMask' Enum Numeric:19749 array False / dotnet Enum LogRecordMask clr 'int' members 0=EventType, 1=SourceNode, 2=SourceName, 3=TraceContext, 4=AdditionalData
+  array  opcua LogRecordMask 'LogRecordMask' Enum Numeric:19749 array True / dotnet Array LogRecordMask[] clr 'int[]' of (dotnet Enum LogRecordMask clr 'int' members 0=EventType, 1=SourceNode, 2=SourceName, 3=TraceContext, 4=AdditionalData)
+i=20408 DataSetOrderingType
+  scalar opcua DataSetOrderingType 'DataSetOrderingType' Enum Numeric:20408 array False / dotnet Enum DataSetOrderingType clr 'int' members 0=Undefined, 1=AscendingWriterId, 2=AscendingWriterIdSingle
+  array  opcua DataSetOrderingType 'DataSetOrderingType' Enum Numeric:20408 array True / dotnet Array DataSetOrderingType[] clr 'int[]' of (dotnet Enum DataSetOrderingType clr 'int' members 0=Undefined, 1=AscendingWriterId, 2=AscendingWriterIdSingle)
+i=20998 VersionTime
+  scalar opcua UInt32 'UInt32' Primitive Numeric:20998 array False / dotnet Primitive UInt32 clr 'uint'
+  array  opcua UInt32 'UInt32' Primitive Numeric:20998 array True / dotnet Array UInt32[] clr 'uint[]' of (dotnet Primitive UInt32 clr 'uint')
+i=20999 SessionlessInvokeResponseType
+  scalar opcua i=20999 'i=20999' Unknown Unknown: array False / dotnet Unknown i=20999 clr 'object'
+  array  opcua i=20999 'i=20999' Unknown Unknown: array True / dotnet Array i=20999[] clr 'object[]' of (dotnet Unknown i=20999 clr 'object')
+i=23468 AliasNameDataType
+  scalar opcua AliasNameDataType 'AliasNameDataType' Structure Numeric:23468 array False / dotnet Complex AliasNameDataType clr 'object'
+  array  opcua AliasNameDataType 'AliasNameDataType' Structure Numeric:23468 array True / dotnet Array AliasNameDataType[] clr 'object[]' of (dotnet Complex AliasNameDataType clr 'object')
+i=23497 ReadAnnotationDataDetails
+  scalar opcua i=23497 'i=23497' Unknown Unknown: array False / dotnet Unknown i=23497 clr 'object'
+  array  opcua i=23497 'i=23497' Unknown Unknown: array True / dotnet Array i=23497[] clr 'object[]' of (dotnet Unknown i=23497 clr 'object')
+i=23498 CurrencyUnitType
+  scalar opcua CurrencyUnitType 'CurrencyUnitType' Structure Numeric:23498 array False / dotnet Complex CurrencyUnitType clr 'object'
+  array  opcua CurrencyUnitType 'CurrencyUnitType' Structure Numeric:23498 array True / dotnet Array CurrencyUnitType[] clr 'object[]' of (dotnet Complex CurrencyUnitType clr 'object')
+i=23564 TrustListValidationOptions
+  scalar opcua TrustListValidationOptions 'TrustListValidationOptions' Enum Numeric:23564 array False / dotnet Enum TrustListValidationOptions clr 'int' members 0=SuppressCertificateExpired, 1=SuppressHostNameInvalid, 2=SuppressRevocationStatusUnknown, 3=SuppressIssuerCertificateExpired, 4=SuppressIssuerRevocationStatusUnknown, 5=CheckRevocationStatusOnline, 6=CheckRevocationStatusOffline
+  array  opcua TrustListValidationOptions 'TrustListValidationOptions' Enum Numeric:23564 array True / dotnet Array TrustListValidationOptions[] clr 'int[]' of (dotnet Enum TrustListValidationOptions clr 'int' members 0=SuppressCertificateExpired, 1=SuppressHostNameInvalid, 2=SuppressRevocationStatusUnknown, 3=SuppressIssuerCertificateExpired, 4=SuppressIssuerRevocationStatusUnknown, 5=CheckRevocationStatusOnline, 6=CheckRevocationStatusOffline)
+i=23599 StandaloneSubscribedDataSetRefDataType
+  scalar opcua StandaloneSubscribedDataSetRefDataType 'StandaloneSubscribedDataSetRefDataType' Structure Numeric:23599 array False / dotnet Complex StandaloneSubscribedDataSetRefDataType clr 'object'
+  array  opcua StandaloneSubscribedDataSetRefDataType 'StandaloneSubscribedDataSetRefDataType' Structure Numeric:23599 array True / dotnet Array StandaloneSubscribedDataSetRefDataType[] clr 'object[]' of (dotnet Complex StandaloneSubscribedDataSetRefDataType clr 'object')
+i=23600 StandaloneSubscribedDataSetDataType
+  scalar opcua StandaloneSubscribedDataSetDataType 'StandaloneSubscribedDataSetDataType' Structure Numeric:23600 array False / dotnet Complex StandaloneSubscribedDataSetDataType clr 'object'
+  array  opcua StandaloneSubscribedDataSetDataType 'StandaloneSubscribedDataSetDataType' Structure Numeric:23600 array True / dotnet Array StandaloneSubscribedDataSetDataType[] clr 'object[]' of (dotnet Complex StandaloneSubscribedDataSetDataType clr 'object')
+i=23601 SecurityGroupDataType
+  scalar opcua SecurityGroupDataType 'SecurityGroupDataType' Structure Numeric:23601 array False / dotnet Complex SecurityGroupDataType clr 'object'
+  array  opcua SecurityGroupDataType 'SecurityGroupDataType' Structure Numeric:23601 array True / dotnet Array SecurityGroupDataType[] clr 'object[]' of (dotnet Complex SecurityGroupDataType clr 'object')
+i=23602 PubSubConfiguration2DataType
+  scalar opcua PubSubConfiguration2DataType 'PubSubConfiguration2DataType' Structure Numeric:23602 array False / dotnet Complex PubSubConfiguration2DataType clr 'object'
+  array  opcua PubSubConfiguration2DataType 'PubSubConfiguration2DataType' Structure Numeric:23602 array True / dotnet Array PubSubConfiguration2DataType[] clr 'object[]' of (dotnet Complex PubSubConfiguration2DataType clr 'object')
+i=23603 QosDataType
+  scalar opcua QosDataType 'QosDataType' Structure Numeric:23603 array False / dotnet Complex QosDataType clr 'object'
+  array  opcua QosDataType 'QosDataType' Structure Numeric:23603 array True / dotnet Array QosDataType[] clr 'object[]' of (dotnet Complex QosDataType clr 'object')
+i=23604 TransmitQosDataType
+  scalar opcua TransmitQosDataType 'TransmitQosDataType' Structure Numeric:23604 array False / dotnet Complex TransmitQosDataType clr 'object'
+  array  opcua TransmitQosDataType 'TransmitQosDataType' Structure Numeric:23604 array True / dotnet Array TransmitQosDataType[] clr 'object[]' of (dotnet Complex TransmitQosDataType clr 'object')
+i=23605 TransmitQosPriorityDataType
+  scalar opcua TransmitQosPriorityDataType 'TransmitQosPriorityDataType' Structure Numeric:23605 array False / dotnet Complex TransmitQosPriorityDataType clr 'object'
+  array  opcua TransmitQosPriorityDataType 'TransmitQosPriorityDataType' Structure Numeric:23605 array True / dotnet Array TransmitQosPriorityDataType[] clr 'object[]' of (dotnet Complex TransmitQosPriorityDataType clr 'object')
+i=23608 ReceiveQosDataType
+  scalar opcua ReceiveQosDataType 'ReceiveQosDataType' Structure Numeric:23608 array False / dotnet Complex ReceiveQosDataType clr 'object'
+  array  opcua ReceiveQosDataType 'ReceiveQosDataType' Structure Numeric:23608 array True / dotnet Array ReceiveQosDataType[] clr 'object[]' of (dotnet Complex ReceiveQosDataType clr 'object')
+i=23609 ReceiveQosPriorityDataType
+  scalar opcua ReceiveQosPriorityDataType 'ReceiveQosPriorityDataType' Structure Numeric:23609 array False / dotnet Complex ReceiveQosPriorityDataType clr 'object'
+  array  opcua ReceiveQosPriorityDataType 'ReceiveQosPriorityDataType' Structure Numeric:23609 array True / dotnet Array ReceiveQosPriorityDataType[] clr 'object[]' of (dotnet Complex ReceiveQosPriorityDataType clr 'object')
+i=23612 DatagramConnectionTransport2DataType
+  scalar opcua DatagramConnectionTransport2DataType 'DatagramConnectionTransport2DataType' Structure Numeric:23612 array False / dotnet Complex DatagramConnectionTransport2DataType clr 'object'
+  array  opcua DatagramConnectionTransport2DataType 'DatagramConnectionTransport2DataType' Structure Numeric:23612 array True / dotnet Array DatagramConnectionTransport2DataType[] clr 'object[]' of (dotnet Complex DatagramConnectionTransport2DataType clr 'object')
+i=23613 DatagramWriterGroupTransport2DataType
+  scalar opcua DatagramWriterGroupTransport2DataType 'DatagramWriterGroupTransport2DataType' Structure Numeric:23613 array False / dotnet Complex DatagramWriterGroupTransport2DataType clr 'object'
+  array  opcua DatagramWriterGroupTransport2DataType 'DatagramWriterGroupTransport2DataType' Structure Numeric:23613 array True / dotnet Array DatagramWriterGroupTransport2DataType[] clr 'object[]' of (dotnet Complex DatagramWriterGroupTransport2DataType clr 'object')
+i=23614 DatagramDataSetReaderTransportDataType
+  scalar opcua DatagramDataSetReaderTransportDataType 'DatagramDataSetReaderTransportDataType' Structure Numeric:23614 array False / dotnet Complex DatagramDataSetReaderTransportDataType clr 'object'
+  array  opcua DatagramDataSetReaderTransportDataType 'DatagramDataSetReaderTransportDataType' Structure Numeric:23614 array True / dotnet Array DatagramDataSetReaderTransportDataType[] clr 'object[]' of (dotnet Complex DatagramDataSetReaderTransportDataType clr 'object')
+i=23751 UriString
+  scalar opcua UriString 'UriString' Structure Numeric:23751 array False / dotnet Complex UriString clr 'object'
+  array  opcua UriString 'UriString' Structure Numeric:23751 array True / dotnet Array UriString[] clr 'object[]' of (dotnet Complex UriString clr 'object')
+i=24033 ProgramDiagnostic2DataType
+  scalar opcua ProgramDiagnostic2DataType 'ProgramDiagnostic2DataType' Structure Numeric:24033 array False / dotnet Complex ProgramDiagnostic2DataType clr 'object'
+  array  opcua ProgramDiagnostic2DataType 'ProgramDiagnostic2DataType' Structure Numeric:24033 array True / dotnet Array ProgramDiagnostic2DataType[] clr 'object[]' of (dotnet Complex ProgramDiagnostic2DataType clr 'object')
+i=24105 PortableQualifiedName
+  scalar opcua PortableQualifiedName 'PortableQualifiedName' Structure Numeric:24105 array False / dotnet Complex PortableQualifiedName clr 'object'
+  array  opcua PortableQualifiedName 'PortableQualifiedName' Structure Numeric:24105 array True / dotnet Array PortableQualifiedName[] clr 'object[]' of (dotnet Complex PortableQualifiedName clr 'object')
+i=24106 PortableNodeId
+  scalar opcua PortableNodeId 'PortableNodeId' Structure Numeric:24106 array False / dotnet Complex PortableNodeId clr 'object'
+  array  opcua PortableNodeId 'PortableNodeId' Structure Numeric:24106 array True / dotnet Array PortableNodeId[] clr 'object[]' of (dotnet Complex PortableNodeId clr 'object')
+i=24107 UnsignedRationalNumber
+  scalar opcua UnsignedRationalNumber 'UnsignedRationalNumber' Structure Numeric:24107 array False / dotnet Complex UnsignedRationalNumber clr 'object'
+  array  opcua UnsignedRationalNumber 'UnsignedRationalNumber' Structure Numeric:24107 array True / dotnet Array UnsignedRationalNumber[] clr 'object[]' of (dotnet Complex UnsignedRationalNumber clr 'object')
+i=24210 Duplex
+  scalar opcua Duplex 'Duplex' Enum Numeric:24210 array False / dotnet Enum Duplex clr 'int' members 0=Full, 1=Half, 2=Unknown
+  array  opcua Duplex 'Duplex' Enum Numeric:24210 array True / dotnet Array Duplex[] clr 'int[]' of (dotnet Enum Duplex clr 'int' members 0=Full, 1=Half, 2=Unknown)
+i=24212 InterfaceAdminStatus
+  scalar opcua InterfaceAdminStatus 'InterfaceAdminStatus' Enum Numeric:24212 array False / dotnet Enum InterfaceAdminStatus clr 'int' members 0=Up, 1=Down, 2=Testing
+  array  opcua InterfaceAdminStatus 'InterfaceAdminStatus' Enum Numeric:24212 array True / dotnet Array InterfaceAdminStatus[] clr 'int[]' of (dotnet Enum InterfaceAdminStatus clr 'int' members 0=Up, 1=Down, 2=Testing)
+i=24214 InterfaceOperStatus
+  scalar opcua InterfaceOperStatus 'InterfaceOperStatus' Enum Numeric:24214 array False / dotnet Enum InterfaceOperStatus clr 'int' members 0=Up, 1=Down, 2=Testing, 3=Unknown, 4=Dormant, 5=NotPresent, 6=LowerLayerDown
+  array  opcua InterfaceOperStatus 'InterfaceOperStatus' Enum Numeric:24214 array True / dotnet Array InterfaceOperStatus[] clr 'int[]' of (dotnet Enum InterfaceOperStatus clr 'int' members 0=Up, 1=Down, 2=Testing, 3=Unknown, 4=Dormant, 5=NotPresent, 6=LowerLayerDown)
+i=24216 NegotiationStatus
+  scalar opcua NegotiationStatus 'NegotiationStatus' Enum Numeric:24216 array False / dotnet Enum NegotiationStatus clr 'int' members 0=InProgress, 1=Complete, 2=Failed, 3=Unknown, 4=NoNegotiation
+  array  opcua NegotiationStatus 'NegotiationStatus' Enum Numeric:24216 array True / dotnet Array NegotiationStatus[] clr 'int[]' of (dotnet Enum NegotiationStatus clr 'int' members 0=InProgress, 1=Complete, 2=Failed, 3=Unknown, 4=NoNegotiation)
+i=24218 TsnFailureCode
+  scalar opcua TsnFailureCode 'TsnFailureCode' Enum Numeric:24218 array False / dotnet Enum TsnFailureCode clr 'int' members 0=NoFailure, 1=InsufficientBandwidth, 2=InsufficientResources, 3=InsufficientTrafficClassBandwidth, 4=StreamIdInUse, 5=StreamDestinationAddressInUse, 6=StreamPreemptedByHigherRank, 7=LatencyHasChanged, 8=EgressPortNotAvbCapable, 9=UseDifferentDestinationAddress, 10=OutOfMsrpResources, 11=OutOfMmrpResources, 12=CannotStoreDestinationAddress, 13=PriorityIsNotAnSrcClass, 14=MaxFrameSizeTooLarge, 15=MaxFanInPortsLimitReached, 16=FirstValueChangedForStreamId, 17=VlanBlockedOnEgress, 18=VlanTaggingDisabledOnEgress, 19=SrClassPriorityMismatch, 20=FeatureNotPropagated, 21=MaxLatencyExceeded, 22=BridgeDoesNotProvideNetworkId, 23=StreamTransformNotSupported, 24=StreamIdTypeNotSupported, 25=FeatureNotSupported
+  array  opcua TsnFailureCode 'TsnFailureCode' Enum Numeric:24218 array True / dotnet Array TsnFailureCode[] clr 'int[]' of (dotnet Enum TsnFailureCode clr 'int' members 0=NoFailure, 1=InsufficientBandwidth, 2=InsufficientResources, 3=InsufficientTrafficClassBandwidth, 4=StreamIdInUse, 5=StreamDestinationAddressInUse, 6=StreamPreemptedByHigherRank, 7=LatencyHasChanged, 8=EgressPortNotAvbCapable, 9=UseDifferentDestinationAddress, 10=OutOfMsrpResources, 11=OutOfMmrpResources, 12=CannotStoreDestinationAddress, 13=PriorityIsNotAnSrcClass, 14=MaxFrameSizeTooLarge, 15=MaxFanInPortsLimitReached, 16=FirstValueChangedForStreamId, 17=VlanBlockedOnEgress, 18=VlanTaggingDisabledOnEgress, 19=SrClassPriorityMismatch, 20=FeatureNotPropagated, 21=MaxLatencyExceeded, 22=BridgeDoesNotProvideNetworkId, 23=StreamTransformNotSupported, 24=StreamIdTypeNotSupported, 25=FeatureNotSupported)
+i=24220 TsnStreamState
+  scalar opcua TsnStreamState 'TsnStreamState' Enum Numeric:24220 array False / dotnet Enum TsnStreamState clr 'int' members 0=Disabled, 1=Configuring, 2=Ready, 3=Operational, 4=Error
+  array  opcua TsnStreamState 'TsnStreamState' Enum Numeric:24220 array True / dotnet Array TsnStreamState[] clr 'int[]' of (dotnet Enum TsnStreamState clr 'int' members 0=Disabled, 1=Configuring, 2=Ready, 3=Operational, 4=Error)
+i=24222 TsnTalkerStatus
+  scalar opcua TsnTalkerStatus 'TsnTalkerStatus' Enum Numeric:24222 array False / dotnet Enum TsnTalkerStatus clr 'int' members 0=None, 1=Ready, 2=Failed
+  array  opcua TsnTalkerStatus 'TsnTalkerStatus' Enum Numeric:24222 array True / dotnet Array TsnTalkerStatus[] clr 'int[]' of (dotnet Enum TsnTalkerStatus clr 'int' members 0=None, 1=Ready, 2=Failed)
+i=24224 TsnListenerStatus
+  scalar opcua TsnListenerStatus 'TsnListenerStatus' Enum Numeric:24224 array False / dotnet Enum TsnListenerStatus clr 'int' members 0=None, 1=Ready, 2=PartialFailed, 3=Failed
+  array  opcua TsnListenerStatus 'TsnListenerStatus' Enum Numeric:24224 array True / dotnet Array TsnListenerStatus[] clr 'int[]' of (dotnet Enum TsnListenerStatus clr 'int' members 0=None, 1=Ready, 2=PartialFailed, 3=Failed)
+i=24263 SemanticVersionString
+  scalar opcua SemanticVersionString 'SemanticVersionString' Structure Numeric:24263 array False / dotnet Complex SemanticVersionString clr 'object'
+  array  opcua SemanticVersionString 'SemanticVersionString' Structure Numeric:24263 array True / dotnet Array SemanticVersionString[] clr 'object[]' of (dotnet Complex SemanticVersionString clr 'object')
+i=24277 PasswordOptionsMask
+  scalar opcua PasswordOptionsMask 'PasswordOptionsMask' Enum Numeric:24277 array False / dotnet Enum PasswordOptionsMask clr 'int' members 0=SupportInitialPasswordChange, 1=SupportDisableUser, 2=SupportDisableDeleteForUser, 3=SupportNoChangeForUser, 4=SupportDescriptionForUser, 5=RequiresUpperCaseCharacters, 6=RequiresLowerCaseCharacters, 7=RequiresDigitCharacters, 8=RequiresSpecialCharacters
+  array  opcua PasswordOptionsMask 'PasswordOptionsMask' Enum Numeric:24277 array True / dotnet Array PasswordOptionsMask[] clr 'int[]' of (dotnet Enum PasswordOptionsMask clr 'int' members 0=SupportInitialPasswordChange, 1=SupportDisableUser, 2=SupportDisableDeleteForUser, 3=SupportNoChangeForUser, 4=SupportDescriptionForUser, 5=RequiresUpperCaseCharacters, 6=RequiresLowerCaseCharacters, 7=RequiresDigitCharacters, 8=RequiresSpecialCharacters)
+i=24279 UserConfigurationMask
+  scalar opcua UserConfigurationMask 'UserConfigurationMask' Enum Numeric:24279 array False / dotnet Enum UserConfigurationMask clr 'int' members 0=NoDelete, 1=Disabled, 2=NoChangeByUser, 3=MustChangePassword
+  array  opcua UserConfigurationMask 'UserConfigurationMask' Enum Numeric:24279 array True / dotnet Array UserConfigurationMask[] clr 'int[]' of (dotnet Enum UserConfigurationMask clr 'int' members 0=NoDelete, 1=Disabled, 2=NoChangeByUser, 3=MustChangePassword)
+i=24281 UserManagementDataType
+  scalar opcua UserManagementDataType 'UserManagementDataType' Structure Numeric:24281 array False / dotnet Complex UserManagementDataType clr 'object'
+  array  opcua UserManagementDataType 'UserManagementDataType' Structure Numeric:24281 array True / dotnet Array UserManagementDataType[] clr 'object[]' of (dotnet Complex UserManagementDataType clr 'object')
+i=25220 PriorityMappingEntryType
+  scalar opcua PriorityMappingEntryType 'PriorityMappingEntryType' Structure Numeric:25220 array False / dotnet Complex PriorityMappingEntryType clr 'object'
+  array  opcua PriorityMappingEntryType 'PriorityMappingEntryType' Structure Numeric:25220 array True / dotnet Array PriorityMappingEntryType[] clr 'object[]' of (dotnet Complex PriorityMappingEntryType clr 'object')
+i=25269 PublishedDataSetCustomSourceDataType
+  scalar opcua PublishedDataSetCustomSourceDataType 'PublishedDataSetCustomSourceDataType' Structure Numeric:25269 array False / dotnet Complex PublishedDataSetCustomSourceDataType clr 'object'
+  array  opcua PublishedDataSetCustomSourceDataType 'PublishedDataSetCustomSourceDataType' Structure Numeric:25269 array True / dotnet Array PublishedDataSetCustomSourceDataType[] clr 'object[]' of (dotnet Complex PublishedDataSetCustomSourceDataType clr 'object')
+i=25270 PubSubKeyPushTargetDataType
+  scalar opcua PubSubKeyPushTargetDataType 'PubSubKeyPushTargetDataType' Structure Numeric:25270 array False / dotnet Complex PubSubKeyPushTargetDataType clr 'object'
+  array  opcua PubSubKeyPushTargetDataType 'PubSubKeyPushTargetDataType' Structure Numeric:25270 array True / dotnet Array PubSubKeyPushTargetDataType[] clr 'object[]' of (dotnet Complex PubSubKeyPushTargetDataType clr 'object')
+i=25517 PubSubConfigurationRefMask
+  scalar opcua PubSubConfigurationRefMask 'PubSubConfigurationRefMask' Enum Numeric:25517 array False / dotnet Enum PubSubConfigurationRefMask clr 'int' members 0=ElementAdd, 1=ElementMatch, 2=ElementModify, 3=ElementRemove, 4=ReferenceWriter, 5=ReferenceReader, 6=ReferenceWriterGroup, 7=ReferenceReaderGroup, 8=ReferenceConnection, 9=ReferencePubDataset, 10=ReferenceSubDataset, 11=ReferenceSecurityGroup, 12=ReferencePushTarget
+  array  opcua PubSubConfigurationRefMask 'PubSubConfigurationRefMask' Enum Numeric:25517 array True / dotnet Array PubSubConfigurationRefMask[] clr 'int[]' of (dotnet Enum PubSubConfigurationRefMask clr 'int' members 0=ElementAdd, 1=ElementMatch, 2=ElementModify, 3=ElementRemove, 4=ReferenceWriter, 5=ReferenceReader, 6=ReferenceWriterGroup, 7=ReferenceReaderGroup, 8=ReferenceConnection, 9=ReferencePubDataset, 10=ReferenceSubDataset, 11=ReferenceSecurityGroup, 12=ReferencePushTarget)
+i=25519 PubSubConfigurationRefDataType
+  scalar opcua PubSubConfigurationRefDataType 'PubSubConfigurationRefDataType' Structure Numeric:25519 array False / dotnet Complex PubSubConfigurationRefDataType clr 'object'
+  array  opcua PubSubConfigurationRefDataType 'PubSubConfigurationRefDataType' Structure Numeric:25519 array True / dotnet Array PubSubConfigurationRefDataType[] clr 'object[]' of (dotnet Complex PubSubConfigurationRefDataType clr 'object')
+i=25520 PubSubConfigurationValueDataType
+  scalar opcua PubSubConfigurationValueDataType 'PubSubConfigurationValueDataType' Structure Numeric:25520 array False / dotnet Complex PubSubConfigurationValueDataType clr 'object'
+  array  opcua PubSubConfigurationValueDataType 'PubSubConfigurationValueDataType' Structure Numeric:25520 array True / dotnet Array PubSubConfigurationValueDataType[] clr 'object[]' of (dotnet Complex PubSubConfigurationValueDataType clr 'object')
+i=25726 EncodedTicket
+  scalar opcua EncodedTicket 'EncodedTicket' Structure Numeric:25726 array False / dotnet Complex EncodedTicket clr 'object'
+  array  opcua EncodedTicket 'EncodedTicket' Structure Numeric:25726 array True / dotnet Array EncodedTicket[] clr 'object[]' of (dotnet Complex EncodedTicket clr 'object')
+i=31917 Handle
+  scalar opcua Handle 'Handle' Structure Numeric:31917 array False / dotnet Complex Handle clr 'object'
+  array  opcua Handle 'Handle' Structure Numeric:31917 array True / dotnet Array Handle[] clr 'object[]' of (dotnet Complex Handle clr 'object')
+i=31918 TrimmedString
+  scalar opcua TrimmedString 'TrimmedString' Structure Numeric:31918 array False / dotnet Complex TrimmedString clr 'object'
+  array  opcua TrimmedString 'TrimmedString' Structure Numeric:31918 array True / dotnet Array TrimmedString[] clr 'object[]' of (dotnet Complex TrimmedString clr 'object')
+i=32251 AlarmMask
+  scalar opcua AlarmMask 'AlarmMask' Enum Numeric:32251 array False / dotnet Enum AlarmMask clr 'int' members 0=Active, 1=Unacknowledged, 2=Unconfirmed
+  array  opcua AlarmMask 'AlarmMask' Enum Numeric:32251 array True / dotnet Array AlarmMask[] clr 'int[]' of (dotnet Enum AlarmMask clr 'int' members 0=Active, 1=Unacknowledged, 2=Unconfirmed)
+i=32285 TransactionErrorType
+  scalar opcua TransactionErrorType 'TransactionErrorType' Structure Numeric:32285 array False / dotnet Complex TransactionErrorType clr 'object'
+  array  opcua TransactionErrorType 'TransactionErrorType' Structure Numeric:32285 array True / dotnet Array TransactionErrorType[] clr 'object[]' of (dotnet Complex TransactionErrorType clr 'object')
+i=32417 RedundantServerMode
+  scalar opcua RedundantServerMode 'RedundantServerMode' Enum Numeric:32417 array False / dotnet Enum RedundantServerMode clr 'int' members 0=PrimaryWithBackup, 1=PrimaryOnly, 2=BackupReady, 3=BackupNotReady
+  array  opcua RedundantServerMode 'RedundantServerMode' Enum Numeric:32417 array True / dotnet Array RedundantServerMode[] clr 'int[]' of (dotnet Enum RedundantServerMode clr 'int' members 0=PrimaryWithBackup, 1=PrimaryOnly, 2=BackupReady, 3=BackupNotReady)
+i=32421 BitFieldDefinition
+  scalar opcua BitFieldDefinition 'BitFieldDefinition' Structure Numeric:32421 array False / dotnet Complex BitFieldDefinition clr 'object'
+  array  opcua BitFieldDefinition 'BitFieldDefinition' Structure Numeric:32421 array True / dotnet Array BitFieldDefinition[] clr 'object[]' of (dotnet Complex BitFieldDefinition clr 'object')
+i=32434 AnnotationDataType
+  scalar opcua AnnotationDataType 'AnnotationDataType' Structure Numeric:32434 array False / dotnet Complex AnnotationDataType clr 'object'
+  array  opcua AnnotationDataType 'AnnotationDataType' Structure Numeric:32434 array True / dotnet Array AnnotationDataType[] clr 'object[]' of (dotnet Complex AnnotationDataType clr 'object')
+i=32435 LinearConversionDataType
+  scalar opcua LinearConversionDataType 'LinearConversionDataType' Structure Numeric:32435 array False / dotnet Complex LinearConversionDataType clr 'object'
+  array  opcua LinearConversionDataType 'LinearConversionDataType' Structure Numeric:32435 array True / dotnet Array LinearConversionDataType[] clr 'object[]' of (dotnet Complex LinearConversionDataType clr 'object')
+i=32436 ConversionLimitEnum
+  scalar opcua ConversionLimitEnum 'ConversionLimitEnum' Enum Numeric:32436 array False / dotnet Enum ConversionLimitEnum clr 'int' members 0=NoConversion, 1=Limited, 2=Unlimited
+  array  opcua ConversionLimitEnum 'ConversionLimitEnum' Enum Numeric:32436 array True / dotnet Array ConversionLimitEnum[] clr 'int[]' of (dotnet Enum ConversionLimitEnum clr 'int' members 0=NoConversion, 1=Limited, 2=Unlimited)
+i=32438 QuantityDimension
+  scalar opcua QuantityDimension 'QuantityDimension' Structure Numeric:32438 array False / dotnet Complex QuantityDimension clr 'object'
+  array  opcua QuantityDimension 'QuantityDimension' Structure Numeric:32438 array True / dotnet Array QuantityDimension[] clr 'object[]' of (dotnet Complex QuantityDimension clr 'object')
+i=32659 ReferenceDescriptionDataType
+  scalar opcua ReferenceDescriptionDataType 'ReferenceDescriptionDataType' Structure Numeric:32659 array False / dotnet Complex ReferenceDescriptionDataType clr 'object'
+  array  opcua ReferenceDescriptionDataType 'ReferenceDescriptionDataType' Structure Numeric:32659 array True / dotnet Array ReferenceDescriptionDataType[] clr 'object[]' of (dotnet Complex ReferenceDescriptionDataType clr 'object')
+i=32660 ReferenceListEntryDataType
+  scalar opcua ReferenceListEntryDataType 'ReferenceListEntryDataType' Structure Numeric:32660 array False / dotnet Complex ReferenceListEntryDataType clr 'object'
+  array  opcua ReferenceListEntryDataType 'ReferenceListEntryDataType' Structure Numeric:32660 array True / dotnet Array ReferenceListEntryDataType[] clr 'object[]' of (dotnet Complex ReferenceListEntryDataType clr 'object')
+i=32799 ReadEventDetails2
+  scalar opcua i=32799 'i=32799' Unknown Unknown: array False / dotnet Unknown i=32799 clr 'object'
+  array  opcua i=32799 'i=32799' Unknown Unknown: array True / dotnet Array i=32799[] clr 'object[]' of (dotnet Unknown i=32799 clr 'object')
+i=32824 HistoryModifiedEvent
+  scalar opcua HistoryModifiedEvent 'HistoryModifiedEvent' Structure Numeric:32824 array False / dotnet Complex HistoryModifiedEvent clr 'object'
+  array  opcua HistoryModifiedEvent 'HistoryModifiedEvent' Structure Numeric:32824 array True / dotnet Array HistoryModifiedEvent[] clr 'object[]' of (dotnet Complex HistoryModifiedEvent clr 'object')

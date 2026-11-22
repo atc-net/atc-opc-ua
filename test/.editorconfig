@@ -55,4 +55,5 @@ dotnet_diagnostic.SA1133.severity = none            # Do not combine attributes
 # Custom - Code Analyzers Rules
 ##########################################
 
+dotnet_diagnostic.CA1031.severity = none            # Do not catch general exception types
 dotnet_diagnostic.CA1062.severity = none            # Validate arguments of public methods

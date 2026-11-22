@@ -1,0 +1,6 @@
+i=852: i=852 ServerState 'ServerState' enum values True '' members 0=Running 'Running' '', 1=Failed 'Failed' '', 2=NoConfiguration 'NoConfiguration' '', 3=Suspended 'Suspended' '', 4=Shutdown 'Shutdown' '', 5=Test 'Test' '', 6=CommunicationFault 'CommunicationFault' '', 7=Unknown 'Unknown' ''
+i=11939: i=11939 OpenFileMode 'OpenFileMode' enum values True '' members 1=Read 'Read' '', 2=Write 'Write' '', 4=EraseExisting 'EraseExisting' '', 8=Append 'Append' ''
+i=12077: i=12077 AxisScaleEnumeration 'AxisScaleEnumeration' enum values True '' members 0=Linear 'Linear' '', 1=Log 'Log' '', 2=Ln 'Ln' ''
+i=29: throws ArgumentException
+i=1: throws ArgumentException
+i=99999: null

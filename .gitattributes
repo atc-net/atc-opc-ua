@@ -1,0 +1,2 @@
+# Snapshot files are compared character for character, so keep them with LF line endings everywhere.
+**/Snapshots/Verified/*.txt text eol=lf

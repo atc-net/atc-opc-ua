@@ -352,3 +352,6 @@ MigrationBackup/
 
 # OPC UA certificate stores the client creates in its working directory (they contain private keys)
 opc/
+
+# Output of a snapshot test that didn't match its .verified.txt (see test/Atc.Opc.Ua.Tests/Snapshots/README.md)
+*.received.txt

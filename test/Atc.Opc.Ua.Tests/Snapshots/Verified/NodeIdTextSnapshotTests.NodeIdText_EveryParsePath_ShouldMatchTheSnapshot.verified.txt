@@ -1,0 +1,136 @@
+input "i=85"
+  new NodeId: i=85 | ns 0 | Numeric | identifier '85' | as string '85'
+  Parse:      i=85 | ns 0 | Numeric | identifier '85' | as string '85'
+  Expanded:   i=85 -> i=85 | ns 0 | Numeric | identifier '85' | as string '85'
+input "ns=0;i=85"
+  new NodeId: i=85 | ns 0 | Numeric | identifier '85' | as string '85'
+  Parse:      i=85 | ns 0 | Numeric | identifier '85' | as string '85'
+  Expanded:   i=85 -> i=85 | ns 0 | Numeric | identifier '85' | as string '85'
+input "ns=2;i=6095"
+  new NodeId: ns=2;i=6095 | ns 2 | Numeric | identifier '6095' | as string '6095'
+  Parse:      ns=2;i=6095 | ns 2 | Numeric | identifier '6095' | as string '6095'
+  Expanded:   ns=2;i=6095 -> ns=2;i=6095 | ns 2 | Numeric | identifier '6095' | as string '6095'
+input "ns=4;i=4294967295"
+  new NodeId: ns=4;i=4294967295 | ns 4 | Numeric | identifier '4294967295' | as string '4294967295'
+  Parse:      ns=4;i=4294967295 | ns 4 | Numeric | identifier '4294967295' | as string '4294967295'
+  Expanded:   ns=4;i=4294967295 -> ns=4;i=4294967295 | ns 4 | Numeric | identifier '4294967295' | as string '4294967295'
+input "i=0"
+  new NodeId: i=0 | ns 0 | Numeric | identifier '0' | as string '0'
+  Parse:      i=0 | ns 0 | Numeric | identifier '0' | as string '0'
+  Expanded:   i=0 -> i=0 | ns 0 | Numeric | identifier '0' | as string '0'
+input "ns=3;s=StepUp"
+  new NodeId: ns=3;s=StepUp | ns 3 | String | identifier 'StepUp' | as string 'StepUp'
+  Parse:      ns=3;s=StepUp | ns 3 | String | identifier 'StepUp' | as string 'StepUp'
+  Expanded:   ns=3;s=StepUp -> ns=3;s=StepUp | ns 3 | String | identifier 'StepUp' | as string 'StepUp'
+input "s=WithoutNamespace"
+  new NodeId: s=WithoutNamespace | ns 0 | String | identifier 'WithoutNamespace' | as string 'WithoutNamespace'
+  Parse:      s=WithoutNamespace | ns 0 | String | identifier 'WithoutNamespace' | as string 'WithoutNamespace'
+  Expanded:   s=WithoutNamespace -> s=WithoutNamespace | ns 0 | String | identifier 'WithoutNamespace' | as string 'WithoutNamespace'
+input "ns=4;s="Root.Objects.IoT data""
+  new NodeId: ns=4;s="Root.Objects.IoT data" | ns 4 | String | identifier '"Root.Objects.IoT data"' | as string 'Root.Objects.IoT data'
+  Parse:      ns=4;s="Root.Objects.IoT data" | ns 4 | String | identifier '"Root.Objects.IoT data"' | as string 'Root.Objects.IoT data'
+  Expanded:   ns=4;s="Root.Objects.IoT data" -> ns=4;s="Root.Objects.IoT data" | ns 4 | String | identifier '"Root.Objects.IoT data"' | as string 'Root.Objects.IoT data'
+input "ns=4;s="Root.Objects.IoT data.instanceConverted""
+  new NodeId: ns=4;s="Root.Objects.IoT data.instanceConverted" | ns 4 | String | identifier '"Root.Objects.IoT data.instanceConverted"' | as string 'Root.Objects.IoT data.instanceConverted'
+  Parse:      ns=4;s="Root.Objects.IoT data.instanceConverted" | ns 4 | String | identifier '"Root.Objects.IoT data.instanceConverted"' | as string 'Root.Objects.IoT data.instanceConverted'
+  Expanded:   ns=4;s="Root.Objects.IoT data.instanceConverted" -> ns=4;s="Root.Objects.IoT data.instanceConverted" | ns 4 | String | identifier '"Root.Objects.IoT data.instanceConverted"' | as string 'Root.Objects.IoT data.instanceConverted'
+input "ns=4;s="DB_Data"."Motor 1"."Speed""
+  new NodeId: ns=4;s="DB_Data"."Motor 1"."Speed" | ns 4 | String | identifier '"DB_Data"."Motor 1"."Speed"' | as string 'DB_Data"."Motor 1"."Speed'
+  Parse:      ns=4;s="DB_Data"."Motor 1"."Speed" | ns 4 | String | identifier '"DB_Data"."Motor 1"."Speed"' | as string 'DB_Data"."Motor 1"."Speed'
+  Expanded:   ns=4;s="DB_Data"."Motor 1"."Speed" -> ns=4;s="DB_Data"."Motor 1"."Speed" | ns 4 | String | identifier '"DB_Data"."Motor 1"."Speed"' | as string 'DB_Data"."Motor 1"."Speed'
+input "ns=3;s=a;b"
+  new NodeId: ns=3;s=a;b | ns 3 | String | identifier 'a;b' | as string 'a;b'
+  Parse:      ns=3;s=a;b | ns 3 | String | identifier 'a;b' | as string 'a;b'
+  Expanded:   ns=3;s=a;b -> ns=3;s=a;b | ns 3 | String | identifier 'a;b' | as string 'a;b'
+input "ns=3;s=a=b"
+  new NodeId: ns=3;s=a=b | ns 3 | String | identifier 'a=b' | as string 'a=b'
+  Parse:      ns=3;s=a=b | ns 3 | String | identifier 'a=b' | as string 'a=b'
+  Expanded:   ns=3;s=a=b -> ns=3;s=a=b | ns 3 | String | identifier 'a=b' | as string 'a=b'
+input "ns=3;s=ns=2;i=5"
+  new NodeId: ns=3;s=ns=2;i=5 | ns 3 | String | identifier 'ns=2;i=5' | as string 'ns=2;i=5'
+  Parse:      ns=3;s=ns=2;i=5 | ns 3 | String | identifier 'ns=2;i=5' | as string 'ns=2;i=5'
+  Expanded:   ns=3;s=ns=2;i=5 -> ns=3;s=ns=2;i=5 | ns 3 | String | identifier 'ns=2;i=5' | as string 'ns=2;i=5'
+input "ns=3;s=Tank æøå ÆØÅ"
+  new NodeId: ns=3;s=Tank æøå ÆØÅ | ns 3 | String | identifier 'Tank æøå ÆØÅ' | as string 'Tank æøå ÆØÅ'
+  Parse:      ns=3;s=Tank æøå ÆØÅ | ns 3 | String | identifier 'Tank æøå ÆØÅ' | as string 'Tank æøå ÆØÅ'
+  Expanded:   ns=3;s=Tank æøå ÆØÅ -> ns=3;s=Tank æøå ÆØÅ | ns 3 | String | identifier 'Tank æøå ÆØÅ' | as string 'Tank æøå ÆØÅ'
+input "ns=6;s=Locales_QN日本の"
+  new NodeId: ns=6;s=Locales_QN日本の | ns 6 | String | identifier 'Locales_QN日本の' | as string 'Locales_QN日本の'
+  Parse:      ns=6;s=Locales_QN日本の | ns 6 | String | identifier 'Locales_QN日本の' | as string 'Locales_QN日本の'
+  Expanded:   ns=6;s=Locales_QN日本の -> ns=6;s=Locales_QN日本の | ns 6 | String | identifier 'Locales_QN日本の' | as string 'Locales_QN日本の'
+input "ns=3;s= leading and trailing "
+  new NodeId: ns=3;s= leading and trailing  | ns 3 | String | identifier ' leading and trailing ' | as string ' leading and trailing '
+  Parse:      ns=3;s= leading and trailing  | ns 3 | String | identifier ' leading and trailing ' | as string ' leading and trailing '
+  Expanded:   ns=3;s= leading and trailing  -> ns=3;s= leading and trailing  | ns 3 | String | identifier ' leading and trailing ' | as string ' leading and trailing '
+input "ns=3;s="
+  new NodeId: ns=3;s= | ns 3 | String | identifier '' | as string ''
+  Parse:      ns=3;s= | ns 3 | String | identifier '' | as string ''
+  Expanded:   ns=3;s= -> ns=3;s= | ns 3 | String | identifier '' | as string ''
+input "ns=3;g=51b74e55-f2e3-4a4d-b79c-bf57c76ea67c"
+  new NodeId: ns=3;g=51b74e55-f2e3-4a4d-b79c-bf57c76ea67c | ns 3 | Guid | identifier '51b74e55-f2e3-4a4d-b79c-bf57c76ea67c' | as string '51b74e55-f2e3-4a4d-b79c-bf57c76ea67c'
+  Parse:      ns=3;g=51b74e55-f2e3-4a4d-b79c-bf57c76ea67c | ns 3 | Guid | identifier '51b74e55-f2e3-4a4d-b79c-bf57c76ea67c' | as string '51b74e55-f2e3-4a4d-b79c-bf57c76ea67c'
+  Expanded:   ns=3;g=51b74e55-f2e3-4a4d-b79c-bf57c76ea67c -> ns=3;g=51b74e55-f2e3-4a4d-b79c-bf57c76ea67c | ns 3 | Guid | identifier '51b74e55-f2e3-4a4d-b79c-bf57c76ea67c' | as string '51b74e55-f2e3-4a4d-b79c-bf57c76ea67c'
+input "ns=3;g=51B74E55-F2E3-4A4D-B79C-BF57C76EA67C"
+  new NodeId: ns=3;g=51b74e55-f2e3-4a4d-b79c-bf57c76ea67c | ns 3 | Guid | identifier '51b74e55-f2e3-4a4d-b79c-bf57c76ea67c' | as string '51b74e55-f2e3-4a4d-b79c-bf57c76ea67c'
+  Parse:      ns=3;g=51b74e55-f2e3-4a4d-b79c-bf57c76ea67c | ns 3 | Guid | identifier '51b74e55-f2e3-4a4d-b79c-bf57c76ea67c' | as string '51b74e55-f2e3-4a4d-b79c-bf57c76ea67c'
+  Expanded:   ns=3;g=51b74e55-f2e3-4a4d-b79c-bf57c76ea67c -> ns=3;g=51b74e55-f2e3-4a4d-b79c-bf57c76ea67c | ns 3 | Guid | identifier '51b74e55-f2e3-4a4d-b79c-bf57c76ea67c' | as string '51b74e55-f2e3-4a4d-b79c-bf57c76ea67c'
+input "g=00000000-0000-0000-0000-000000009204"
+  new NodeId: g=00000000-0000-0000-0000-000000009204 | ns 0 | Guid | identifier '00000000-0000-0000-0000-000000009204' | as string '00000000-0000-0000-0000-000000009204'
+  Parse:      g=00000000-0000-0000-0000-000000009204 | ns 0 | Guid | identifier '00000000-0000-0000-0000-000000009204' | as string '00000000-0000-0000-0000-000000009204'
+  Expanded:   g=00000000-0000-0000-0000-000000009204 -> g=00000000-0000-0000-0000-000000009204 | ns 0 | Guid | identifier '00000000-0000-0000-0000-000000009204' | as string '00000000-0000-0000-0000-000000009204'
+input "ns=3;b=YWJj"
+  new NodeId: ns=3;b=YWJj | ns 3 | Opaque | identifier 'System.Byte[]' | as string '61-62-63'
+  Parse:      ns=3;b=YWJj | ns 3 | Opaque | identifier 'System.Byte[]' | as string '61-62-63'
+  Expanded:   ns=3;b=YWJj -> ns=3;b=YWJj | ns 3 | Opaque | identifier 'System.Byte[]' | as string '61-62-63'
+input "ns=6;b=CQIABQ=="
+  new NodeId: ns=6;b=CQIABQ== | ns 6 | Opaque | identifier 'System.Byte[]' | as string '09-02-00-05'
+  Parse:      ns=6;b=CQIABQ== | ns 6 | Opaque | identifier 'System.Byte[]' | as string '09-02-00-05'
+  Expanded:   ns=6;b=CQIABQ== -> ns=6;b=CQIABQ== | ns 6 | Opaque | identifier 'System.Byte[]' | as string '09-02-00-05'
+input "nsu=http://microsoft.com/Opc/OpcPlc/;s=StepUp"
+  new NodeId: throws ArgumentException
+  Parse:      throws ArgumentException
+  Expanded:   nsu=http://microsoft.com/Opc/OpcPlc/;s=StepUp -> ns=3;s=StepUp | ns 3 | String | identifier 'StepUp' | as string 'StepUp'
+input "nsu=http://www.siemens.com/simatic-s7-opcua;s="DB_Data"."Speed""
+  new NodeId: throws ArgumentException
+  Parse:      throws ArgumentException
+  Expanded:   nsu=http://www.siemens.com/simatic-s7-opcua;s="DB_Data"."Speed" -> ns=4;s="DB_Data"."Speed" | ns 4 | String | identifier '"DB_Data"."Speed"' | as string 'DB_Data"."Speed'
+input "nsu=urn:unknown;i=1"
+  new NodeId: throws ArgumentException
+  Parse:      throws ArgumentException
+  Expanded:   nsu=urn:unknown;i=1 -> null
+input " i=85"
+  new NodeId: throws ArgumentException
+  Parse:      throws ArgumentException
+  Expanded:   throws ServiceResultException
+input "i=85 "
+  new NodeId: i=85 | ns 0 | Numeric | identifier '85' | as string '85'
+  Parse:      i=85 | ns 0 | Numeric | identifier '85' | as string '85'
+  Expanded:   i=85 -> i=85 | ns 0 | Numeric | identifier '85' | as string '85'
+input "ns=2;i=abc"
+  new NodeId: throws ServiceResultException
+  Parse:      throws ServiceResultException
+  Expanded:   throws ServiceResultException
+input "ns=x;i=1"
+  new NodeId: throws ServiceResultException
+  Parse:      throws ServiceResultException
+  Expanded:   throws ServiceResultException
+input "ns=2;x=1"
+  new NodeId: ns=2;s=x=1 | ns 2 | String | identifier 'x=1' | as string 'x=1'
+  Parse:      ns=2;s=x=1 | ns 2 | String | identifier 'x=1' | as string 'x=1'
+  Expanded:   ns=2;s=x=1 -> ns=2;s=x=1 | ns 2 | String | identifier 'x=1' | as string 'x=1'
+input "ns=3;g=not-a-guid"
+  new NodeId: throws ServiceResultException
+  Parse:      throws ServiceResultException
+  Expanded:   throws ServiceResultException
+input "ns=3;b=not base64!"
+  new NodeId: throws ServiceResultException
+  Parse:      throws ServiceResultException
+  Expanded:   throws ServiceResultException
+input "foo"
+  new NodeId: throws ArgumentException
+  Parse:      throws ArgumentException
+  Expanded:   throws ServiceResultException
+input ""
+  new NodeId: i=0 | ns 0 | Numeric | identifier '0' | as string '0'
+  Parse:      i=0 | ns 0 | Numeric | identifier '0' | as string '0'
+  Expanded:   i=0 -> null

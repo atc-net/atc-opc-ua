@@ -1,0 +1,40 @@
+ns=6;s=Scalar_Static_Boolean written: value 'True' | opcua Boolean 'Boolean' Primitive Numeric:1 array False | dotnet Primitive Boolean clr 'bool'
+ns=6;s=Scalar_Static_SByte written: value '-5' | opcua SByte 'SByte' Primitive Numeric:2 array False | dotnet Primitive SByte clr 'sbyte'
+ns=6;s=Scalar_Static_Byte written: value '200' | opcua Byte 'Byte' Primitive Numeric:3 array False | dotnet Primitive Byte clr 'byte'
+ns=6;s=Scalar_Static_Int16 written: value '-300' | opcua Int16 'Int16' Primitive Numeric:4 array False | dotnet Primitive Int16 clr 'short'
+ns=6;s=Scalar_Static_UInt16 written: value '60000' | opcua UInt16 'UInt16' Primitive Numeric:5 array False | dotnet Primitive UInt16 clr 'ushort'
+ns=6;s=Scalar_Static_Int32 written: value '-70000' | opcua Int32 'Int32' Primitive Numeric:6 array False | dotnet Primitive Int32 clr 'int'
+ns=6;s=Scalar_Static_UInt32 written: value '4000000000' | opcua UInt32 'UInt32' Primitive Numeric:7 array False | dotnet Primitive UInt32 clr 'uint'
+ns=6;s=Scalar_Static_Int64 written: value '-5000000000' | opcua Int64 'Int64' Primitive Numeric:8 array False | dotnet Primitive Int64 clr 'long'
+ns=6;s=Scalar_Static_UInt64 written: value '10000000000000000000' | opcua UInt64 'UInt64' Primitive Numeric:9 array False | dotnet Primitive UInt64 clr 'ulong'
+ns=6;s=Scalar_Static_Float written: value '0.1' | opcua Float 'Float' Primitive Numeric:10 array False | dotnet Primitive Float clr 'float'
+ns=6;s=Scalar_Static_Double written: value '0.1' | opcua Double 'Double' Primitive Numeric:11 array False | dotnet Primitive Double clr 'double'
+ns=6;s=Scalar_Static_String written: value 'Tank æøå; "quoted"' | opcua String 'String' Primitive Numeric:12 array False | dotnet Primitive String clr 'string'
+ns=6;s=Scalar_Static_DateTime written: value '2026-11-20T12:34:56.7890000Z' | opcua DateTime 'DateTime' Primitive Numeric:13 array False | dotnet Primitive DateTime clr 'DateTime'
+ns=6;s=Scalar_Static_Guid written: value '51b74e55-f2e3-4a4d-b79c-bf57c76ea67c' | opcua Guid 'Guid' Primitive Numeric:14 array False | dotnet Primitive Guid clr 'Uuid'
+ns=6;s=Scalar_Static_ByteString written: value '01ABFF' | opcua ByteString 'ByteString' Primitive Numeric:15 array False | dotnet Primitive ByteString clr 'byte[]'
+ns=6;s=Scalar_Static_XmlElement written: value '<Motor Speed="1500">Running</Motor>' | opcua XmlElement 'XmlElement' Primitive Numeric:16 array False | dotnet Primitive XmlElement clr 'XmlElement'
+ns=6;s=Scalar_Static_NodeId written: value 'ns=2;s=Motor 1' | opcua NodeId 'NodeId' Primitive Numeric:17 array False | dotnet Primitive NodeId clr 'NodeId'
+ns=6;s=Scalar_Static_QualifiedName written: value '2:Speed' | opcua QualifiedName 'QualifiedName' Primitive Numeric:20 array False | dotnet Primitive QualifiedName clr 'QualifiedName'
+ns=6;s=Scalar_Static_LocalizedText written: value 'Tank level' | opcua LocalizedText 'LocalizedText' Primitive Numeric:21 array False | dotnet Primitive LocalizedText clr 'LocalizedText'
+ns=6;s=Scalar_Static_Variant written: value '42' | opcua Variant 'Variant' Primitive Numeric:24 array False | dotnet Primitive Variant clr 'Variant'
+ns=6;s=Scalar_Static_Arrays_Boolean written: value '{True|False}' | opcua Boolean 'Boolean' Primitive Numeric:1 array True | dotnet Array Boolean[] clr 'bool[]' of (dotnet Primitive Boolean clr 'bool')
+ns=6;s=Scalar_Static_Arrays_SByte written: value '{-5|7}' | opcua SByte 'SByte' Primitive Numeric:2 array True | dotnet Array SByte[] clr 'sbyte[]' of (dotnet Primitive SByte clr 'sbyte')
+ns=6;s=Scalar_Static_Arrays_Byte written: value '01FF' | opcua Byte 'Byte' Primitive Numeric:3 array True | dotnet Array Byte[] clr 'byte[]' of (dotnet Primitive Byte clr 'byte')
+ns=6;s=Scalar_Static_Arrays_Int16 written: value '{-300|300}' | opcua Int16 'Int16' Primitive Numeric:4 array True | dotnet Array Int16[] clr 'short[]' of (dotnet Primitive Int16 clr 'short')
+ns=6;s=Scalar_Static_Arrays_UInt16 written: value '{0|60000}' | opcua UInt16 'UInt16' Primitive Numeric:5 array True | dotnet Array UInt16[] clr 'ushort[]' of (dotnet Primitive UInt16 clr 'ushort')
+ns=6;s=Scalar_Static_Arrays_Int32 written: value '{-70000|70000}' | opcua Int32 'Int32' Primitive Numeric:6 array True | dotnet Array Int32[] clr 'int[]' of (dotnet Primitive Int32 clr 'int')
+ns=6;s=Scalar_Static_Arrays_UInt32 written: value '{0|4000000000}' | opcua UInt32 'UInt32' Primitive Numeric:7 array True | dotnet Array UInt32[] clr 'uint[]' of (dotnet Primitive UInt32 clr 'uint')
+ns=6;s=Scalar_Static_Arrays_Int64 written: value '{-5000000000|5000000000}' | opcua Int64 'Int64' Primitive Numeric:8 array True | dotnet Array Int64[] clr 'long[]' of (dotnet Primitive Int64 clr 'long')
+ns=6;s=Scalar_Static_Arrays_UInt64 written: value '{0|10000000000000000000}' | opcua UInt64 'UInt64' Primitive Numeric:9 array True | dotnet Array UInt64[] clr 'ulong[]' of (dotnet Primitive UInt64 clr 'ulong')
+ns=6;s=Scalar_Static_Arrays_Float written: value '{0.1|-1.5}' | opcua Float 'Float' Primitive Numeric:10 array True | dotnet Array Float[] clr 'float[]' of (dotnet Primitive Float clr 'float')
+ns=6;s=Scalar_Static_Arrays_Double written: value '{0.1|1E-20}' | opcua Double 'Double' Primitive Numeric:11 array True | dotnet Array Double[] clr 'double[]' of (dotnet Primitive Double clr 'double')
+ns=6;s=Scalar_Static_Arrays_String written: value '{a|b;c|}' | opcua String 'String' Primitive Numeric:12 array True | dotnet Array String[] clr 'string[]' of (dotnet Primitive String clr 'string')
+ns=6;s=Scalar_Static_Arrays_DateTime written: value '{2026-11-20T12:34:56.7890000Z|2026-11-21T12:34:56.7890000Z}' | opcua DateTime 'DateTime' Primitive Numeric:13 array True | dotnet Array DateTime[] clr 'DateTime[]' of (dotnet Primitive DateTime clr 'DateTime')
+ns=6;s=Scalar_Static_Arrays_Guid written: value '{51b74e55-f2e3-4a4d-b79c-bf57c76ea67c|00000000-0000-0000-0000-000000000000}' | opcua Guid 'Guid' Primitive Numeric:14 array True | dotnet Array Guid[] clr 'Uuid[]' of (dotnet Primitive Guid clr 'Uuid')
+ns=6;s=Scalar_Static_Arrays_ByteString written: value '{0102|}' | opcua ByteString 'ByteString' Primitive Numeric:15 array True | dotnet Array ByteString[] clr 'byte[][]' of (dotnet Primitive ByteString clr 'byte[]')
+ns=6;s=Scalar_Static_Arrays_NodeId written: value '{i=85|ns=2;s=Motor 1}' | opcua NodeId 'NodeId' Primitive Numeric:17 array True | dotnet Array NodeId[] clr 'NodeId[]' of (dotnet Primitive NodeId clr 'NodeId')
+ns=6;s=Scalar_Static_Arrays_QualifiedName written: value '{2:Speed|Level}' | opcua QualifiedName 'QualifiedName' Primitive Numeric:20 array True | dotnet Array QualifiedName[] clr 'QualifiedName[]' of (dotnet Primitive QualifiedName clr 'QualifiedName')
+ns=6;s=Scalar_Static_Arrays_LocalizedText written: value '{Tank|Tank æøå}' | opcua LocalizedText 'LocalizedText' Primitive Numeric:21 array True | dotnet Array LocalizedText[] clr 'LocalizedText[]' of (dotnet Primitive LocalizedText clr 'LocalizedText')
+ns=4;i=6198 read only: value '0' | opcua DeviceHealthEnumeration 'DeviceHealthEnumeration' Enum Numeric:6244 array False | dotnet Enum DeviceHealthEnumeration clr 'int' members 0=NORMAL, 1=FAILURE, 2=CHECK_FUNCTION, 3=OFF_SPEC, 4=MAINTENANCE_REQUIRED
+ns=4;i=15013 read only: value '' | opcua BoilerDataType 'BoilerDataType' Structure Numeric:15032 array False | dotnet Complex BoilerDataType clr 'object'

@@ -10,11 +10,19 @@
   <ItemGroup>
     <None Remove="XUnitTestData\001_scan_current_result.json" />
     <None Remove="XUnitTestData\001_scan_previous_result.json" />
+    <None Remove="XUnitTestData\namespace_zero_data_type_ids.txt" />
+    <None Remove="XUnitTestData\scan_written_by_3.2.0.json" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="XUnitTestData\001_scan_current_result.json" />
     <EmbeddedResource Include="XUnitTestData\001_scan_previous_result.json" />
+    <EmbeddedResource Include="XUnitTestData\namespace_zero_data_type_ids.txt" />
+    <EmbeddedResource Include="XUnitTestData\scan_written_by_3.2.0.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Testcontainers" Version="4.17.0" />
   </ItemGroup>
 
   <ItemGroup>
