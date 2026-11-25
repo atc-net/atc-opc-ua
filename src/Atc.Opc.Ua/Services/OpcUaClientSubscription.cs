@@ -11,10 +11,9 @@ public partial class OpcUaClient
     private const string NoActiveSubscriptionMessage = "No active subscription. Call CreateSubscriptionAsync first.";
 
     /// <summary>
-    /// The upper 16 bits of an OPC UA status code identify it: its severity and its code. The lower 16 bits are info
-    /// bits, e.g. Overflow when a monitored item's queue dropped values, which aren't part of the status code's name.
+    /// How many publishing intervals without a value the server waits before it sends a keep-alive message.
     /// </summary>
-    private const uint StatusCodeIdentityMask = 0xFFFF0000;
+    private const uint SubscriptionKeepAliveCount = 10;
 
     private readonly MonitoredNodeRegistry monitoredNodes = new();
     private readonly ConcurrentDictionary<NodeId, string?> dataTypeNames = new();
@@ -47,11 +46,12 @@ public partial class OpcUaClient
 
                     LogSubscriptionCreating(activeSubscriptionOptions.PublishingIntervalMs);
 
-                    var subscription = new Subscription(session.DefaultSubscription)
+                    var subscription = new Subscription(telemetry)
                     {
                         DisplayName = SubscriptionDisplayName,
                         PublishingInterval = activeSubscriptionOptions.PublishingIntervalMs,
                         PublishingEnabled = true,
+                        KeepAliveCount = SubscriptionKeepAliveCount,
                         LifetimeCount = 0,
                         MaxNotificationsPerPublish = 0,
                         Priority = 0,
@@ -323,13 +323,13 @@ public partial class OpcUaClient
         var parsed = new List<(int Index, NodeId NodeId)>(requests.Count);
         for (var i = 0; i < requests.Count; i++)
         {
-            if (TryParseNodeId(requests[i].NodeId, out var nodeId))
+            if (NodeIdParser.TryParse(requests[i].NodeId, out var nodeId))
             {
                 parsed.Add((i, nodeId));
             }
             else
             {
-                results[i] = Rejected(requests[i].NodeId, StatusCodes.BadNodeIdInvalid);
+                results[i] = Rejected(requests[i].NodeId, StatusCodes.BadNodeIdInvalid.Code);
             }
         }
 
@@ -370,7 +370,7 @@ public partial class OpcUaClient
                 LogSubscriptionNodeSubscribing(requests[index].NodeId, handle);
             }
 
-            var monitoredItem = new MonitoredItem
+            var monitoredItem = new MonitoredItem(telemetry)
             {
                 StartNodeId = nodeId,
                 DisplayName = requests[index].DisplayName ?? nodeAttributes.DisplayName ?? requests[index].NodeId,
@@ -381,9 +381,9 @@ public partial class OpcUaClient
             };
 
             // Registered before the item is created on the server, so its first value already has the metadata.
-            var dataTypeName = nodeAttributes.DataTypeId is null
-                ? null
-                : dataTypeNames.GetValueOrDefault(nodeAttributes.DataTypeId);
+            var dataTypeName = nodeAttributes.DataTypeId is { } dataTypeId
+                ? dataTypeNames.GetValueOrDefault(dataTypeId)
+                : null;
 
             monitoredNodes.Add(new MonitoredNode(handle, monitoredItem, dataTypeName, nodeAttributes.AccessLevel));
             monitoredItem.Notification += OnMonitoredItemNotification;
@@ -428,8 +428,8 @@ public partial class OpcUaClient
         List<(int Index, MonitoredItem Item)> rejected = [.. prepared.Where(x => ServiceResult.IsBad(x.Item.Status.Error))];
         foreach (var (index, item) in prepared.Except(rejected))
         {
-            var handle = (uint)item.Handle;
-            results[index] = new NodeSubscriptionResult(requests[index].NodeId, Succeeded: true, handle, StatusCodes.Good, ErrorMessage: null);
+            var handle = MonitoredNodeRegistry.GetHandle(item);
+            results[index] = new NodeSubscriptionResult(requests[index].NodeId, Succeeded: true, handle, StatusCodes.Good.Code, ErrorMessage: null);
             if (logEachNode)
             {
                 LogSubscriptionNodeSubscribed(requests[index].NodeId, handle);
@@ -443,7 +443,7 @@ public partial class OpcUaClient
 
         foreach (var (index, item) in rejected)
         {
-            results[index] = Rejected(requests[index].NodeId, item.Status.Error.StatusCode.Code);
+            results[index] = Rejected(requests[index].NodeId, item.Status.Error?.StatusCode.Code ?? StatusCodes.BadUnexpectedError.Code);
         }
 
         // Rejected items don't exist on the server, so this needs no call to it, and can't fail the nodes that are monitored.
@@ -465,7 +465,7 @@ public partial class OpcUaClient
         foreach (var item in items)
         {
             item.Notification -= OnMonitoredItemNotification;
-            monitoredNodes.Remove((uint)item.Handle);
+            monitoredNodes.Remove(MonitoredNodeRegistry.GetHandle(item));
         }
 
         var createdOnServer = items.Any(x => x.Status.Created);
@@ -502,28 +502,6 @@ public partial class OpcUaClient
     }
 
     /// <summary>
-    /// Parses a node id, e.g. <c>ns=3;s=StepUp</c>, without throwing.
-    /// </summary>
-    /// <param name="nodeId">The node id as text.</param>
-    /// <param name="parsed">The parsed node id, or <see langword="null"/> when it doesn't parse.</param>
-    /// <returns><see langword="true"/> when it parses.</returns>
-    private static bool TryParseNodeId(
-        string nodeId,
-        [NotNullWhen(true)] out NodeId? parsed)
-    {
-        try
-        {
-            parsed = NodeId.Parse(nodeId);
-            return true;
-        }
-        catch (Exception ex) when (ex is ServiceResultException or ArgumentException or FormatException)
-        {
-            parsed = null;
-            return false;
-        }
-    }
-
-    /// <summary>
     /// Reads the display name, data type and access level of the nodes, in as few reads as the server allows.
     /// </summary>
     /// <param name="session">The session to read with.</param>
@@ -535,7 +513,7 @@ public partial class OpcUaClient
         IReadOnlyList<NodeId> nodeIds,
         CancellationToken cancellationToken)
     {
-        var reads = new ReadValueIdCollection(nodeIds.Count * MonitoredNodeAttributes.AttributeIds.Length);
+        var reads = new List<ReadValueId>(nodeIds.Count * MonitoredNodeAttributes.AttributeIds.Length);
         foreach (var nodeId in nodeIds)
         {
             reads.AddRange(MonitoredNodeAttributes.AttributeIds.Select(x => new ReadValueId { NodeId = nodeId, AttributeId = x }));
@@ -573,12 +551,12 @@ public partial class OpcUaClient
             return;
         }
 
-        var reads = new ReadValueIdCollection(unknown.Select(x => new ReadValueId { NodeId = x, AttributeId = Attributes.DisplayName }));
+        List<ReadValueId> reads = [.. unknown.Select(x => new ReadValueId { NodeId = x, AttributeId = Attributes.DisplayName })];
         var values = await ReadAsync(session, reads, cancellationToken);
         for (var i = 0; i < unknown.Count; i++)
         {
-            dataTypeNames[unknown[i]] = StatusCode.IsGood(values[i].StatusCode)
-                ? (values[i].Value as LocalizedText)?.Text
+            dataTypeNames[unknown[i]] = StatusCode.IsGood(values[i].StatusCode) && values[i].WrappedValue.TryGetValue(out LocalizedText text)
+                ? text.Text
                 : null;
         }
     }
@@ -590,16 +568,16 @@ public partial class OpcUaClient
     /// <param name="reads">The node attributes to read.</param>
     /// <param name="cancellationToken">Cancellation token for the operation.</param>
     /// <returns>The values, in the order of <paramref name="reads"/>.</returns>
-    private static async Task<DataValueCollection> ReadAsync(
+    private static async Task<List<DataValue>> ReadAsync(
         ISession session,
-        ReadValueIdCollection reads,
+        List<ReadValueId> reads,
         CancellationToken cancellationToken)
     {
         var maxNodesPerRead = session.OperationLimits?.MaxNodesPerRead is > 0 and var limit
             ? (int)System.Math.Min(limit, int.MaxValue)
             : System.Math.Max(reads.Count, 1);
 
-        var values = new DataValueCollection(reads.Count);
+        var values = new List<DataValue>(reads.Count);
         foreach (var chunk in reads.Chunk(maxNodesPerRead))
         {
             var response = await session.ReadAsync(
@@ -609,7 +587,7 @@ public partial class OpcUaClient
                 [.. chunk],
                 cancellationToken);
 
-            values.AddRange(response.Results);
+            values.AddRange(response.Results.ToArray() ?? []);
         }
 
         return values;
@@ -631,20 +609,21 @@ public partial class OpcUaClient
                 return;
             }
 
-            var handle = monitoredItem.Handle is uint h ? h : 0u;
+            var handle = MonitoredNodeRegistry.GetHandle(monitoredItem);
             monitoredNodes.TryGet(handle, out var node);
 
+            var value = notification.Value;
             var monitoredNodeValue = new MonitoredNodeValue
             {
                 MonitoredItemHandle = handle,
-                NodeId = monitoredItem.StartNodeId?.ToString() ?? string.Empty,
+                NodeId = monitoredItem.StartNodeId.IsNull ? string.Empty : monitoredItem.StartNodeId.ToString(),
                 DisplayName = monitoredItem.DisplayName ?? string.Empty,
-                Value = notification.Value?.WrappedValue.ToPlainValue(),
-                ValueAsText = notification.Value?.WrappedValue.ToInvariantString(),
-                ServerTimestamp = notification.Value?.ServerTimestamp,
-                SourceTimestamp = notification.Value?.SourceTimestamp,
-                StatusCode = notification.Value?.StatusCode.Code ?? 0,
-                StatusCodeName = GetStatusCodeName(notification.Value?.StatusCode.Code ?? 0),
+                Value = value.WrappedValue.ToPlainValue(),
+                ValueAsText = value.WrappedValue.ToInvariantString(),
+                ServerTimestamp = value.ServerTimestamp.ToTimestamp(),
+                SourceTimestamp = value.SourceTimestamp.ToTimestamp(),
+                StatusCode = value.StatusCode.Code,
+                StatusCodeName = GetStatusCodeName(value.StatusCode.Code),
                 DataTypeName = node?.DataTypeName,
                 AccessLevel = node?.AccessLevel,
             };
@@ -658,15 +637,12 @@ public partial class OpcUaClient
     }
 
     /// <summary>
-    /// The name of a status code, e.g. <c>BadNodeIdUnknown</c>, without its info bits (see <see cref="StatusCodeIdentityMask"/>).
+    /// The name of a status code, e.g. <c>BadNodeIdUnknown</c>, whatever its info bits.
     /// </summary>
     /// <param name="statusCode">The status code, with or without info bits.</param>
     /// <returns>The name, or <see langword="null"/> for a status code the stack doesn't know.</returns>
     private static string? GetStatusCodeName(uint statusCode)
-    {
-        var name = StatusCodes.GetBrowseName(statusCode & StatusCodeIdentityMask);
-        return string.IsNullOrEmpty(name) ? null : name;
-    }
+        => new StatusCode(statusCode).SymbolicId;
 
     /// <summary>
     /// After a reconnect that needed a new session, the OPC UA stack recreates the subscription and its monitored items

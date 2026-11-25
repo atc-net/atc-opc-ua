@@ -41,8 +41,8 @@ public partial class OpcUaClient
 
         var request = new CallMethodRequest
         {
-            ObjectId = new NodeId(parentNodeId),
-            MethodId = new NodeId(methodNodeId),
+            ObjectId = NodeIdParser.Parse(parentNodeId, nameof(parentNodeId)),
+            MethodId = NodeIdParser.Parse(methodNodeId, nameof(methodNodeId)),
         };
 
         if (arguments.Count > 0)
@@ -66,7 +66,7 @@ public partial class OpcUaClient
                 $"Calling method '{methodNodeId}' on '{parentNodeId}' failed: {GetStatusCodeName(statusCode) ?? $"0x{statusCode:X8}"}.");
         }
 
-        return MethodArgumentMapper.ToResults(results[0].OutputArguments);
+        return MethodArgumentMapper.ToResults(results[0].OutputArguments.ToList());
     }
 
     private static string ArgumentsToString(

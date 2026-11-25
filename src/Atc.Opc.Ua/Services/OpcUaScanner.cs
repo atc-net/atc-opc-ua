@@ -49,7 +49,7 @@ public partial class OpcUaScanner : IOpcUaScanner
         CancellationToken cancellationToken)
     {
         var startingNodeId = string.IsNullOrWhiteSpace(options.StartingNodeId)
-            ? ObjectIds.ObjectsFolder.ToString()
+            ? OpcUaConstants.ObjectsFolderNodeId
             : options.StartingNodeId.Trim();
 
         LogScannerStart(startingNodeId, options.ObjectDepth, options.VariableDepth, options.IncludeSampleValues);

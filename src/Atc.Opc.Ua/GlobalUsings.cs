@@ -1,4 +1,5 @@
 global using System.Collections.Concurrent;
+global using System.Collections.Frozen;
 global using System.Diagnostics.CodeAnalysis;
 global using System.Globalization;
 global using System.Text;
@@ -21,3 +22,8 @@ global using Opc.Ua;
 global using Opc.Ua.Client;
 global using Opc.Ua.Client.ComplexTypes;
 global using Opc.Ua.Configuration;
+global using Opc.Ua.Security.Certificates;
+
+// The stack has its own types with these names.
+global using OpcUaClientOptions = Atc.Opc.Ua.Options.OpcUaClientOptions;
+global using SubscriptionOptions = Atc.Opc.Ua.Contracts.SubscriptionOptions;

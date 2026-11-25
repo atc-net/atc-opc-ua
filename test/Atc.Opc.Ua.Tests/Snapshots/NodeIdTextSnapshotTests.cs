@@ -64,7 +64,7 @@ public sealed class NodeIdTextSnapshotTests
         foreach (var input in Inputs)
         {
             text.AppendLine(CultureInfo.InvariantCulture, $"input {Quote(input)}");
-            text.AppendLine(CultureInfo.InvariantCulture, $"  new NodeId: {SnapshotFormat.Try(() => SnapshotStack.Describe(SnapshotStack.Construct(input)))}");
+            text.AppendLine(CultureInfo.InvariantCulture, $"  library:    {SnapshotFormat.Try(() => SnapshotStack.Describe(SnapshotStack.ParseAsTheLibraryDoes(input)))}");
             text.AppendLine(CultureInfo.InvariantCulture, $"  Parse:      {SnapshotFormat.Try(() => SnapshotStack.Describe(SnapshotStack.Parse(input)))}");
             text.AppendLine(CultureInfo.InvariantCulture, $"  Expanded:   {SnapshotFormat.Try(() => SnapshotStack.ParseExpandedAndResolve(input))}");
         }

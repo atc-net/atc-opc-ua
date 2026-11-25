@@ -5,10 +5,32 @@ namespace Atc.Opc.Ua.Extensions;
 /// </summary>
 internal static class OpcUaExceptionExtensions
 {
-    /// <summary>
-    /// The upper 16 bits of a status code identify it; the lower 16 are info bits.
-    /// </summary>
-    private const uint StatusCodeIdentityMask = 0xFFFF0000;
+    private static readonly FrozenSet<uint> NodeFailures = CodeBitsOf(
+        StatusCodes.BadNodeIdUnknown,
+        StatusCodes.BadUserAccessDenied,
+        StatusCodes.BadNotReadable,
+        StatusCodes.BadSecurityModeInsufficient,
+        StatusCodes.BadAttributeIdInvalid);
+
+    private static readonly FrozenSet<uint> ConnectionFailures = CodeBitsOf(
+        StatusCodes.BadCommunicationError,
+        StatusCodes.BadConnectionClosed,
+        StatusCodes.BadConnectionRejected,
+        StatusCodes.BadDisconnect,
+        StatusCodes.BadNoCommunication,
+        StatusCodes.BadNotConnected,
+        StatusCodes.BadRequestInterrupted,
+        StatusCodes.BadRequestTimeout,
+        StatusCodes.BadSecureChannelClosed,
+        StatusCodes.BadSecureChannelIdInvalid,
+        StatusCodes.BadServerHalted,
+        StatusCodes.BadServerNotConnected,
+        StatusCodes.BadSessionClosed,
+        StatusCodes.BadSessionIdInvalid,
+        StatusCodes.BadSessionNotActivated,
+        StatusCodes.BadShutdown,
+        StatusCodes.BadTcpInternalError,
+        StatusCodes.BadTimeout);
 
     /// <summary>
     /// Whether reading or browsing a node failed because of the node itself, so a call that reads many nodes can skip
@@ -24,12 +46,7 @@ internal static class OpcUaExceptionExtensions
     {
         ArgumentNullException.ThrowIfNull(exception);
 
-        return (exception.StatusCode & StatusCodeIdentityMask)
-            is StatusCodes.BadNodeIdUnknown
-            or StatusCodes.BadUserAccessDenied
-            or StatusCodes.BadNotReadable
-            or StatusCodes.BadSecurityModeInsufficient
-            or StatusCodes.BadAttributeIdInvalid;
+        return NodeFailures.Contains(exception.StatusCode.CodeBits);
     }
 
     /// <summary>
@@ -40,23 +57,13 @@ internal static class OpcUaExceptionExtensions
     /// <returns><see langword="true"/> for a failure of the connection or the session.</returns>
     public static bool IsConnectionFailure(this Exception exception)
         => exception is ServiceResultException serviceResultException &&
-           (serviceResultException.StatusCode & StatusCodeIdentityMask)
-           is StatusCodes.BadCommunicationError
-           or StatusCodes.BadConnectionClosed
-           or StatusCodes.BadConnectionRejected
-           or StatusCodes.BadDisconnect
-           or StatusCodes.BadNoCommunication
-           or StatusCodes.BadNotConnected
-           or StatusCodes.BadRequestInterrupted
-           or StatusCodes.BadRequestTimeout
-           or StatusCodes.BadSecureChannelClosed
-           or StatusCodes.BadSecureChannelIdInvalid
-           or StatusCodes.BadServerHalted
-           or StatusCodes.BadServerNotConnected
-           or StatusCodes.BadSessionClosed
-           or StatusCodes.BadSessionIdInvalid
-           or StatusCodes.BadSessionNotActivated
-           or StatusCodes.BadShutdown
-           or StatusCodes.BadTcpInternalError
-           or StatusCodes.BadTimeout;
+           ConnectionFailures.Contains(serviceResultException.StatusCode.CodeBits);
+
+    /// <summary>
+    /// The code bits of status codes, which identify them, without their info bits.
+    /// </summary>
+    /// <param name="statusCodes">The status codes.</param>
+    /// <returns>Their code bits.</returns>
+    private static FrozenSet<uint> CodeBitsOf(params StatusCode[] statusCodes)
+        => statusCodes.Select(x => x.CodeBits).ToFrozenSet();
 }

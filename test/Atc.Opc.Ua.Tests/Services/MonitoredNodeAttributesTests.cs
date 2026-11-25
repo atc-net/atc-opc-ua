@@ -14,7 +14,7 @@ public sealed class MonitoredNodeAttributesTests
         var attributes = MonitoredNodeAttributes.FromDataValues(displayName, dataType, accessLevel);
 
         // Assert
-        attributes.StatusCode.Should().Be(StatusCodes.Good);
+        attributes.StatusCode.Should().Be(StatusCodes.Good.Code);
         attributes.DisplayName.Should().Be("StepUp");
         attributes.DataTypeId.Should().Be(DataTypeIds.UInt32);
         attributes.AccessLevel.Should().Be(3);
@@ -24,13 +24,13 @@ public sealed class MonitoredNodeAttributesTests
     public void FromDataValues_UnknownNode_ShouldReturnTheBadStatusAndNoAttributes()
     {
         // Arrange
-        var unknown = new DataValue(StatusCodes.BadNodeIdUnknown);
+        var unknown = DataValue.FromStatusCode(StatusCodes.BadNodeIdUnknown);
 
         // Act
         var attributes = MonitoredNodeAttributes.FromDataValues(unknown, unknown, unknown);
 
         // Assert
-        attributes.StatusCode.Should().Be(StatusCodes.BadNodeIdUnknown);
+        attributes.StatusCode.Should().Be(StatusCodes.BadNodeIdUnknown.Code);
         attributes.DisplayName.Should().BeNull();
         attributes.DataTypeId.Should().BeNull();
         attributes.AccessLevel.Should().BeNull();
@@ -42,13 +42,13 @@ public sealed class MonitoredNodeAttributesTests
         // Arrange
         var displayName = new DataValue(new Variant(new LocalizedText("StepUp")));
         var dataType = new DataValue(new Variant(DataTypeIds.UInt32));
-        var accessLevel = new DataValue(StatusCodes.BadUserAccessDenied);
+        var accessLevel = DataValue.FromStatusCode(StatusCodes.BadUserAccessDenied);
 
         // Act
         var attributes = MonitoredNodeAttributes.FromDataValues(displayName, dataType, accessLevel);
 
         // Assert
-        attributes.StatusCode.Should().Be(StatusCodes.Good);
+        attributes.StatusCode.Should().Be(StatusCodes.Good.Code);
         attributes.DisplayName.Should().Be("StepUp");
         attributes.DataTypeId.Should().Be(DataTypeIds.UInt32);
         attributes.AccessLevel.Should().BeNull();
@@ -59,13 +59,13 @@ public sealed class MonitoredNodeAttributesTests
     {
         // Arrange
         var displayName = new DataValue(new Variant(new LocalizedText("Server")));
-        var notAVariable = new DataValue(StatusCodes.BadAttributeIdInvalid);
+        var notAVariable = DataValue.FromStatusCode(StatusCodes.BadAttributeIdInvalid);
 
         // Act
         var attributes = MonitoredNodeAttributes.FromDataValues(displayName, notAVariable, notAVariable);
 
         // Assert
-        attributes.StatusCode.Should().Be(StatusCodes.Good);
+        attributes.StatusCode.Should().Be(StatusCodes.Good.Code);
         attributes.DataTypeId.Should().BeNull();
         attributes.AccessLevel.Should().BeNull();
     }

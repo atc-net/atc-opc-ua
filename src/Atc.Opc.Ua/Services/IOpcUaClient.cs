@@ -246,6 +246,9 @@ public interface IOpcUaClient : IDisposable
     /// <param name="value">The value, of the variable's data type.</param>
     /// <param name="cancellationToken">Cancellation token for the operation.</param>
     /// <returns>A task that completes when the server accepted the value.</returns>
+    /// <exception cref="ArgumentException">
+    /// <paramref name="nodeId"/> isn't a valid node id, or the value's type has no OPC UA type, e.g. <see cref="decimal"/>.
+    /// </exception>
     /// <exception cref="ServiceResultException">The server rejected the value, e.g. with <c>BadTypeMismatch</c>.</exception>
     Task WriteNodeAsync(
         string nodeId,
@@ -258,6 +261,9 @@ public interface IOpcUaClient : IDisposable
     /// <param name="nodesToWrite">The variables and their values.</param>
     /// <param name="cancellationToken">Cancellation token for the operation.</param>
     /// <returns>A task that completes when the server accepted every value.</returns>
+    /// <exception cref="ArgumentException">
+    /// A node id isn't valid, or a value's type has no OPC UA type, e.g. <see cref="decimal"/>.
+    /// </exception>
     /// <exception cref="ServiceResultException">
     /// The server rejected a value. The message names every rejected node; the status code is the first one's.
     /// </exception>
@@ -273,6 +279,9 @@ public interface IOpcUaClient : IDisposable
     /// <param name="arguments">The method's input arguments.</param>
     /// <param name="cancellationToken">Cancellation token for the operation.</param>
     /// <returns>The method's output arguments.</returns>
+    /// <exception cref="ArgumentException">
+    /// A node id isn't valid, or an argument's value isn't valid for its data type or can't be sent as a method argument.
+    /// </exception>
     /// <exception cref="ServiceResultException">The server rejected the call, e.g. with <c>BadArgumentsMissing</c>.</exception>
     Task<IList<MethodExecutionResult>> ExecuteMethodAsync(
         string parentNodeId,

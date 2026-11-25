@@ -30,17 +30,11 @@ internal sealed record MonitoredNodeAttributes(
         DataValue displayName,
         DataValue dataType,
         DataValue accessLevel)
-    {
-        ArgumentNullException.ThrowIfNull(displayName);
-        ArgumentNullException.ThrowIfNull(dataType);
-        ArgumentNullException.ThrowIfNull(accessLevel);
-
-        return new MonitoredNodeAttributes(
+        => new(
             displayName.StatusCode.Code,
-            IsGood(displayName) ? (displayName.Value as LocalizedText)?.Text : null,
-            IsGood(dataType) ? dataType.Value as NodeId : null,
-            IsGood(accessLevel) && accessLevel.Value is byte level ? level : null);
-    }
+            IsGood(displayName) && displayName.WrappedValue.TryGetValue(out LocalizedText text) ? text.Text : null,
+            IsGood(dataType) && dataType.WrappedValue.TryGetValue(out NodeId nodeId) ? nodeId : null,
+            IsGood(accessLevel) && accessLevel.WrappedValue.TryGetValue(out byte level) ? level : null);
 
     private static bool IsGood(DataValue value)
         => global::Opc.Ua.StatusCode.IsGood(value.StatusCode);

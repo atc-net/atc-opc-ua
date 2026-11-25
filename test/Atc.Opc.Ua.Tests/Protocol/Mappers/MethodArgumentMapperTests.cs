@@ -20,7 +20,7 @@ public sealed class MethodArgumentMapperTests
         string value,
         object expected)
         => MethodArgumentMapper
-            .ToVariants([new MethodExecutionParameter(dataEncoding, value)])[0].Value
+            .ToVariants([new MethodExecutionParameter(dataEncoding, value)])[0].AsBoxedObject()
             .Should().Be(expected);
 
     [Fact]
@@ -33,7 +33,7 @@ public sealed class MethodArgumentMapperTests
         var variants = MethodArgumentMapper.ToVariants([new MethodExecutionParameter(OpcUaDataEncodingType.Guid, guid.ToString())]);
 
         // Assert
-        variants[0].Value.Should().Be(new Uuid(guid));
+        variants[0].AsBoxedObject().Should().Be(new Uuid(guid));
     }
 
     [Fact]
@@ -43,7 +43,8 @@ public sealed class MethodArgumentMapperTests
         var variants = MethodArgumentMapper.ToVariants([new MethodExecutionParameter(OpcUaDataEncodingType.DateTime, "2026-11-20 12:00:00")]);
 
         // Assert
-        var dateTime = (DateTime)variants[0].Value;
+        variants[0].TryGetValue(out DateTimeUtc value).Should().BeTrue();
+        var dateTime = value.ToDateTime();
         dateTime.Should().Be(new DateTime(2026, 11, 20, 12, 0, 0, DateTimeKind.Utc));
         dateTime.Kind.Should().Be(DateTimeKind.Utc);
     }
@@ -55,7 +56,8 @@ public sealed class MethodArgumentMapperTests
         var variants = MethodArgumentMapper.ToVariants([new MethodExecutionParameter(OpcUaDataEncodingType.DateTime, "2026-11-20T12:00:00+01:00")]);
 
         // Assert
-        var dateTime = (DateTime)variants[0].Value;
+        variants[0].TryGetValue(out DateTimeUtc value).Should().BeTrue();
+        var dateTime = value.ToDateTime();
         dateTime.Should().Be(new DateTime(2026, 11, 20, 11, 0, 0, DateTimeKind.Utc));
         dateTime.Kind.Should().Be(DateTimeKind.Utc);
     }
@@ -127,19 +129,19 @@ public sealed class MethodArgumentMapperTests
         var variants = MethodArgumentMapper.ToVariants(arguments);
 
         // Assert
-        variants.Select(v => v.Value).Should().Equal(7, "seven", false);
+        variants.Select(v => v.AsBoxedObject()).Should().Equal(7, "seven", false);
     }
 
     [Fact]
     public void ToResults_EmptyOutputBetweenOthers_ShouldKeepItAsNoneAndKeepThePositions()
     {
         // Arrange
-        var outputArguments = new VariantCollection
-        {
+        Variant[] outputArguments =
+        [
             new Variant(42),
             Variant.Null,
             new Variant("ok"),
-        };
+        ];
 
         // Act
         var results = MethodArgumentMapper.ToResults(outputArguments);
@@ -155,15 +157,47 @@ public sealed class MethodArgumentMapperTests
     public void ToResults_OutputOfABuiltInTypeWithoutAnEnumValue_ShouldGetNone()
     {
         // Arrange
-        var outputArguments = new VariantCollection
-        {
-            new Variant(3, new TypeInfo(BuiltInType.Enumeration, ValueRanks.Scalar)),
-        };
+        Variant[] outputArguments =
+        [
+            new Variant(new EnumValue(3)),
+        ];
 
         // Act
         var results = MethodArgumentMapper.ToResults(outputArguments);
 
         // Assert
         results.Should().Equal(new MethodExecutionResult(OpcUaDataEncodingType.None, "3"));
+    }
+
+    [Fact]
+    public void ToResults_ArrayOutput_ShouldBeJsonText()
+    {
+        // Arrange
+        Variant[] outputArguments =
+        [
+            new Variant(new[] { 1, 2 }),
+        ];
+
+        // Act
+        var results = MethodArgumentMapper.ToResults(outputArguments);
+
+        // Assert
+        results.Should().Equal(new MethodExecutionResult(OpcUaDataEncodingType.Int32, "[1,2]"));
+    }
+
+    [Fact]
+    public void ToResults_DateTimeOutput_ShouldUseTheRoundTripFormat()
+    {
+        // Arrange
+        Variant[] outputArguments =
+        [
+            new Variant(new DateTimeUtc(new DateTime(2026, 11, 20, 12, 0, 0, DateTimeKind.Utc))),
+        ];
+
+        // Act
+        var results = MethodArgumentMapper.ToResults(outputArguments);
+
+        // Assert
+        results.Should().Equal(new MethodExecutionResult(OpcUaDataEncodingType.DateTime, "2026-11-20T12:00:00.0000000Z"));
     }
 }

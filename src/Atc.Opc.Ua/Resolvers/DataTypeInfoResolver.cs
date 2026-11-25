@@ -106,7 +106,7 @@ public sealed class DataTypeInfoResolver
         CancellationToken cancellationToken)
     {
         var nodeIdString = dataTypeNodeId.ToString();
-        var builtInType = TypeInfo.GetBuiltInType(dataTypeNodeId);
+        var builtInType = StandardDataTypes.GetBuiltInType(dataTypeNodeId);
 
         // Built-in primitive types can be resolved without server calls
         if (builtInType != BuiltInType.Null)
@@ -126,8 +126,8 @@ public sealed class DataTypeInfoResolver
             var opcUaType = new OpUaDataType
             {
                 NodeId = nodeIdString,
-                Name = readNode.BrowseName?.Name ?? nodeIdString,
-                DisplayName = readNode.DisplayName?.Text ?? readNode.BrowseName?.Name ?? nodeIdString,
+                Name = readNode.BrowseName.Name ?? nodeIdString,
+                DisplayName = readNode.DisplayName.Text ?? readNode.BrowseName.Name ?? nodeIdString,
                 IdentifierType = dataTypeNodeId.IdType.GetIdentifierTypeName(),
                 Identifier = dataTypeNodeId.GetIdentifierAsString(),
                 Kind = OpcUaTypeKind.Unknown,
@@ -198,8 +198,7 @@ public sealed class DataTypeInfoResolver
         BuiltInType builtInType)
     {
         var typeName = builtInType.ToString();
-        var systemType = TypeInfo.GetSystemType(builtInType, ValueRanks.Scalar);
-        var clrTypeName = systemType?.BeautifyTypeName() ?? typeName.ToLowerInvariant();
+        var clrTypeName = StandardDataTypes.GetTypeName(builtInType, ValueRanks.Scalar);
 
         var opcUaType = new OpUaDataType
         {
@@ -277,14 +276,14 @@ public sealed class DataTypeInfoResolver
     {
         try
         {
-            var nodesToRead = new ReadValueIdCollection
-            {
+            ReadValueId[] nodesToRead =
+            [
                 new ReadValueId
                 {
                     NodeId = dataTypeNodeId,
                     AttributeId = Attributes.DataTypeDefinition,
                 },
-            };
+            ];
 
             var readResponse = await session.ReadAsync(
                 requestHeader: null,
@@ -293,15 +292,14 @@ public sealed class DataTypeInfoResolver
                 nodesToRead,
                 cancellationToken);
 
-            if (readResponse?.Results is null ||
+            if (readResponse is null ||
                 readResponse.Results.Count == 0 ||
                 StatusCode.IsBad(readResponse.Results[0].StatusCode))
             {
                 return null;
             }
 
-            var definition = readResponse.Results[0].Value;
-            if (definition is ExtensionObject { Body: EnumDefinition enumDefinition })
+            if (readResponse.Results[0].WrappedValue.TryGetStructure<EnumDefinition>(out EnumDefinition? enumDefinition) && enumDefinition is not null)
             {
                 var members = new List<OpcUaEnumMember>(enumDefinition.Fields.Count);
 
@@ -311,8 +309,8 @@ public sealed class DataTypeInfoResolver
                     {
                         Value = field.Value,
                         Name = field.Name ?? string.Empty,
-                        DisplayName = field.DisplayName?.Text ?? field.Name ?? string.Empty,
-                        Description = field.Description?.Text ?? string.Empty,
+                        DisplayName = field.DisplayName.Text ?? field.Name ?? string.Empty,
+                        Description = field.Description.Text ?? string.Empty,
                     });
                 }
 
@@ -340,14 +338,14 @@ public sealed class DataTypeInfoResolver
                 return null;
             }
 
-            var nodesToRead = new ReadValueIdCollection
-            {
+            ReadValueId[] nodesToRead =
+            [
                 new ReadValueId
                 {
-                    NodeId = enumValuesNodeId,
+                    NodeId = enumValuesNodeId.Value,
                     AttributeId = Attributes.Value,
                 },
-            };
+            ];
 
             var readResponse = await session.ReadAsync(
                 requestHeader: null,
@@ -356,28 +354,27 @@ public sealed class DataTypeInfoResolver
                 nodesToRead,
                 cancellationToken);
 
-            if (readResponse?.Results is null ||
+            if (readResponse is null ||
                 readResponse.Results.Count == 0 ||
                 StatusCode.IsBad(readResponse.Results[0].StatusCode))
             {
                 return null;
             }
 
-            var value = readResponse.Results[0].Value;
-            if (value is ExtensionObject[] extensionObjects)
+            if (readResponse.Results[0].WrappedValue.TryGetValue(out ArrayOf<ExtensionObject> extensionObjects))
             {
                 var members = new List<OpcUaEnumMember>();
 
                 foreach (var ext in extensionObjects)
                 {
-                    if (ext.Body is EnumValueType enumValue)
+                    if (ext.TryGetValue<EnumValueType>(out var enumValue) && enumValue is not null)
                     {
                         members.Add(new OpcUaEnumMember
                         {
                             Value = enumValue.Value,
-                            Name = enumValue.DisplayName?.Text ?? string.Empty,
-                            DisplayName = enumValue.DisplayName?.Text ?? string.Empty,
-                            Description = enumValue.Description?.Text ?? string.Empty,
+                            Name = enumValue.DisplayName.Text ?? string.Empty,
+                            DisplayName = enumValue.DisplayName.Text ?? string.Empty,
+                            Description = enumValue.Description.Text ?? string.Empty,
                         });
                     }
                 }
@@ -406,14 +403,14 @@ public sealed class DataTypeInfoResolver
                 return null;
             }
 
-            var nodesToRead = new ReadValueIdCollection
-            {
+            ReadValueId[] nodesToRead =
+            [
                 new ReadValueId
                 {
-                    NodeId = enumStringsNodeId,
+                    NodeId = enumStringsNodeId.Value,
                     AttributeId = Attributes.Value,
                 },
-            };
+            ];
 
             var readResponse = await session.ReadAsync(
                 requestHeader: null,
@@ -422,19 +419,18 @@ public sealed class DataTypeInfoResolver
                 nodesToRead,
                 cancellationToken);
 
-            if (readResponse?.Results is null ||
+            if (readResponse is null ||
                 readResponse.Results.Count == 0 ||
                 StatusCode.IsBad(readResponse.Results[0].StatusCode))
             {
                 return null;
             }
 
-            var value = readResponse.Results[0].Value;
-            if (value is LocalizedText[] localizedTexts)
+            if (readResponse.Results[0].WrappedValue.TryGetValue(out ArrayOf<LocalizedText> localizedTexts))
             {
                 var members = new List<OpcUaEnumMember>();
 
-                for (var i = 0; i < localizedTexts.Length; i++)
+                for (var i = 0; i < localizedTexts.Count; i++)
                 {
                     var text = localizedTexts[i].Text ?? string.Empty;
                     members.Add(new OpcUaEnumMember
@@ -474,14 +470,14 @@ public sealed class DataTypeInfoResolver
             };
 
             var references = await browser.BrowseAsync(parentNodeId, cancellationToken);
-            if (references is null || references.Count == 0)
+            if (references.Count == 0)
             {
                 return null;
             }
 
             foreach (var reference in references)
             {
-                if (string.Equals(reference.BrowseName?.Name, propertyName, StringComparison.Ordinal))
+                if (string.Equals(reference.BrowseName.Name, propertyName, StringComparison.Ordinal))
                 {
                     return ExpandedNodeId.ToNodeId(reference.NodeId, session.NamespaceUris);
                 }

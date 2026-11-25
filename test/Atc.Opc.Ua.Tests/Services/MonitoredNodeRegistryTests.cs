@@ -2,6 +2,8 @@ namespace Atc.Opc.Ua.Tests.Services;
 
 public sealed class MonitoredNodeRegistryTests
 {
+    private static readonly StackTelemetryContext Telemetry = new(NullLoggerFactory.Instance);
+
     [Fact]
     public void NextHandle_CalledConcurrently_ShouldReturnUniqueHandles()
     {
@@ -84,8 +86,8 @@ public sealed class MonitoredNodeRegistryTests
         registry.Add(first);
         registry.Add(second);
 
-        var recreatedFirst = new MonitoredItem { Handle = first.Handle };
-        var recreatedSecond = new MonitoredItem { Handle = second.Handle };
+        var recreatedFirst = new MonitoredItem(Telemetry) { Handle = first.Handle };
+        var recreatedSecond = new MonitoredItem(Telemetry) { Handle = second.Handle };
 
         // Act
         var rebound = registry.Rebind([recreatedFirst, recreatedSecond]);
@@ -93,10 +95,12 @@ public sealed class MonitoredNodeRegistryTests
         // Assert
         rebound.Should().Be(2);
         registry.TryGet(first.Handle, out var firstNode).Should().BeTrue();
+        firstNode.Should().NotBeNull();
         firstNode.Item.Should().BeSameAs(recreatedFirst);
         firstNode.DataTypeName.Should().Be("Float");
         firstNode.AccessLevel.Should().Be(3);
         registry.TryGet(second.Handle, out var secondNode).Should().BeTrue();
+        secondNode.Should().NotBeNull();
         secondNode.Item.Should().BeSameAs(recreatedSecond);
     }
 
@@ -111,7 +115,7 @@ public sealed class MonitoredNodeRegistryTests
         registry.Add(lost);
 
         // Act
-        var rebound = registry.Rebind([new MonitoredItem { Handle = kept.Handle }]);
+        var rebound = registry.Rebind([new MonitoredItem(Telemetry) { Handle = kept.Handle }]);
 
         // Assert
         rebound.Should().Be(1);
@@ -128,7 +132,7 @@ public sealed class MonitoredNodeRegistryTests
         registry.Add(node);
 
         // Act
-        var rebound = registry.Rebind([new MonitoredItem { Handle = "not ours" }, new MonitoredItem { Handle = node.Handle }]);
+        var rebound = registry.Rebind([new MonitoredItem(Telemetry) { Handle = "not ours" }, new MonitoredItem(Telemetry) { Handle = node.Handle }]);
 
         // Assert
         rebound.Should().Be(1);
@@ -138,5 +142,5 @@ public sealed class MonitoredNodeRegistryTests
         uint handle,
         string? dataTypeName = null,
         byte? accessLevel = null)
-        => new(handle, new MonitoredItem { Handle = handle }, dataTypeName, accessLevel);
+        => new(handle, new MonitoredItem(Telemetry) { Handle = handle }, dataTypeName, accessLevel);
 }

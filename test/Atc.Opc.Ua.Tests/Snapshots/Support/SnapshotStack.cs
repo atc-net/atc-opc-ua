@@ -18,8 +18,8 @@ internal static class SnapshotStack
         "http://www.siemens.com/simatic-s7-opcua",
     ];
 
-    public static NodeId Construct(string text)
-        => new(text);
+    public static NodeId ParseAsTheLibraryDoes(string text)
+        => NodeIdParser.Parse(text, nameof(text));
 
     public static NodeId Parse(string text)
         => NodeId.Parse(text);
@@ -29,7 +29,7 @@ internal static class SnapshotStack
         var expandedNodeId = ExpandedNodeId.Parse(text);
         var namespaceTable = new NamespaceTable(NamespaceUris);
         var nodeId = ExpandedNodeId.ToNodeId(expandedNodeId, namespaceTable);
-        return $"{expandedNodeId} -> {(nodeId is null ? "null" : Describe(nodeId))}";
+        return $"{expandedNodeId} -> {(nodeId.IsNull ? "null" : Describe(nodeId))}";
     }
 
     /// <summary>
@@ -39,7 +39,7 @@ internal static class SnapshotStack
     /// <param name="nodeId">The node id.</param>
     /// <returns>One line.</returns>
     public static string Describe(NodeId nodeId)
-        => $"{nodeId} | ns {nodeId.NamespaceIndex} | {nodeId.IdType.GetIdentifierTypeName()} | identifier '{nodeId.Identifier}' | as string '{nodeId.GetIdentifierAsString()}'";
+        => $"{nodeId} | ns {nodeId.NamespaceIndex} | {nodeId.IdType.GetIdentifierTypeName()} | identifier '{nodeId.GetIdentifierText()}' | as string '{nodeId.GetIdentifierAsString()}'";
 
     public static VariableNode CreateVariableNode(
         NodeId dataType,
@@ -54,7 +54,7 @@ internal static class SnapshotStack
 
         if (isArray)
         {
-            variableNode.ArrayDimensions = new UInt32Collection { 0 };
+            variableNode.ArrayDimensions = [0];
         }
 
         return variableNode;

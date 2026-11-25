@@ -65,11 +65,11 @@ public partial class OpcUaNodeBrowser : IOpcUaNodeBrowser
         LogBrowseChildren(parentNodeId);
 
         var browser = BrowserFactory.GetForwardBrowser(session);
-        var references = await browser.BrowseAsync(new NodeId(parentNodeId), cancellationToken);
+        var references = await browser.BrowseAsync(NodeIdParser.Parse(parentNodeId, nameof(parentNodeId)), cancellationToken);
 
         var results = new List<NodeBrowseResult>(references.Count);
 
-        foreach (var reference in references)
+        foreach (var reference in references.ToList())
         {
             var nodeClass = MapNodeClass(reference.NodeClass);
             var nodeIdStr = reference.NodeId.ToString();
@@ -77,8 +77,8 @@ public partial class OpcUaNodeBrowser : IOpcUaNodeBrowser
             var browseResult = new NodeBrowseResult
             {
                 NodeId = nodeIdStr,
-                DisplayName = reference.DisplayName?.Text ?? string.Empty,
-                BrowseName = reference.BrowseName?.Name ?? string.Empty,
+                DisplayName = reference.DisplayName.Text ?? string.Empty,
+                BrowseName = reference.BrowseName.Name ?? string.Empty,
                 NodeClass = nodeClass,
                 HasChildren = nodeClass is NodeClassType.Object or NodeClassType.Variable,
             };
@@ -115,7 +115,7 @@ public partial class OpcUaNodeBrowser : IOpcUaNodeBrowser
         Node? node;
         try
         {
-            node = await session.ReadNodeAsync(nodeId, cancellationToken);
+            node = await session.ReadNodeAsync(NodeIdParser.Parse(nodeId, nameof(nodeId)), cancellationToken);
         }
         catch (ServiceResultException ex) when (ex.StatusCode == StatusCodes.BadNodeIdUnknown)
         {
@@ -130,10 +130,10 @@ public partial class OpcUaNodeBrowser : IOpcUaNodeBrowser
         var attributes = new NodeAttributeSet
         {
             NodeId = nodeId,
-            DisplayName = node.DisplayName?.Text ?? string.Empty,
-            BrowseName = node.BrowseName?.Name ?? string.Empty,
+            DisplayName = node.DisplayName.Text ?? string.Empty,
+            BrowseName = node.BrowseName.Name ?? string.Empty,
             NodeClass = MapNodeClass(node.NodeClass),
-            Description = node.Description?.Text,
+            Description = node.Description.Text,
         };
 
         if (node is VariableNode variableNode)
@@ -158,14 +158,14 @@ public partial class OpcUaNodeBrowser : IOpcUaNodeBrowser
         CancellationToken cancellationToken)
     {
         // Read value with timestamps
-        var nodesToRead = new ReadValueIdCollection
-        {
+        ReadValueId[] nodesToRead =
+        [
             new()
             {
-                NodeId = new NodeId(nodeId),
+                NodeId = NodeIdParser.Parse(nodeId, nameof(nodeId)),
                 AttributeId = Attributes.Value,
             },
-        };
+        ];
 
         var readResponse = await session.ReadAsync(
             requestHeader: null,
@@ -174,22 +174,22 @@ public partial class OpcUaNodeBrowser : IOpcUaNodeBrowser
             nodesToRead,
             cancellationToken);
 
-        if (readResponse?.Results?.Count > 0)
+        if (readResponse?.Results.Count > 0)
         {
             var dataValue = readResponse.Results[0];
             attributes.Value = dataValue.WrappedValue.ToInvariantString();
             attributes.StatusCode = dataValue.StatusCode.Code;
-            attributes.ServerTimestamp = dataValue.ServerTimestamp;
+            attributes.ServerTimestamp = dataValue.ServerTimestamp.ToTimestamp();
         }
 
         // Resolve data type name
         var dataTypeNode = variableNode.DataType;
-        if (dataTypeNode is not null)
+        if (!dataTypeNode.IsNull)
         {
             try
             {
                 var dtNode = await session.ReadNodeAsync(dataTypeNode, cancellationToken);
-                attributes.DataTypeName = dtNode?.DisplayName?.Text;
+                attributes.DataTypeName = dtNode?.DisplayName.Text;
             }
             catch (Exception ex) when (!cancellationToken.IsCancellationRequested && !ex.IsConnectionFailure())
             {
@@ -210,11 +210,11 @@ public partial class OpcUaNodeBrowser : IOpcUaNodeBrowser
     {
         try
         {
-            var node = await session.ReadNodeAsync(nodeId, cancellationToken);
-            if (node is VariableNode variableNode && variableNode.DataType is not null)
+            var node = await session.ReadNodeAsync(NodeIdParser.Parse(nodeId, nameof(nodeId)), cancellationToken);
+            if (node is VariableNode variableNode && !variableNode.DataType.IsNull)
             {
                 var dtNode = await session.ReadNodeAsync(variableNode.DataType, cancellationToken);
-                return dtNode?.DisplayName?.Text;
+                return dtNode?.DisplayName.Text;
             }
         }
         catch (Exception ex) when (!cancellationToken.IsCancellationRequested && !ex.IsConnectionFailure())

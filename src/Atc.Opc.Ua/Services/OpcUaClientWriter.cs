@@ -15,10 +15,7 @@ public partial class OpcUaClient
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(nodeId);
 
-        var nodesToWriteCollection = new WriteValueCollection
-        {
-            BuildWriteValue(nodeId.Trim(), value),
-        };
+        List<WriteValue> nodesToWriteCollection = [BuildWriteValue(nodeId.Trim(), value, nameof(value))];
 
         return WriteNodeValueCollectionAsync(nodesToWriteCollection, cancellationToken).NormalizeCancellation(cancellationToken);
     }
@@ -40,11 +37,10 @@ public partial class OpcUaClient
             throw new ArgumentException("A node id is missing or blank.", nameof(nodesToWrite));
         }
 
-        var nodesToWriteCollection = new WriteValueCollection();
+        var nodesToWriteCollection = new List<WriteValue>(nodesToWrite.Count);
         foreach (var (nodeId, value) in nodesToWrite)
         {
-            var writeVal = BuildWriteValue(nodeId.Trim(), value);
-            nodesToWriteCollection.Add(writeVal);
+            nodesToWriteCollection.Add(BuildWriteValue(nodeId.Trim(), value, nameof(nodesToWrite)));
         }
 
         return WriteNodeValueCollectionAsync(nodesToWriteCollection, cancellationToken).NormalizeCancellation(cancellationToken);
@@ -57,20 +53,19 @@ public partial class OpcUaClient
     /// <param name="cancellationToken">Cancellation token for the operation.</param>
     /// <exception cref="ServiceResultException">The server rejected a value, with the first failed node's status code.</exception>
     private async Task WriteNodeValueCollectionAsync(
-        WriteValueCollection nodesToWriteCollection,
+        List<WriteValue> nodesToWriteCollection,
         CancellationToken cancellationToken)
     {
         EnsureConnected();
 
         var writeResponse = await CurrentSession.WriteAsync(requestHeader: null, nodesToWriteCollection, cancellationToken);
-        var results = writeResponse?.Results;
-        if (results is null || results.Count != nodesToWriteCollection.Count)
+        if (writeResponse is null || writeResponse.Results.Count != nodesToWriteCollection.Count)
         {
             throw new ServiceResultException(StatusCodes.BadUnexpectedError, "The server didn't return a result for every node written.");
         }
 
         List<(NodeId NodeId, uint Code)> failed = [.. nodesToWriteCollection
-            .Zip(results, (node, result) => (node.NodeId, result.Code))
+            .Zip(writeResponse.Results.ToArray() ?? [], (node, result) => (node.NodeId, result.Code))
             .Where(x => StatusCode.IsBad(x.Code))];
 
         if (failed.Count == 0)
@@ -87,17 +82,17 @@ public partial class OpcUaClient
     /// </summary>
     /// <param name="nodeId">The node identifier.</param>
     /// <param name="value">The value to write.</param>
+    /// <param name="paramName">The caller's parameter, for an exception.</param>
     /// <returns>A WriteValue object ready for being sent to the server.</returns>
+    /// <exception cref="ArgumentException">The node id isn't valid, or the value's type has no OPC UA type.</exception>
     private static WriteValue BuildWriteValue(
         string nodeId,
-        object value)
+        object value,
+        string paramName)
         => new()
         {
-            NodeId = new NodeId(nodeId),
+            NodeId = NodeIdParser.Parse(nodeId, paramName),
             AttributeId = Attributes.Value,
-            Value = new DataValue
-            {
-                Value = value,
-            },
+            Value = new DataValue(VariantExtensions.ToVariant(value, paramName)),
         };
 }

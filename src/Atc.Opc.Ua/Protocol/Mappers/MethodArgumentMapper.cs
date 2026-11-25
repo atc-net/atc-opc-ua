@@ -19,12 +19,12 @@ internal static class MethodArgumentMapper
     /// <exception cref="ArgumentException">
     /// An argument's value isn't valid for its data type, or its data type can't be sent as a method argument.
     /// </exception>
-    public static VariantCollection ToVariants(
+    public static List<Variant> ToVariants(
         IReadOnlyList<MethodExecutionParameter> arguments)
     {
         ArgumentNullException.ThrowIfNull(arguments);
 
-        var variants = new VariantCollection(arguments.Count);
+        var variants = new List<Variant>(arguments.Count);
         for (var i = 0; i < arguments.Count; i++)
         {
             variants.Add(ToVariant(arguments, i));
@@ -39,24 +39,25 @@ internal static class MethodArgumentMapper
     /// <param name="outputArguments">The output arguments the server returned.</param>
     /// <returns>
     /// One result for each output argument, in the same order. An output without a value, or of a type that has no
-    /// <see cref="OpcUaDataEncodingType"/>, gets <see cref="OpcUaDataEncodingType.None"/>.
+    /// <see cref="OpcUaDataEncodingType"/>, gets <see cref="OpcUaDataEncodingType.None"/>. The value is formatted as
+    /// <see cref="VariantExtensions.ToInvariantString"/> formats a node's value, and is empty for an output without a value.
     /// </returns>
     public static List<MethodExecutionResult> ToResults(
-        VariantCollection outputArguments)
+        IReadOnlyList<Variant> outputArguments)
     {
         ArgumentNullException.ThrowIfNull(outputArguments);
 
         var results = new List<MethodExecutionResult>(outputArguments.Count);
         foreach (var outputArgument in outputArguments)
         {
-            // The enum's values are the OPC UA built-in type ids; an empty output has no type info.
-            var dataEncoding = (OpcUaDataEncodingType)(outputArgument.TypeInfo?.BuiltInType ?? BuiltInType.Null);
+            // The enum's values are the OPC UA built-in type ids; an empty output has the built-in type Null.
+            var dataEncoding = (OpcUaDataEncodingType)outputArgument.TypeInfo.BuiltInType;
             if (!Enum.IsDefined(dataEncoding))
             {
                 dataEncoding = OpcUaDataEncodingType.None;
             }
 
-            results.Add(new MethodExecutionResult(dataEncoding, outputArgument.Value?.ToString() ?? string.Empty));
+            results.Add(new MethodExecutionResult(dataEncoding, outputArgument.ToInvariantString() ?? string.Empty));
         }
 
         return results;
@@ -161,7 +162,7 @@ internal static class MethodArgumentMapper
             case OpcUaDataEncodingType.Guid:
                 if (Guid.TryParse(value, out var guid))
                 {
-                    return new Variant(guid);
+                    return new Variant(new Uuid(guid));
                 }
 
                 break;

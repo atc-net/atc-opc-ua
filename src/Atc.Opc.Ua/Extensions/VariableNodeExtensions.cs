@@ -7,7 +7,7 @@ public static class VariableNodeExtensions
     {
         ArgumentNullException.ThrowIfNull(variableNode);
 
-        var builtInType = TypeInfo.GetBuiltInType(variableNode.DataType);
+        var builtInType = StandardDataTypes.GetBuiltInType(variableNode.DataType);
         var isBuiltIn = builtInType != BuiltInType.Null;
 
         return new OpUaDataType
@@ -27,13 +27,13 @@ public static class VariableNodeExtensions
     {
         ArgumentNullException.ThrowIfNull(variableNode);
 
-        var builtInType = TypeInfo.GetBuiltInType(variableNode.DataType);
+        var builtInType = StandardDataTypes.GetBuiltInType(variableNode.DataType);
         var isBuiltIn = builtInType != BuiltInType.Null;
         var isArray = variableNode.ArrayDimensions.Count > 0;
 
         var clrType = OpcUaToDotNetDataTypeMapper.GetSystemTypeAsString(
             variableNode.DataType,
-            variableNode.ArrayDimensions);
+            variableNode.ArrayDimensions.ToArray() ?? []);
 
         if (!isArray)
         {
@@ -46,7 +46,7 @@ public static class VariableNodeExtensions
         }
 
         var elementClrType = isBuiltIn
-            ? TypeInfo.GetSystemType(builtInType, ValueRanks.Scalar)?.BeautifyTypeName() ?? builtInType.ToString().ToLowerInvariant()
+            ? StandardDataTypes.GetTypeName(builtInType, ValueRanks.Scalar)
             : "object";
 
         return new DotNetTypeDescriptor

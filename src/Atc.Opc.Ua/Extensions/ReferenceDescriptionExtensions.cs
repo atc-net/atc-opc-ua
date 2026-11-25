@@ -21,9 +21,9 @@ public static class ReferenceDescriptionExtensions
         {
             ParentNodeId = parentNodeId,
             NodeId = node.NodeId.ToString(),
-            NodeIdentifier = node.NodeId.Identifier.ToString()!,
+            NodeIdentifier = node.NodeId.GetIdentifierText(),
             NodeClass = Enum<NodeClassType>.Parse(node.NodeClass.ToString()),
-            DisplayName = node.DisplayName.Text,
+            DisplayName = node.DisplayName.Text ?? string.Empty,
         };
     }
 }

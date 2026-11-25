@@ -44,6 +44,12 @@ public partial class OpcUaClient
     private partial void LogSessionReplacedAfterReconnect(string sessionName);
 
     [LoggerMessage(
+        EventId = LoggingEventIdConstants.SessionNoSecureEndpoint,
+        Level = LogLevel.Warning,
+        Message = "The server at '{OpcUaUri}' offers no endpoint with security that this client supports; connecting without security")]
+    private partial void LogSessionNoSecureEndpoint(string opcUaUri);
+
+    [LoggerMessage(
         EventId = LoggingEventIdConstants.SessionAlreadyConnected,
         Level = LogLevel.Warning,
         Message = "Session is already connected")]
@@ -83,6 +89,15 @@ public partial class OpcUaClient
     private partial void LogServerCertificateRejected(
         string subject,
         string thumbprint,
+        string statusCode,
+        string hint);
+
+    [LoggerMessage(
+        EventId = LoggingEventIdConstants.ServerCertificateRefusedWithoutHandler,
+        Level = LogLevel.Warning,
+        Message = "The server certificate of '{OpcUaUri}' was refused: {StatusCode}. {Hint}")]
+    private partial void LogServerCertificateRefusedWithoutHandler(
+        string opcUaUri,
         string statusCode,
         string hint);
 

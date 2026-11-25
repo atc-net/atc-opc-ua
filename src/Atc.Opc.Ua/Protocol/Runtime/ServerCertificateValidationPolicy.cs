@@ -32,27 +32,29 @@ internal enum ServerCertificateDecision
 /// </summary>
 /// <remarks>
 /// <para>
-/// The OPC UA stack checks a server certificate first. Only when it finds a problem does it call the client's
-/// <c>CertificateValidation</c> handler: once for each problem, in turn, stopping at the first one the handler doesn't
-/// accept. A certificate without problems never reaches the handler.
+/// The OPC UA stack checks a server certificate first. Only when it finds a problem that can be accepted does it call
+/// the client's <c>CertificateManager.AcceptError</c> handler: once for each problem, in turn, stopping at the first
+/// one the handler doesn't accept. A certificate without problems never reaches the handler.
+/// </para>
+/// <para>
+/// The problems that can be accepted: the certificate isn't trusted, has expired or isn't valid yet (or its CA's), its
+/// key or signature is too weak, it doesn't contain the host name, its CA's revocation list is missing, or its key usage
+/// doesn't allow this use (or its CA's).
+/// </para>
+/// <para>
+/// The OPC UA stack refuses every other problem without calling the handler, in every
+/// <see cref="ServerCertificateValidation"/> mode: e.g. a certificate signed by a CA the client doesn't know, a revoked
+/// certificate, an application URI that doesn't match, or a malformed certificate. The connect then fails, with the
+/// problem among the results of its error, where <see cref="FindErrorRefusedWithoutHandler"/> finds it.
 /// </para>
 /// <para>
 /// While the client has that handler registered, the OPC UA stack ignores its own
 /// <c>AutoAcceptUntrustedCertificates</c> setting and leaves every problem to the handler. So <see cref="Decide"/>
 /// applies <see cref="OpcUaSecurityOptions.AutoAcceptUntrustedCertificates"/> itself.
 /// </para>
-/// <para>
-/// The OPC UA stack refuses some problems without calling the handler, e.g. a malformed certificate. No setting
-/// accepts those.
-/// </para>
 /// </remarks>
 internal static class ServerCertificateValidationPolicy
 {
-    /// <summary>
-    /// The upper 16 bits of a status code identify it; the lower 16 are info bits.
-    /// </summary>
-    private const uint StatusCodeIdentityMask = 0xFFFF0000;
-
     /// <summary>
     /// Decides on one error in a server certificate.
     /// </summary>
@@ -98,34 +100,107 @@ internal static class ServerCertificateValidationPolicy
         var rejected = $"{options.PkiRootPath}/{options.RejectedCertificates.StorePath}";
         var issuers = $"{options.PkiRootPath}/{options.TrustedIssuerCertificates.StorePath}";
 
-        return (error.Code & StatusCodeIdentityMask) switch
+        if (Is(error, StatusCodes.BadCertificateUntrusted))
         {
-            StatusCodes.BadCertificateUntrusted when refused =>
-                $"To trust it, copy it from '{rejected}/certs' to '{trusted}/certs', or set AutoAcceptUntrustedCertificates.",
-            StatusCodes.BadCertificateUntrusted =>
-                $"To trust it, put the server's certificate into '{trusted}/certs', or set AutoAcceptUntrustedCertificates. With Validate, a refused certificate is saved in '{rejected}/certs' to copy from.",
-            StatusCodes.BadCertificateChainIncomplete =>
-                $"It's signed by a CA the client doesn't know: put the CA certificate into '{issuers}/certs'.",
-            StatusCodes.BadCertificateRevocationUnknown or StatusCodes.BadCertificateIssuerRevocationUnknown =>
-                $"The CA's revocation list is missing: put the CA's CRL into '{issuers}/crl'.",
-            StatusCodes.BadCertificateTimeInvalid or StatusCodes.BadCertificateIssuerTimeInvalid =>
-                "It has expired or isn't valid yet: check the clock, or renew the server's certificate.",
-            StatusCodes.BadCertificatePolicyCheckFailed =>
-                "Its key is too small or its signature too weak: renew the server's certificate, or lower MinimumCertificateKeySize or turn off RejectSha1SignedCertificates.",
-            StatusCodes.BadCertificateRevoked or StatusCodes.BadCertificateIssuerRevoked =>
-                "It's revoked: the server needs a new certificate.",
-            StatusCodes.BadCertificateHostNameInvalid =>
-                "It doesn't contain the host name the client connected to: connect by a name on the certificate, or renew it.",
-            StatusCodes.BadCertificateUriInvalid =>
-                "Its application URI doesn't match the server's: renew the server's certificate.",
-            StatusCodes.BadCertificateUseNotAllowed or StatusCodes.BadCertificateIssuerUseNotAllowed =>
-                "Its key usage doesn't allow this use: renew the server's certificate.",
-            _ => "See the status code in the OPC UA specification (Part 4, Certificate validation).",
-        };
+            return refused
+                ? $"To trust it, copy it from '{rejected}/certs' to '{trusted}/certs', or, if it's signed by a CA, put the CA certificate into '{trusted}/certs' and its CRL into '{trusted}/crl', or set AutoAcceptUntrustedCertificates."
+                : $"To trust it, put the server's certificate into '{trusted}/certs', or, if it's signed by a CA, put the CA certificate into '{trusted}/certs' and its CRL into '{trusted}/crl', or set AutoAcceptUntrustedCertificates. With Validate, a refused certificate is saved in '{rejected}/certs' to copy from.";
+        }
+
+        if (Is(error, StatusCodes.BadCertificateChainIncomplete))
+        {
+            return $"It's signed by a CA the client doesn't know, and no ServerCertificateValidation mode accepts that: put the CA certificate into '{trusted}/certs' and its CRL into '{trusted}/crl', or have the server send its CA with its certificate.";
+        }
+
+        if (Is(error, StatusCodes.BadCertificateRevocationUnknown) || Is(error, StatusCodes.BadCertificateIssuerRevocationUnknown))
+        {
+            return $"The CA's revocation list is missing: put the CA's CRL next to the CA certificate, into '{trusted}/crl' if the CA is in '{trusted}/certs', or '{issuers}/crl' if it's in '{issuers}/certs'; or turn off RejectUnknownRevocationStatus.";
+        }
+
+        if (Is(error, StatusCodes.BadCertificateTimeInvalid) || Is(error, StatusCodes.BadCertificateIssuerTimeInvalid))
+        {
+            return "It has expired or isn't valid yet: check the clock, or renew the server's certificate.";
+        }
+
+        if (Is(error, StatusCodes.BadCertificatePolicyCheckFailed))
+        {
+            return "Its key is too small or its signature too weak: renew the server's certificate, or lower MinimumCertificateKeySize or turn off RejectSha1SignedCertificates.";
+        }
+
+        if (Is(error, StatusCodes.BadCertificateRevoked) || Is(error, StatusCodes.BadCertificateIssuerRevoked))
+        {
+            return "It's revoked: the server needs a new certificate.";
+        }
+
+        if (Is(error, StatusCodes.BadCertificateHostNameInvalid))
+        {
+            return "It doesn't contain the host name the client connected to: connect by a name on the certificate, or renew it.";
+        }
+
+        if (Is(error, StatusCodes.BadCertificateUriInvalid))
+        {
+            return "Its application URI doesn't match the server's: renew the server's certificate.";
+        }
+
+        if (Is(error, StatusCodes.BadCertificateUseNotAllowed) || Is(error, StatusCodes.BadCertificateIssuerUseNotAllowed))
+        {
+            return "Its key usage doesn't allow this use: renew the server's certificate.";
+        }
+
+        return "See the status code in the OPC UA specification (Part 4, Certificate validation).";
     }
 
+    /// <summary>
+    /// Finds, in the error of a failed connect, a server certificate problem that the OPC UA stack refuses without
+    /// calling the handler, and that <see cref="GetHint"/> has a hint for: a certificate signed by a CA the client
+    /// doesn't know, a revoked certificate (or CA), or an application URI that doesn't match.
+    /// </summary>
+    /// <param name="exception">The error of the failed connect.</param>
+    /// <returns>The problem, or <see langword="null"/> when the error isn't one of them.</returns>
+    public static StatusCode? FindErrorRefusedWithoutHandler(
+        Exception exception)
+    {
+        ArgumentNullException.ThrowIfNull(exception);
+
+        for (var current = exception; current is not null; current = current.InnerException)
+        {
+            if (current is not ServiceResultException serviceResultException)
+            {
+                continue;
+            }
+
+            for (var result = serviceResultException.Result; result is not null; result = result.InnerResult)
+            {
+                if (IsRefusedWithoutHandler(result.StatusCode))
+                {
+                    return result.StatusCode;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Whether the OPC UA stack refuses a server certificate problem without calling the handler, and
+    /// <see cref="GetHint"/> has a hint for it.
+    /// </summary>
+    /// <param name="error">The status code.</param>
+    /// <returns>Whether it's one of them.</returns>
+    private static bool IsRefusedWithoutHandler(StatusCode error)
+        => Is(error, StatusCodes.BadCertificateChainIncomplete) ||
+           Is(error, StatusCodes.BadCertificateRevoked) ||
+           Is(error, StatusCodes.BadCertificateIssuerRevoked) ||
+           Is(error, StatusCodes.BadCertificateUriInvalid);
+
+    /// <summary>
+    /// Whether a status code is the given one, ignoring its info bits.
+    /// </summary>
+    /// <param name="error">The status code.</param>
+    /// <param name="statusCode">The one to compare with.</param>
+    /// <returns>Whether they're the same.</returns>
     private static bool Is(
         StatusCode error,
-        uint statusCode)
-        => (error.Code & StatusCodeIdentityMask) == statusCode;
+        StatusCode statusCode)
+        => error.CodeBits == statusCode.CodeBits;
 }

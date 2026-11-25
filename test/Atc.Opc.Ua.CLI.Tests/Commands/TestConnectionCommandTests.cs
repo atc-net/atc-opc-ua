@@ -27,6 +27,24 @@ public sealed class TestConnectionCommandTests
     }
 
     [Fact]
+    public void DescribeEndpoint_NoSecurityAndAUserNameSent_ShouldSayTheCertificateIsChecked()
+    {
+        // Arrange
+        var endpoint = new EndpointDescription
+        {
+            EndpointUrl = EndpointUrl,
+            SecurityMode = MessageSecurityMode.None,
+            SecurityPolicyUri = SecurityPolicies.None,
+        };
+
+        // Act
+        var lines = TestConnectionCommand.DescribeEndpoint(endpoint, userNameSent: true);
+
+        // Assert
+        lines.Should().Contain("No security on this endpoint, but the server's certificate is checked, because the password is encrypted with it.");
+    }
+
+    [Fact]
     public void DescribeEndpoint_SelfSignedCertificate_ShouldDescribeIt()
     {
         // Arrange
@@ -37,7 +55,7 @@ public sealed class TestConnectionCommandTests
             EndpointUrl = EndpointUrl,
             SecurityMode = MessageSecurityMode.SignAndEncrypt,
             SecurityPolicyUri = Basic256Sha256,
-            ServerCertificate = certificate.RawData,
+            ServerCertificate = ByteString.From(certificate.RawData),
         };
 
         // Act
@@ -68,7 +86,7 @@ public sealed class TestConnectionCommandTests
             EndpointUrl = EndpointUrl,
             SecurityMode = MessageSecurityMode.Sign,
             SecurityPolicyUri = Basic256Sha256,
-            ServerCertificate = [.. leaf.RawData, .. ca.RawData],
+            ServerCertificate = ByteString.From([.. leaf.RawData, .. ca.RawData]),
         };
 
         // Act
@@ -78,6 +96,110 @@ public sealed class TestConnectionCommandTests
         lines.Should().Contain("  Subject:     CN=PLC");
         lines.Should().Contain("  Issuer:      CN=Project CA");
         lines.Should().Contain("  CA certificates sent with it: 1");
+    }
+
+    [Fact]
+    public void DescribeEndpoint_UserTokens_ShouldListThemBeforeTheCertificate()
+    {
+        // Arrange
+        var endpoint = new EndpointDescription
+        {
+            EndpointUrl = EndpointUrl,
+            SecurityMode = MessageSecurityMode.None,
+            SecurityPolicyUri = SecurityPolicies.None,
+            UserIdentityTokens =
+            [
+                new UserTokenPolicy { TokenType = UserTokenType.Anonymous },
+                new UserTokenPolicy { TokenType = UserTokenType.UserName, SecurityPolicyUri = Basic256Sha256 },
+            ],
+        };
+
+        // Act
+        var lines = TestConnectionCommand.DescribeEndpoint(endpoint);
+
+        // Assert
+        lines.Should().Equal(
+            $"Endpoint: {EndpointUrl} (None, None)",
+            "No security on this endpoint: the server's certificate isn't checked.",
+            "User tokens:",
+            "  Anonymous",
+            "  UserName: the password is encrypted (Basic256Sha256)",
+            "The server presents no certificate.");
+    }
+
+    [Fact]
+    public void DescribeUserTokenPolicy_UserNameWithoutItsOwnSecurityPolicy_ShouldUseTheEndpointsPolicy()
+    {
+        // Arrange
+        var endpoint = new EndpointDescription
+        {
+            SecurityMode = MessageSecurityMode.Sign,
+            SecurityPolicyUri = Basic256Sha256,
+        };
+        var userTokenPolicy = new UserTokenPolicy { TokenType = UserTokenType.UserName };
+
+        // Act
+        var line = TestConnectionCommand.DescribeUserTokenPolicy(userTokenPolicy, endpoint);
+
+        // Assert
+        line.Should().Be("UserName: the password is encrypted (Basic256Sha256)");
+    }
+
+    [Fact]
+    public void DescribeUserTokenPolicy_UserNameWithPolicyNoneOnSignAndEncrypt_ShouldSayTheChannelProtectsThePassword()
+    {
+        // Arrange
+        var endpoint = new EndpointDescription
+        {
+            SecurityMode = MessageSecurityMode.SignAndEncrypt,
+            SecurityPolicyUri = Basic256Sha256,
+        };
+        var userTokenPolicy = new UserTokenPolicy { TokenType = UserTokenType.UserName, SecurityPolicyUri = SecurityPolicies.None };
+
+        // Act
+        var line = TestConnectionCommand.DescribeUserTokenPolicy(userTokenPolicy, endpoint);
+
+        // Assert
+        line.Should().Be("UserName: the password is protected by the encrypted channel");
+    }
+
+    [Theory]
+    [InlineData(MessageSecurityMode.None)]
+    [InlineData(MessageSecurityMode.Sign)]
+    public void DescribeUserTokenPolicy_UserNameWithPolicyNoneWithoutEncryption_ShouldNameTheOption(
+        MessageSecurityMode securityMode)
+    {
+        // Arrange
+        var endpoint = new EndpointDescription
+        {
+            SecurityMode = securityMode,
+            SecurityPolicyUri = securityMode == MessageSecurityMode.None ? SecurityPolicies.None : Basic256Sha256,
+        };
+        var userTokenPolicy = new UserTokenPolicy { TokenType = UserTokenType.UserName, SecurityPolicyUri = SecurityPolicies.None };
+
+        // Act
+        var line = TestConnectionCommand.DescribeUserTokenPolicy(userTokenPolicy, endpoint);
+
+        // Assert
+        line.Should().Be("UserName: the password would be sent as it is, which the client refuses unless AllowUnencryptedUserNameTokens is on");
+    }
+
+    [Fact]
+    public void DescribeUserTokenPolicy_Certificate_ShouldNameItsSecurityPolicy()
+    {
+        // Arrange
+        var endpoint = new EndpointDescription
+        {
+            SecurityMode = MessageSecurityMode.SignAndEncrypt,
+            SecurityPolicyUri = Basic256Sha256,
+        };
+        var userTokenPolicy = new UserTokenPolicy { TokenType = UserTokenType.Certificate };
+
+        // Act
+        var line = TestConnectionCommand.DescribeUserTokenPolicy(userTokenPolicy, endpoint);
+
+        // Assert
+        line.Should().Be("Certificate (Basic256Sha256)");
     }
 
     private static X509Certificate2 CreateCertificate(

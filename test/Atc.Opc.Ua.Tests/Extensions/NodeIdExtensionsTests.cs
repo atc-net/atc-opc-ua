@@ -59,7 +59,7 @@ public sealed class NodeIdExtensionsTests
     public void GetIdentifierAsString_OpaqueId_ShouldReturnHexString()
     {
         // Arrange
-        var bytes = new byte[] { 0xA1, 0xB2, 0xC3 };
+        var bytes = ByteString.From([0xA1, 0xB2, 0xC3]);
         var nodeId = new NodeId(bytes);
 
         // Act
@@ -73,7 +73,7 @@ public sealed class NodeIdExtensionsTests
     public void GetIdentifierAsString_OpaqueIdEmpty_ShouldReturnEmptyHexString()
     {
         // Arrange
-        var bytes = Array.Empty<byte>();
+        var bytes = ByteString.From([]);
         var nodeId = new NodeId(bytes);
 
         // Act
@@ -84,15 +84,6 @@ public sealed class NodeIdExtensionsTests
     }
 
     [Fact]
-    public void GetIdentifierAsString_NullNodeId_ShouldThrowArgumentNullException()
-    {
-        // Arrange
-        NodeId nodeId = null;
-
-        // Act
-        var act = () => nodeId.GetIdentifierAsString();
-
-        // Assert
-        act.Should().Throw<ArgumentNullException>();
-    }
+    public void GetIdentifierAsString_NullNodeId_ShouldReturnZero()
+        => NodeId.Null.GetIdentifierAsString().Should().Be("0");
 }

@@ -46,7 +46,7 @@ public sealed class OpcUaSecurityOptions
     /// <summary>
     /// Automatically add application certificate to the trusted store.
     /// </summary>
-    public bool AddAppCertToTrustedStore { get; set; } = true;
+    public bool AddAppCertToTrustedStore { get; set; }
 
     /// <summary>
     /// How the certificate a server presents is checked. Defaults to <see cref="Options.ServerCertificateValidation.Validate"/>.
@@ -64,7 +64,7 @@ public sealed class OpcUaSecurityOptions
     /// <summary>
     /// Minimum key size.
     /// </summary>
-    public ushort MinimumCertificateKeySize { get; set; } = 1024;
+    public ushort MinimumCertificateKeySize { get; set; } = 2048;
 
     /// <summary>
     /// Whether to reject unsecure signatures.
@@ -76,4 +76,10 @@ public sealed class OpcUaSecurityOptions
     /// e.g.when the CRL is not available or the OCSP provider is offline.
     /// </summary>
     public bool RejectUnknownRevocationStatus { get; set; } = true;
+
+    /// <summary>
+    /// Whether a user name and password may be sent when they wouldn't be encrypted: the server's user token policy
+    /// doesn't encrypt them, and neither does the connection. Off by default, so they're never sent in plain text.
+    /// </summary>
+    public bool AllowUnencryptedUserNameTokens { get; set; }
 }

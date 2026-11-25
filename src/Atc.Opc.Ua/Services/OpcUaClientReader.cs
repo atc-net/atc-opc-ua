@@ -207,7 +207,7 @@ public partial class OpcUaClient
     {
         try
         {
-            var node = await CurrentSession.ReadNodeAsync(nodeId, cancellationToken);
+            var node = await CurrentSession.ReadNodeAsync(NodeIdParser.Parse(nodeId, nameof(nodeId)), cancellationToken);
             if (node is null)
             {
                 LogSessionNodeNotFound(nodeId);
@@ -300,7 +300,7 @@ public partial class OpcUaClient
         ArgumentNullException.ThrowIfNull(currentNode);
         ArgumentNullException.ThrowIfNull(visited);
 
-        if (excludeNodes.Find(x => x.ToString().Equals(currentNode.NodeId, StringComparison.Ordinal)) != null)
+        if (!excludeNodes.Find(x => x.ToString().Equals(currentNode.NodeId, StringComparison.Ordinal)).IsNull)
         {
             return;
         }
@@ -371,7 +371,7 @@ public partial class OpcUaClient
     {
         ArgumentNullException.ThrowIfNull(currentNode);
 
-        if (excludeNodes.Find(x => x.ToString().Equals(currentNode.NodeId, StringComparison.Ordinal)) != null)
+        if (!excludeNodes.Find(x => x.ToString().Equals(currentNode.NodeId, StringComparison.Ordinal)).IsNull)
         {
             return;
         }
@@ -700,7 +700,7 @@ public partial class OpcUaClient
 
         try
         {
-            childNode = await CurrentSession.ReadNodeAsync(childNodeId, cancellationToken);
+            childNode = await CurrentSession.ReadNodeAsync(NodeIdParser.Parse(childNodeId, nameof(childNodeId)), cancellationToken);
         }
         catch (ServiceResultException ex) when (ex.IsNodeFailure())
         {
@@ -752,14 +752,15 @@ public partial class OpcUaClient
     /// <param name="nodeId">The identifier of the node.</param>
     /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>A collection of reference descriptions for child nodes.</returns>
-    private async Task<ReferenceDescriptionCollection> BrowseForwardByNodeIdAsync(
+    private async Task<List<ReferenceDescription>> BrowseForwardByNodeIdAsync(
         string nodeId,
         CancellationToken cancellationToken = default)
     {
         try
         {
             var browser = BrowserFactory.GetForwardBrowser(CurrentSession);
-            return await browser.BrowseAsync(new NodeId(nodeId), cancellationToken);
+            var references = await browser.BrowseAsync(NodeIdParser.Parse(nodeId, nameof(nodeId)), cancellationToken);
+            return references.ToList();
         }
         catch (ServiceResultException ex) when (ex.IsNodeFailure())
         {
@@ -774,15 +775,15 @@ public partial class OpcUaClient
     /// <param name="nodeId">The identifier of the node.</param>
     /// <param name="cancellationToken">Cancellation token for the operation</param>
     /// <returns>A collection of reference descriptions for parent nodes.</returns>
-    private async Task<ReferenceDescriptionCollection> BrowseBackwardsByNodeIdAsync(
+    private async Task<List<ReferenceDescription>> BrowseBackwardsByNodeIdAsync(
         string nodeId,
         CancellationToken cancellationToken = default)
     {
         try
         {
             var browser = BrowserFactory.GetBackwardsBrowser(CurrentSession);
-            var referenceDescriptionCollection = await browser.BrowseAsync(new NodeId(nodeId), cancellationToken);
-            return referenceDescriptionCollection;
+            var references = await browser.BrowseAsync(NodeIdParser.Parse(nodeId, nameof(nodeId)), cancellationToken);
+            return references.ToList();
         }
         catch (ServiceResultException ex) when (ex.IsNodeFailure())
         {
@@ -803,20 +804,19 @@ public partial class OpcUaClient
         bool loadComplexTypeSystem = false,
         CancellationToken cancellationToken = default)
     {
-        DataValue? sampleValue = null;
-
-        var nodesToRead = new ReadValueIdCollection
-        {
+        ReadValueId[] nodesToRead =
+        [
             new ReadValueId
             {
                 NodeId = node.NodeId,
                 AttributeId = Attributes.Value,
             },
-        };
+        ];
 
         if (loadComplexTypeSystem)
         {
-            var complexTypeSystem = new ComplexTypeSystem(CurrentSession);
+            // The loaded types stay registered with the session after the type system is disposed.
+            using var complexTypeSystem = ComplexTypeSystem.Create(CurrentSession, telemetry);
             var nodeDataType = node.DataType;
             LogLoadingComplexTypeSystem(node.NodeId.ToString(), nodeDataType.ToString());
             await complexTypeSystem.LoadTypeAsync(nodeDataType, subTypes: false, throwOnError: false, ct: cancellationToken);
@@ -829,49 +829,38 @@ public partial class OpcUaClient
             nodesToRead,
             cancellationToken);
 
-        if (readResponse is null)
+        if (readResponse is null || readResponse.Results.Count != 1)
         {
             return null;
         }
 
-        var resultValues = readResponse.Results;
-
-        if (resultValues is not null &&
-            resultValues.Any() &&
-            resultValues.Count == 1)
+        var resultValue = readResponse.Results[0];
+        if (resultValue.WrappedValue.IsNull)
         {
-            var resultValue = resultValues[0];
-            if (resultValue.Value is null)
+            var statusCode = resultValue.StatusCode;
+
+            if (!loadComplexTypeSystem &&
+                statusCode == StatusCodes.BadDataTypeIdUnknown)
             {
-                var statusCode = resultValue.StatusCode;
-
-                if (!loadComplexTypeSystem &&
-                    statusCode.Code == StatusCodes.BadDataTypeIdUnknown)
-                {
-                    return await TryGetDataValueForVariableAsync(node, loadComplexTypeSystem: true, cancellationToken);
-                }
-
-                if (StatusCode.IsGood(statusCode))
-                {
-                    // The value was read, and it's null, e.g. a variable of the Null data type: nothing went wrong.
-                    LogSessionReadNodeVariableValueNull(node.NodeId.ToString());
-                }
-                else
-                {
-                    LogSessionReadNodeVariableValueEmpty(node.NodeId.ToString(), statusCode.ToString());
-                }
-
-                return sampleValue;
+                return await TryGetDataValueForVariableAsync(node, loadComplexTypeSystem: true, cancellationToken);
             }
 
-            if (resultValue.Value is ExtensionObject or ExtensionObject[])
+            if (StatusCode.IsGood(statusCode))
             {
-                return sampleValue;
+                // The value was read, and it's null, e.g. a variable of the Null data type: nothing went wrong.
+                LogSessionReadNodeVariableValueNull(node.NodeId.ToString());
+            }
+            else
+            {
+                LogSessionReadNodeVariableValueEmpty(node.NodeId.ToString(), statusCode.ToString());
             }
 
-            sampleValue = resultValue;
+            return null;
         }
 
-        return sampleValue;
+        // A structure's value isn't kept as a sample: only its fields are, as variables of their own.
+        return resultValue.WrappedValue.TypeInfo.BuiltInType == BuiltInType.ExtensionObject
+            ? null
+            : resultValue;
     }
 }

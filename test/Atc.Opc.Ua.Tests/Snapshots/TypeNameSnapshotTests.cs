@@ -40,7 +40,7 @@ public sealed class TypeNameSnapshotTests
                 var dataType = SnapshotStack.Parse(id);
                 var variableNode = SnapshotStack.CreateVariableNode(dataType, isArray);
                 var shape = isArray ? "array " : "scalar";
-                var mapper = SnapshotFormat.Try(() => OpcUaToDotNetDataTypeMapper.GetSystemTypeAsString(dataType, variableNode.ArrayDimensions));
+                var mapper = SnapshotFormat.Try(() => OpcUaToDotNetDataTypeMapper.GetSystemTypeAsString(dataType, variableNode.ArrayDimensions.ToArray() ?? []));
                 var basic = SnapshotFormat.Try(() => $"{SnapshotFormat.Describe(variableNode.CreateBasicOpcUaDataType())} / {SnapshotFormat.Describe(variableNode.CreateBasicDotNetTypeDescriptor())}");
                 var resolved = await SnapshotFormat.TryAsync(async () =>
                 {

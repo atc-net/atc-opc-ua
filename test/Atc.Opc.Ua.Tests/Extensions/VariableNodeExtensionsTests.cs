@@ -289,7 +289,7 @@ public sealed class VariableNodeExtensionsTests
 
         if (isArray)
         {
-            variableNode.ArrayDimensions = new UInt32Collection([0]);
+            variableNode.ArrayDimensions = [0];
         }
 
         return variableNode;

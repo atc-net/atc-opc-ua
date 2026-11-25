@@ -26,6 +26,8 @@ public partial class OpcUaClient : IOpcUaClient
     /// </summary>
     private static readonly TimeSpan StaleSessionCloseTimeout = TimeSpan.FromSeconds(5);
 
+    private readonly StackTelemetryContext telemetry = new(Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance);
+    private readonly ApplicationInstance application;
     private readonly ApplicationConfiguration configuration;
     private readonly OpcUaSecurityOptions securityOptions;
     private readonly OpcUaClientOptions clientOptions;
@@ -75,9 +77,8 @@ public partial class OpcUaClient : IOpcUaClient
                 nameof(opcUaSecurityOptions));
         }
 
-        var application = BuildAndValidateOpcUaApplicationAsync().GetAwaiter().GetResult();
-        configuration = application.ApplicationConfiguration;
-        configuration.CertificateValidator.CertificateValidation += CertificateValidation;
+        (application, configuration) = BuildAndValidateOpcUaApplicationAsync().GetAwaiter().GetResult();
+        configuration.CertificateManager.AcceptError = AcceptServerCertificateError;
     }
 
     public OpcUaClient(
@@ -158,7 +159,7 @@ public partial class OpcUaClient : IOpcUaClient
             return;
         }
 
-        var sessionName = session.SessionName ?? "unknown";
+        var sessionName = session.SessionName;
         LogSessionDisconnecting(sessionName);
 
         if (keepAliveOptions.Enable)
@@ -174,7 +175,7 @@ public partial class OpcUaClient : IOpcUaClient
         }
         finally
         {
-            session.Dispose();
+            await session.DisposeAsync();
             Session = null;
             dataTypeInfoResolver.ClearCache();
         }
@@ -239,11 +240,28 @@ public partial class OpcUaClient : IOpcUaClient
         var useSecurity = !string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(password);
         var endpoint = await GetServerEndpointAsync(serverUri, useSecurity, cancellationToken);
         var userIdentity = BuildUserIdentity(userName, password);
-        var session = await CreateSessionAsync(endpoint, userIdentity, cancellationToken);
+
+        Session session;
+
+        try
+        {
+            session = await CreateSessionAsync(endpoint, userIdentity, cancellationToken);
+        }
+        catch (ServiceResultException ex) when (ServerCertificateValidationPolicy.FindErrorRefusedWithoutHandler(ex) is { } error)
+        {
+            // The OPC UA stack refused the server certificate without calling AcceptServerCertificateError, so no
+            // hint was logged yet.
+            LogServerCertificateRefusedWithoutHandler(
+                serverUri.AbsoluteUri,
+                error.SymbolicId ?? error.ToString(),
+                ServerCertificateValidationPolicy.GetHint(error, refused: true, securityOptions));
+
+            throw;
+        }
 
         if (!session.Connected)
         {
-            session.Dispose();
+            await session.DisposeAsync();
             throw new ServiceResultException(StatusCodes.BadNotConnected, $"The session to '{serverUri.AbsoluteUri}' isn't connected.");
         }
 
@@ -260,45 +278,63 @@ public partial class OpcUaClient : IOpcUaClient
             Session.KeepAliveInterval = 0;
         }
 
-        LogSessionConnected(Session.SessionName ?? "unknown");
+        LogSessionConnected(Session.SessionName);
     }
 
     /// <summary>
-    /// Retrieves the endpoint configuration from the specified server.
+    /// Retrieves the endpoint to connect to on the specified server. With security, that's the most secure endpoint;
+    /// if the server offers none that this client supports, an endpoint without security is used, and a warning is
+    /// logged.
     /// </summary>
     /// <param name="serverUri">The URI of the server.</param>
     /// <param name="useSecurity">Indicates whether to use security while connecting.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
     /// <returns>The configured endpoint on the server.</returns>
+    /// <exception cref="ServiceResultException">The server offers no endpoint for the URI's scheme.</exception>
     private async Task<ConfiguredEndpoint> GetServerEndpointAsync(
         Uri serverUri,
         bool useSecurity,
         CancellationToken cancellationToken = default)
     {
-        var endpointDescription = await CoreClientUtils.SelectEndpointAsync(configuration, serverUri.AbsoluteUri, useSecurity, cancellationToken);
+        var endpointDescription = await CoreClientUtils.SelectEndpointAsync(configuration, serverUri.AbsoluteUri, useSecurity, telemetry, cancellationToken);
+
+        // The OPC UA stack never picks an endpoint without security when security was asked for. Servers that only
+        // offer None exist, so ask again without security, and say so.
+        if (endpointDescription is null && useSecurity)
+        {
+            LogSessionNoSecureEndpoint(serverUri.AbsoluteUri);
+            endpointDescription = await CoreClientUtils.SelectEndpointAsync(configuration, serverUri.AbsoluteUri, useSecurity: false, telemetry, cancellationToken);
+        }
+
+        if (endpointDescription is null)
+        {
+            throw new ServiceResultException(StatusCodes.BadNotConnected, $"The server at '{serverUri.AbsoluteUri}' offers no endpoint to connect to.");
+        }
+
         var endpointConfiguration = EndpointConfiguration.Create(configuration);
-        var endpoint = new ConfiguredEndpoint(collection: null, endpointDescription, endpointConfiguration);
-        return endpoint;
+        return new ConfiguredEndpoint(collection: null, endpointDescription, endpointConfiguration);
     }
 
     /// <summary>
     /// Decides on an error the OPC UA stack found in a server certificate, as
-    /// <see cref="OpcUaSecurityOptions.ServerCertificateValidation"/> says. The stack raises it once for each error.
+    /// <see cref="OpcUaSecurityOptions.ServerCertificateValidation"/> says. The stack calls it once for each error.
     /// </summary>
-    /// <param name="sender">The sender of the event.</param>
-    /// <param name="e">The event arguments.</param>
-    private void CertificateValidation(
-        CertificateValidator sender,
-        CertificateValidationEventArgs e)
+    /// <param name="certificate">The server's certificate.</param>
+    /// <param name="serviceResult">The error the stack found.</param>
+    /// <returns>Whether the error is accepted.</returns>
+    private bool AcceptServerCertificateError(
+        Certificate certificate,
+        ServiceResult serviceResult)
     {
-        var error = e.Error.StatusCode;
+        var error = serviceResult.StatusCode;
         var decision = ServerCertificateValidationPolicy.Decide(
             securityOptions.ServerCertificateValidation,
             securityOptions.AutoAcceptUntrustedCertificates,
             error);
 
-        var subject = e.Certificate?.Subject ?? "unknown";
-        var thumbprint = e.Certificate?.Thumbprint ?? "unknown";
-        var statusCode = StatusCodes.GetBrowseName(error.Code);
+        var subject = certificate.Subject;
+        var thumbprint = certificate.Thumbprint;
+        var statusCode = error.SymbolicId ?? error.ToString();
 
         switch (decision)
         {
@@ -324,7 +360,7 @@ public partial class OpcUaClient : IOpcUaClient
                 break;
         }
 
-        e.Accept = decision != ServerCertificateDecision.Reject;
+        return decision != ServerCertificateDecision.Reject;
     }
 
     /// <summary>
@@ -338,7 +374,7 @@ public partial class OpcUaClient : IOpcUaClient
         IUserIdentity userIdentity,
         CancellationToken cancellationToken = default)
     {
-        var session = await DefaultSessionFactory.Instance.CreateAsync(
+        var session = await new DefaultSessionFactory(telemetry).CreateAsync(
             configuration,
             endpoint,
             updateBeforeConnect: false,
@@ -346,7 +382,7 @@ public partial class OpcUaClient : IOpcUaClient
             configuration.ApplicationName + Guid.NewGuid(),
             clientOptions.SessionTimeoutMilliseconds,
             userIdentity,
-            preferredLocales: null,
+            preferredLocales: default,
             cancellationToken);
 
         return (Session)session;
@@ -361,49 +397,74 @@ public partial class OpcUaClient : IOpcUaClient
     private static UserIdentity BuildUserIdentity(
         string userName,
         string password)
-    {
-        UserIdentity userIdentity;
-
-        if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
-        {
-            userIdentity = new UserIdentity(new AnonymousIdentityToken());
-        }
-        else
-        {
-            var userNameIdentityToken = new UserNameIdentityToken
-            {
-                UserName = userName,
-                DecryptedPassword = password,
-            };
-
-            userIdentity = new UserIdentity(userNameIdentityToken);
-        }
-
-        return userIdentity;
-    }
+        => string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password)
+            ? new UserIdentity(new AnonymousIdentityToken())
+            : new UserIdentity(userName, Encoding.UTF8.GetBytes(password));
 
     /// <summary>
     /// Asynchronously builds and validates an OPC UA application instance.
     /// </summary>
-    /// <returns>A task representing the asynchronous operation, with the created application instance as result.</returns>
-    private async Task<ApplicationInstance> BuildAndValidateOpcUaApplicationAsync(
+    /// <returns>The application instance, and the configuration it was built from.</returns>
+    private async Task<(ApplicationInstance Instance, ApplicationConfiguration Configuration)> BuildAndValidateOpcUaApplicationAsync(
         CancellationToken cancellationToken = default)
     {
-        var applicationConfiguration = ApplicationConfigurationFactory.Create(clientOptions.ApplicationName, securityOptions);
-        applicationConfiguration = ApplicationInstance.FixupAppConfig(applicationConfiguration);
+        var applicationConfiguration = ApplicationConfigurationFactory.Create(clientOptions.ApplicationName, securityOptions, telemetry);
+        applicationConfiguration.ApplicationUri = await ResolveApplicationUriAsync(applicationConfiguration, cancellationToken);
 
         await applicationConfiguration.ValidateAsync(applicationConfiguration.ApplicationType, cancellationToken);
 
-        var application = new ApplicationInstance(applicationConfiguration);
+        var instance = new ApplicationInstance(applicationConfiguration, telemetry);
 
-        var hasAppCertificate = await application.CheckApplicationInstanceCertificatesAsync(
+        var hasAppCertificate = await instance.CheckApplicationInstanceCertificatesAsync(
             silent: true,
             lifeTimeInMonths: CertificateFactory.DefaultLifeTime,
             cancellationToken);
 
-        return hasAppCertificate
-            ? application
-            : throw new CertificateValidationException("OPC UA application certificate cannot be validated.");
+        if (hasAppCertificate)
+        {
+            return (instance, applicationConfiguration);
+        }
+
+        await instance.DisposeAsync();
+        throw new CertificateValidationException("OPC UA application certificate cannot be validated.");
+    }
+
+    /// <summary>
+    /// The client's application URI: <see cref="OpcUaClientOptions.ApplicationUri"/>, else the URI in the client's
+    /// existing certificate, else the URI a new certificate gets. The URI must match the certificate's, and the OPC UA
+    /// stack would otherwise make one up that doesn't, e.g. by replacing <c>localhost</c> with the host name.
+    /// </summary>
+    /// <param name="applicationConfiguration">The configuration, with the certificate's store and subject.</param>
+    /// <param name="cancellationToken">Cancellation token for the operation.</param>
+    /// <returns>The application URI.</returns>
+    private async Task<string> ResolveApplicationUriAsync(
+        ApplicationConfiguration applicationConfiguration,
+        CancellationToken cancellationToken)
+    {
+        if (!string.IsNullOrWhiteSpace(clientOptions.ApplicationUri))
+        {
+            return clientOptions.ApplicationUri;
+        }
+
+        var newCertificateUri = $"urn:{Utils.GetHostName()}:{clientOptions.ApplicationName}";
+        if (applicationConfiguration.SecurityConfiguration.ApplicationCertificate is not { } certificateIdentifier)
+        {
+            return newCertificateUri;
+        }
+
+        using var certificate = await CertificateIdentifierResolver.ResolveAsync(
+            certificateIdentifier,
+            needPrivateKey: false,
+            telemetry: telemetry,
+            ct: cancellationToken);
+
+        IReadOnlyList<string> certificateUris = certificate is null
+            ? []
+            : X509Utils.GetApplicationUrisFromCertificate(certificate);
+
+        return certificateUris.Count > 0
+            ? certificateUris[0]
+            : newCertificateUri;
     }
 
     /// <summary>
@@ -449,8 +510,8 @@ public partial class OpcUaClient : IOpcUaClient
                 if (consecutiveKeepAliveFailures >= keepAliveOptions.MaxFailuresBeforeReconnect)
                 {
                     // Start background reconnect; session remains usable if server recovers quickly.
-                    LogSessionReconnecting(session.SessionName ?? "unknown", consecutiveKeepAliveFailures);
-                    reconnectHandler = new SessionReconnectHandler();
+                    LogSessionReconnecting(session.SessionName, consecutiveKeepAliveFailures);
+                    reconnectHandler = new SessionReconnectHandler(telemetry);
                     reconnectHandler.BeginReconnect(session, keepAliveOptions.ReconnectPeriodMilliseconds, OnReconnectComplete);
                 }
             }
@@ -503,7 +564,7 @@ public partial class OpcUaClient : IOpcUaClient
                         ? keepAliveOptions.IntervalMilliseconds
                         : 0;
 
-                    LogSessionReconnected(reconnected.SessionName ?? "unknown");
+                    LogSessionReconnected(reconnected.SessionName);
 
                     RestoreSubscriptionAfterReconnect(reconnected);
                 }
@@ -546,8 +607,16 @@ public partial class OpcUaClient : IOpcUaClient
             session.KeepAlive -= SessionOnKeepAlive;
         }
 
-        var sessionName = session.SessionName ?? "unknown";
-        Utils.SilentDispose(session);
+        var sessionName = session.SessionName;
+
+        try
+        {
+            session.Dispose();
+        }
+        catch
+        {
+            // Ignore: best-effort dispose
+        }
 
         LogSessionReplacedAfterReconnect(sessionName);
     }
@@ -576,7 +645,7 @@ public partial class OpcUaClient : IOpcUaClient
         {
             try
             {
-                configuration.CertificateValidator.CertificateValidation -= CertificateValidation;
+                configuration.CertificateManager.AcceptError = null;
             }
             catch
             {
@@ -588,23 +657,27 @@ public partial class OpcUaClient : IOpcUaClient
 
             try
             {
-                if (Session is not null)
+                if (Session is { } session)
                 {
                     if (keepAliveOptions.Enable)
                     {
-                        Session.KeepAlive -= SessionOnKeepAlive;
+                        session.KeepAlive -= SessionOnKeepAlive;
                     }
 
-                    try
+                    TaskHelper.RunSync(async () =>
                     {
-                        TaskHelper.RunSync(async () => await Session.CloseAsync(CancellationToken.None));
-                    }
-                    catch
-                    {
-                        // Ignore: best-effort close
-                    }
+                        try
+                        {
+                            await session.CloseAsync(CancellationToken.None);
+                        }
+                        catch
+                        {
+                            // Ignore: best-effort close
+                        }
 
-                    Session.Dispose();
+                        await session.DisposeAsync();
+                    });
+
                     Session = null;
                 }
             }
@@ -627,6 +700,15 @@ public partial class OpcUaClient : IOpcUaClient
             }
 
             consecutiveKeepAliveFailures = 0;
+
+            try
+            {
+                TaskHelper.RunSync(async () => await application.DisposeAsync());
+            }
+            catch
+            {
+                // Ignore: best-effort dispose
+            }
         }
 
         disposed = true;

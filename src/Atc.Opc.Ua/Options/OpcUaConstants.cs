@@ -8,6 +8,11 @@ public static class OpcUaConstants
     public const string DefaultApplicationName = nameof(OpcUaClient);
 
     /// <summary>
+    /// The node id of the server's Objects folder, where browsing and scanning usually start.
+    /// </summary>
+    public const string ObjectsFolderNodeId = "i=85";
+
+    /// <summary>
     /// The default session timeout for the OPC UA client.
     /// </summary>
     public const uint DefaultSessionTimeoutMilliseconds = 30 * 60 * 1000; // 30 minutes

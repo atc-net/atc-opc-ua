@@ -23,9 +23,9 @@ public static class NodeExtensions
         var data = new NodeVariable
         {
             NodeId = node.NodeId.ToString(),
-            NodeIdentifier = node.NodeId.Identifier.ToString()!,
+            NodeIdentifier = node.NodeId.GetIdentifierText(),
             NodeClass = Enum<NodeClassType>.Parse(node.NodeClass.ToString()),
-            DisplayName = node.DisplayName.Text,
+            DisplayName = node.DisplayName.Text ?? string.Empty,
         };
 
         if (!string.IsNullOrEmpty(parentNodeId))
@@ -38,7 +38,7 @@ public static class NodeExtensions
             data.DataTypeOpcUa = resolvedTypeInfo.OpcUaDataType;
             data.DataTypeDotnet = resolvedTypeInfo.DotNetType;
         }
-        else if (node.DataLock is VariableNode variableNode)
+        else if (node is VariableNode variableNode)
         {
             // Fallback for backward compatibility when resolver is not used
             data.DataTypeOpcUa = variableNode.CreateBasicOpcUaDataType();
@@ -71,9 +71,9 @@ public static class NodeExtensions
         }
 
         var data = MapToNodeVariable(node, parentNodeId, resolvedTypeInfo);
-        if (data is not null && nodeDataValue is not null)
+        if (data is not null && nodeDataValue is { } dataValue)
         {
-            data.SampleValue = nodeDataValue.WrappedValue.ToInvariantString() ?? nodeDataValue.ToString();
+            data.SampleValue = dataValue.WrappedValue.ToInvariantString() ?? dataValue.ToString();
         }
 
         return data;
@@ -91,9 +91,9 @@ public static class NodeExtensions
         var result = new NodeObject
         {
             NodeId = node.NodeId.ToString(),
-            NodeIdentifier = node.NodeId.Identifier.ToString()!,
+            NodeIdentifier = node.NodeId.GetIdentifierText(),
             NodeClass = Enum<NodeClassType>.Parse(node.NodeClass.ToString()),
-            DisplayName = node.DisplayName.Text,
+            DisplayName = node.DisplayName.Text ?? string.Empty,
         };
 
         if (!string.IsNullOrEmpty(parentNodeId))

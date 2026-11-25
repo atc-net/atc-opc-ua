@@ -30,5 +30,6 @@ public static class BrowserFactory
             BrowseDirection = BrowseDirection.Inverse,
             NodeClassMask = (int)NodeClass.Object | (int)NodeClass.Variable,
             ReferenceTypeId = ReferenceTypeIds.HierarchicalReferences,
+            IncludeSubtypes = true,
         };
 }

@@ -6,13 +6,10 @@ public static class OpcUaToDotNetDataTypeMapper
         NodeId nodeId,
         IList<uint> arrayDimensions)
     {
-        ArgumentNullException.ThrowIfNull(nodeId);
         ArgumentNullException.ThrowIfNull(arrayDimensions);
 
-        var systemType = arrayDimensions.Count > 0
-            ? TypeInfo.GetSystemType(TypeInfo.GetBuiltInType(nodeId), arrayDimensions.Count)
-            : TypeInfo.GetSystemType(nodeId, EncodeableFactory.GlobalFactory);
-
-        return systemType.BeautifyTypeName();
+        return arrayDimensions.Count > 0
+            ? StandardDataTypes.GetTypeName(StandardDataTypes.GetBuiltInType(nodeId), arrayDimensions.Count)
+            : StandardDataTypes.GetScalarTypeName(nodeId);
     }
 }

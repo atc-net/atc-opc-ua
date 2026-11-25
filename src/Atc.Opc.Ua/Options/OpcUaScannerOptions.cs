@@ -2,7 +2,7 @@ namespace Atc.Opc.Ua.Options;
 
 public sealed class OpcUaScannerOptions
 {
-    public string StartingNodeId { get; set; } = ObjectIds.ObjectsFolder.ToString();
+    public string StartingNodeId { get; set; } = OpcUaConstants.ObjectsFolderNodeId;
 
     public int ObjectDepth { get; set; } = 100;
 

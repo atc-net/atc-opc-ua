@@ -68,9 +68,9 @@ public partial class OpcUaClient
         var enumDataType = new OpcUaEnumDataType
         {
             NodeId = dataTypeNodeId,
-            Name = readNode.BrowseName?.Name ?? string.Empty,
-            DisplayName = readNode.DisplayName?.Text ?? string.Empty,
-            Description = readNode.Description?.Text ?? string.Empty,
+            Name = readNode.BrowseName.Name ?? string.Empty,
+            DisplayName = readNode.DisplayName.Text ?? string.Empty,
+            Description = readNode.Description.Text ?? string.Empty,
         };
 
         // Strategy 1: the DataTypeDefinition attribute (OPC UA 1.04+), then 2: the EnumValues property
@@ -126,14 +126,14 @@ public partial class OpcUaClient
 
         try
         {
-            var nodesToRead = new ReadValueIdCollection
-            {
+            ReadValueId[] nodesToRead =
+            [
                 new ReadValueId
                 {
                     NodeId = dataTypeNodeId,
                     AttributeId = Attributes.DataTypeDefinition,
                 },
-            };
+            ];
 
             var readResponse = await session.ReadAsync(
                 requestHeader: null,
@@ -142,15 +142,14 @@ public partial class OpcUaClient
                 nodesToRead,
                 cancellationToken);
 
-            if (readResponse?.Results is null ||
+            if (readResponse is null ||
                 readResponse.Results.Count == 0 ||
                 StatusCode.IsBad(readResponse.Results[0].StatusCode))
             {
                 return false;
             }
 
-            var definition = readResponse.Results[0].Value;
-            if (definition is ExtensionObject { Body: EnumDefinition enumDefinition })
+            if (readResponse.Results[0].WrappedValue.TryGetStructure<EnumDefinition>(out EnumDefinition? enumDefinition) && enumDefinition is not null)
             {
                 enumDataType.HasEnumValues = true;
 
@@ -160,8 +159,8 @@ public partial class OpcUaClient
                     {
                         Value = field.Value,
                         Name = field.Name ?? string.Empty,
-                        DisplayName = field.DisplayName?.Text ?? field.Name ?? string.Empty,
-                        Description = field.Description?.Text ?? string.Empty,
+                        DisplayName = field.DisplayName.Text ?? field.Name ?? string.Empty,
+                        Description = field.Description.Text ?? string.Empty,
                     });
                 }
 
@@ -197,14 +196,14 @@ public partial class OpcUaClient
             }
 
             // Read the EnumValues property value
-            var nodesToRead = new ReadValueIdCollection
-            {
+            ReadValueId[] nodesToRead =
+            [
                 new ReadValueId
                 {
-                    NodeId = enumValuesNodeId,
+                    NodeId = enumValuesNodeId.Value,
                     AttributeId = Attributes.Value,
                 },
-            };
+            ];
 
             var readResponse = await session.ReadAsync(
                 requestHeader: null,
@@ -213,30 +212,28 @@ public partial class OpcUaClient
                 nodesToRead,
                 cancellationToken);
 
-            if (readResponse?.Results is null ||
+            if (readResponse is null ||
                 readResponse.Results.Count == 0 ||
                 StatusCode.IsBad(readResponse.Results[0].StatusCode))
             {
                 return false;
             }
 
-            var value = readResponse.Results[0].Value;
-
             // EnumValues is an array of ExtensionObjects containing EnumValueType
-            if (value is ExtensionObject[] extensionObjects)
+            if (readResponse.Results[0].WrappedValue.TryGetValue(out ArrayOf<ExtensionObject> extensionObjects))
             {
                 enumDataType.HasEnumValues = true;
 
                 foreach (var extObj in extensionObjects)
                 {
-                    if (extObj.Body is EnumValueType enumValue)
+                    if (extObj.TryGetValue<EnumValueType>(out var enumValue) && enumValue is not null)
                     {
                         enumDataType.Members.Add(new OpcUaEnumMember
                         {
                             Value = enumValue.Value,
-                            Name = enumValue.DisplayName?.Text ?? string.Empty,
-                            DisplayName = enumValue.DisplayName?.Text ?? string.Empty,
-                            Description = enumValue.Description?.Text ?? string.Empty,
+                            Name = enumValue.DisplayName.Text ?? string.Empty,
+                            DisplayName = enumValue.DisplayName.Text ?? string.Empty,
+                            Description = enumValue.Description.Text ?? string.Empty,
                         });
                     }
                 }
@@ -273,14 +270,14 @@ public partial class OpcUaClient
             }
 
             // Read the EnumStrings property value
-            var nodesToRead = new ReadValueIdCollection
-            {
+            ReadValueId[] nodesToRead =
+            [
                 new ReadValueId
                 {
-                    NodeId = enumStringsNodeId,
+                    NodeId = enumStringsNodeId.Value,
                     AttributeId = Attributes.Value,
                 },
-            };
+            ];
 
             var readResponse = await session.ReadAsync(
                 requestHeader: null,
@@ -289,21 +286,19 @@ public partial class OpcUaClient
                 nodesToRead,
                 cancellationToken);
 
-            if (readResponse?.Results is null ||
+            if (readResponse is null ||
                 readResponse.Results.Count == 0 ||
                 StatusCode.IsBad(readResponse.Results[0].StatusCode))
             {
                 return false;
             }
 
-            var value = readResponse.Results[0].Value;
-
-            // EnumStrings is an array of LocalizedText where index = enum value
-            if (value is LocalizedText[] localizedTexts)
+                        // EnumStrings is an array of LocalizedText where index = enum value
+            if (readResponse.Results[0].WrappedValue.TryGetValue(out ArrayOf<LocalizedText> localizedTexts))
             {
                 enumDataType.HasEnumValues = false;
 
-                for (var i = 0; i < localizedTexts.Length; i++)
+                for (var i = 0; i < localizedTexts.Count; i++)
                 {
                     var text = localizedTexts[i].Text ?? string.Empty;
                     enumDataType.Members.Add(new OpcUaEnumMember
@@ -347,14 +342,14 @@ public partial class OpcUaClient
             };
 
             var references = await browser.BrowseAsync(parentNodeId, cancellationToken);
-            if (references is null || references.Count == 0)
+            if (references.Count == 0)
             {
                 return null;
             }
 
             foreach (var reference in references)
             {
-                if (string.Equals(reference.BrowseName?.Name, propertyName, StringComparison.Ordinal))
+                if (string.Equals(reference.BrowseName.Name, propertyName, StringComparison.Ordinal))
                 {
                     return ExpandedNodeId.ToNodeId(reference.NodeId, session.NamespaceUris);
                 }

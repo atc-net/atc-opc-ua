@@ -44,7 +44,7 @@ public sealed class VariantExtensionsTests
         var result = WithCulture(DanishCulture, () => variant.ToInvariantString());
 
         // Assert
-        result.Should().Be("{1.5|2.25}");
+        result.Should().Be("[1.5,2.25]");
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public sealed class VariantExtensionsTests
     public void ToInvariantString_DateTimeArray_ShouldUseRoundTripFormatForEachElement()
     {
         // Arrange
-        var variant = new Variant(new[]
+        var variant = new Variant(new DateTimeUtc[]
         {
             new DateTime(2026, 11, 10, 0, 0, 0, DateTimeKind.Utc),
             new DateTime(2026, 11, 11, 0, 0, 0, DateTimeKind.Utc),
@@ -74,7 +74,7 @@ public sealed class VariantExtensionsTests
         var result = variant.ToInvariantString();
 
         // Assert
-        result.Should().Be("{2026-11-10T00:00:00.0000000Z|2026-11-11T00:00:00.0000000Z}");
+        result.Should().Be("[\"2026-11-10T00:00:00.0000000Z\",\"2026-11-11T00:00:00.0000000Z\"]");
     }
 
     [Theory]
@@ -111,7 +111,7 @@ public sealed class VariantExtensionsTests
 
     [Fact]
     public void ToPlainValue_StatusCode_ShouldReturnItsCode()
-        => new Variant(new StatusCode(StatusCodes.BadNodeIdUnknown)).ToPlainValue().Should().Be(StatusCodes.BadNodeIdUnknown);
+        => new Variant(StatusCodes.BadNodeIdUnknown).ToPlainValue().Should().Be(StatusCodes.BadNodeIdUnknown.Code);
 
     [Fact]
     public void ToPlainValue_Guid_ShouldReturnAGuid()
@@ -129,6 +129,28 @@ public sealed class VariantExtensionsTests
     [Fact]
     public void ToPlainValue_NullValue_ShouldReturnNull()
         => Variant.Null.ToPlainValue().Should().BeNull();
+
+    [Fact]
+    public void ToVariant_SByteArray_ShouldBeAnSByteArrayNotAByteString()
+    {
+        // Act
+        var variant = VariantExtensions.ToVariant(new sbyte[] { -5, 7 }, "value");
+
+        // Assert
+        variant.TypeInfo.BuiltInType.Should().Be(BuiltInType.SByte);
+        variant.TypeInfo.IsArray.Should().BeTrue();
+    }
+
+    [Fact]
+    public void ToVariant_ByteArray_ShouldBeAByteString()
+    {
+        // Act
+        var variant = VariantExtensions.ToVariant(new byte[] { 1, 255 }, "value");
+
+        // Assert
+        variant.TypeInfo.BuiltInType.Should().Be(BuiltInType.ByteString);
+        variant.TypeInfo.IsScalar.Should().BeTrue();
+    }
 
     private static string? WithCulture(
         CultureInfo culture,

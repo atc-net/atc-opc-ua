@@ -56,6 +56,18 @@ internal sealed class MonitoredNodeRegistry
         => nodes.TryRemove(handle, out _);
 
     /// <summary>
+    /// The handle the client gave a monitored item, or 0 for an item it didn't create.
+    /// </summary>
+    /// <param name="item">The monitored item.</param>
+    /// <returns>The handle.</returns>
+    public static uint GetHandle(MonitoredItem item)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+
+        return item.Handle is uint handle ? handle : 0;
+    }
+
+    /// <summary>
     /// Removes all monitored nodes.
     /// </summary>
     public void Clear()
@@ -73,7 +85,7 @@ internal sealed class MonitoredNodeRegistry
 
         var itemsByHandle = items
             .Where(x => x.Handle is uint)
-            .ToDictionary(x => (uint)x.Handle);
+            .ToDictionary(GetHandle);
 
         var rebound = 0;
         foreach (var node in nodes.Values)
