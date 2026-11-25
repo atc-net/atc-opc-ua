@@ -1,6 +1,8 @@
 global using System.Collections.Concurrent;
 global using System.Globalization;
 global using System.Runtime.CompilerServices;
+global using System.Security.Cryptography;
+global using System.Security.Cryptography.X509Certificates;
 global using System.Text;
 global using System.Text.Json;
 global using System.Text.Json.Serialization;
@@ -20,6 +22,7 @@ global using DotNet.Testcontainers.Builders;
 global using DotNet.Testcontainers.Containers;
 global using Microsoft.Extensions.Logging;
 global using Microsoft.Extensions.Logging.Abstractions;
+global using Microsoft.Extensions.Options;
 global using NSubstitute.ExceptionExtensions;
 global using Opc.Ua;
 global using Opc.Ua.Client;
